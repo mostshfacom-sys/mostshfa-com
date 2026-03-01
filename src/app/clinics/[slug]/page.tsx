@@ -505,7 +505,7 @@ function parseWorkingHours(workingHours: any): string {
     const days = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
     const arDays = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
     
-    let schedule = [];
+    const schedule = [];
     for (let i = 0; i < days.length; i++) {
       if (parsed[days[i]]) {
         schedule.push(`${arDays[i]}: ${clean(parsed[days[i]])}`);
@@ -521,4 +521,3 @@ function parseWorkingHours(workingHours: any): string {
     return str;
   }
 }
-

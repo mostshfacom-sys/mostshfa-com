@@ -109,8 +109,8 @@ async function scrapeGoogleMapsDeep() {
               
               // Get detailed working hours
               const hoursBtn = document.querySelector('div[data-item-id="oh"]') as HTMLElement;
-              let hoursText = hoursBtn?.textContent?.trim() || '';
-              let fullSchedule: any = {};
+              const hoursText = hoursBtn?.textContent?.trim() || '';
+              const fullSchedule: any = {};
 
               if (hoursBtn) {
                 try {
