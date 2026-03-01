@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار زر الخريطة</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .test-section h2 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        .result {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            border-left-color: #28a745;
+            color: #28a745;
+        }
+        .error {
+            border-left-color: #dc3545;
+            color: #dc3545;
+        }
+        .info {
+            border-left-color: #17a2b8;
+            color: #17a2b8;
+        }
+        .instruction {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+        .instruction strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 اختبار زر الخريطة التفاعلية</h1>
+        
+        <div class="instruction">
+            <strong>📋 التعليمات:</strong>
+            1. افتح صفحة المستشفيات في تبويب آخر<br>
+            2. افتح Console (F12)<br>
+            3. اضغط على زر "عرض الخريطة"<br>
+            4. راقب الرسائل في Console
+        </div>
+
+        <div class="test-section">
+            <h2>🔍 الاختبار 1: فحص الملفات</h2>
+            <button onclick="testFiles()">فحص وجود الملفات</button>
+            <div id="files-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📦 الاختبار 2: فحص المكتبات</h2>
+            <button onclick="testLibraries()">فحص المكتبات المثبتة</button>
+            <div id="libraries-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🌐 الاختبار 3: فحص الصفحة</h2>
+            <button onclick="testPage()">فتح صفحة المستشفيات</button>
+            <div id="page-result" class="result info" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📝 الاختبار 4: كود الاختبار</h2>
+            <button onclick="showTestCode()">عرض كود الاختبار</button>
+            <div id="code-result" class="result" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        function testFiles() {
+            const result = document.getElementById('files-result');
+            result.style.display = 'block';
+            result.className = 'result info';
+            result.innerHTML = `
+                <strong>✅ الملفات المطلوبة:</strong><br><br>
+                1. MapViewButton.tsx<br>
+                   📁 mostshfa_new/src/components/hospitals-pro/MapViewButton.tsx<br><br>
+                2. InteractiveMap.tsx<br>
+                   📁 mostshfa_new/src/components/hospitals-pro/InteractiveMap.tsx<br><br>
+                3. SmartHeaderCompact.tsx<br>
+                   📁 mostshfa_new/src/components/hospitals-pro/SmartHeaderCompact.tsx<br><br>
+                <strong>🔧 للتحقق من وجود الملفات:</strong><br>
+                افتح Terminal واكتب:<br>
+                <code>
+                cd mostshfa_new<br>
+                ls src/components/hospitals-pro/MapViewButton.tsx<br>
+                ls src/components/hospitals-pro/InteractiveMap.tsx
+                </code>
+            `;
+        }
+
+        function testLibraries() {
+            const result = document.getElementById('libraries-result');
+            result.style.display = 'block';
+            result.className = 'result info';
+            result.innerHTML = `
+                <strong>📦 المكتبات المطلوبة:</strong><br><br>
+                ✅ leaflet@1.9.4<br>
+                ✅ react-leaflet@5.0.0<br>
+                ✅ @types/leaflet@1.9.21<br>
+                ✅ framer-motion@11.0.0<br>
+                ✅ @heroicons/react@2.2.0<br><br>
+                <strong>🔧 للتحقق من المكتبات:</strong><br>
+                افتح Terminal واكتب:<br>
+                <code>
+                cd mostshfa_new<br>
+                npm list leaflet react-leaflet
+                </code><br><br>
+                <strong>🔄 إذا كانت غير مثبتة:</strong><br>
+                <code>
+                npm install leaflet react-leaflet @types/leaflet
+                </code>
+            `;
+        }
+
+        function testPage() {
+            const result = document.getElementById('page-result');
+            result.style.display = 'block';
+            result.className = 'result info';
+            result.innerHTML = `
+                <strong>🌐 فتح صفحة المستشفيات...</strong><br><br>
+                سيتم فتح الصفحة في تبويب جديد<br>
+                تأكد من أن السيرفر يعمل على:<br>
+                <strong>http://localhost:3002/hospitals-pro</strong><br><br>
+                <strong>📋 خطوات الاختبار:</strong><br>
+                1. اضغط F12 لفتح Console<br>
+                2. ابحث عن زر "عرض الخريطة" 🗺️<br>
+                3. اضغط على الزر<br>
+                4. راقب الرسائل في Console
+            `;
+            
+            // Open the page
+            setTimeout(() => {
+                window.open('http://localhost:3002/hospitals-pro', '_blank');
+            }, 1000);
+        }
+
+        function showTestCode() {
+            const result = document.getElementById('code-result');
+            result.style.display = 'block';
+            result.className = 'result';
+            result.innerHTML = `
+                <strong>📝 كود الاختبار في Console:</strong><br><br>
+                <strong>1. اختبر وجود الزر:</strong><br>
+                <code>
+                const button = document.querySelector('button[title="عرض المستشفيات على الخريطة"]');<br>
+                console.log('Button found:', button);<br>
+                console.log('Button text:', button?.textContent);
+                </code><br><br>
+                
+                <strong>2. اختبر الضغط على الزر:</strong><br>
+                <code>
+                button?.click();<br>
+                console.log('Button clicked!');
+                </code><br><br>
+                
+                <strong>3. اختبر بيانات المستشفيات:</strong><br>
+                <code>
+                const cards = document.querySelectorAll('[data-hospital-card]');<br>
+                console.log('Hospitals count:', cards.length);
+                </code><br><br>
+                
+                <strong>4. راقب رسائل الزر:</strong><br>
+                يجب أن تظهر هذه الرسائل:<br>
+                <code>
+                🔧 MapViewButton mounted with X hospitals<br>
+                🗺️ Map button clicked! Opening map with X hospitals<br>
+                ✅ Map state set to true<br>
+                🗺️ InteractiveMap mounted with X hospitals<br>
+                ✅ Leaflet loaded successfully
+                </code>
+            `;
+        }
+    </script>
+</body>
+</html>

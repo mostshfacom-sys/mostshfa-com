@@ -1,0 +1,79 @@
+import type { Metadata, Viewport } from 'next';
+import { Cairo } from 'next/font/google';
+import HomeFloatingActions from '@/components/shared/HomeFloatingActions';
+import MobileBottomNav from '@/components/shared/MobileBottomNav';
+import { ThemeProvider } from '@/components/shared/ThemeProvider';
+import { ImageSettingsProvider } from '@/components/ui/ImageSettingsProvider';
+import './globals.css';
+
+const cairo = Cairo({
+  subsets: ['arabic', 'latin'],
+  display: 'swap',
+  variable: '--font-cairo',
+  preload: true,
+  fallback: ['system-ui', 'arial'],
+  adjustFontFallback: true,
+});
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#0891b2',
+};
+
+export const metadata: Metadata = {
+  title: {
+    default: 'مستشفى - دليل الخدمات الطبية في مصر',
+    template: '%s | مستشفى',
+  },
+  description: 'دليل شامل للمستشفيات والعيادات والمعامل والصيدليات وخدمات التمريض في مصر. ابحث عن أقرب خدمة طبية إليك.',
+  keywords: ['مستشفيات', 'عيادات', 'معامل', 'صيدليات', 'تمريض', 'أطباء', 'مصر', 'دليل طبي'],
+  authors: [{ name: 'مستشفى' }],
+  creator: 'مستشفى',
+  openGraph: {
+    type: 'website',
+    locale: 'ar_EG',
+    url: 'https://mostshfa.com',
+    siteName: 'مستشفى',
+    title: 'مستشفى - دليل الخدمات الطبية في مصر',
+    description: 'دليل شامل للمستشفيات والعيادات والمعامل والصيدليات وخدمات التمريض في مصر',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'مستشفى - دليل الخدمات الطبية في مصر',
+    description: 'دليل شامل للمستشفيات والعيادات والمعامل والصيدليات وخدمات التمريض في مصر',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="ar" dir="rtl" className={cairo.variable} suppressHydrationWarning>
+      <head>
+        {/* DNS Prefetch for external resources */}
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+        {/* Preconnect for faster font loading */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
+      <body className="font-cairo antialiased bg-gray-50 text-gray-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen pb-20 md:pb-0 overflow-x-hidden">
+        <ThemeProvider>
+          <ImageSettingsProvider>
+            {children}
+            <HomeFloatingActions />
+            <MobileBottomNav />
+          </ImageSettingsProvider>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}

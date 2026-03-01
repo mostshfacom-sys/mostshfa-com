@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <linearGradient id="bgL" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e6f4ff"/>
+      <stop offset="100%" stop-color="#f8f5ff"/>
+    </linearGradient>
+    <linearGradient id="pillA" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#6ee7b7"/>
+    </linearGradient>
+    <linearGradient id="pillB" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#93c5fd"/>
+    </linearGradient>
+    <linearGradient id="pillC" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fde68a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bgL)"/>
+  <rect x="16" y="16" width="1248" height="688" rx="28" ry="28" fill="#ffffff" opacity="0.38"/>
+  <g opacity="0.9">
+    <g transform="translate(260,220) rotate(-18)">
+      <rect x="-160" y="-30" width="320" height="60" rx="30" fill="url(#pillA)"/>
+      <circle cx="-80" cy="0" r="22" fill="#ffffff" opacity="0.22"/>
+    </g>
+    <g transform="translate(1030,270) rotate(16)">
+      <rect x="-200" y="-36" width="400" height="72" rx="36" fill="url(#pillB)"/>
+      <circle cx="120" cy="0" r="24" fill="#ffffff" opacity="0.25"/>
+    </g>
+    <g transform="translate(530,520) rotate(9)">
+      <rect x="-150" y="-28" width="300" height="56" rx="28" fill="url(#pillC)"/>
+      <circle cx="-50" cy="0" r="18" fill="#ffffff" opacity="0.25"/>
+    </g>
+  </g>
+  <g fill="#ffffff" opacity="0.28">
+    <circle cx="120" cy="100" r="18"/>
+    <circle cx="1160" cy="140" r="14"/>
+    <circle cx="1050" cy="610" r="20"/>
+    <circle cx="110" cy="600" r="16"/>
+  </g>
+</svg>
