@@ -490,8 +490,8 @@ function parseWorkingHours(workingHours: any): string {
     const parsed = typeof workingHours === 'string' ? JSON.parse(workingHours) : workingHours;
     let note = parsed.note || parsed.Daily || '';
     
-    // Clean strange characters like 
-    const clean = (text: string) => text?.replace(/[\ue0b0-\ue0bf\u]/g, '').trim() || '';
+    // Clean strange characters like private-use glyphs
+    const clean = (text: string) => text?.replace(/[\uE0B0-\uE0BF]/g, '').trim() || '';
     note = clean(note);
 
     // Check if the note is just "See details" or similar placeholders from scrapers
@@ -516,7 +516,7 @@ function parseWorkingHours(workingHours: any): string {
     
     return 'متاح طوال الأسبوع';
   } catch (e) {
-    const str = String(workingHours).replace(/[\ue0b0-\ue0bf\u]/g, '').trim();
+    const str = String(workingHours).replace(/[\uE0B0-\uE0BF]/g, '').trim();
     if (str.includes('انظر') || str.includes('التفاصيل')) return 'اتصل للتحقق من المواعيد';
     return str;
   }
