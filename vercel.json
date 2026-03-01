@@ -1,5 +1,5 @@
 {
-  "buildCommand": "prisma generate && next build",
+  "buildCommand": "node scripts/switch-database.js postgresql && prisma generate && next build --no-lint",
   "installCommand": "npm install --legacy-peer-deps --omit=dev",
   "framework": "nextjs",
   "regions": ["cdg1"],
