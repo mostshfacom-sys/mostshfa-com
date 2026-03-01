@@ -1,10 +1,24 @@
 #!/bin/bash
 
-echo "🚀 Starting custom Vercel build..."
+# Vercel Build Script - The "Nuclear" Option
+# This script forces the environment to be correct for production build
 
-# 1. Force switch to PostgreSQL schema
-echo "🔄 Switching to PostgreSQL schema..."
-cat > prisma/schema.prisma <<EOF
+echo "☢️ STARTING NUCLEAR BUILD SCRIPT ☢️"
+
+# 1. Clean slate
+echo "🧹 Cleaning previous artifacts..."
+rm -rf .next
+rm -rf node_modules/.prisma
+rm -rf prisma/migrations
+
+# 2. Set environment variables explicitly
+export DATABASE_URL="$POSTGRES_URL"
+export NODE_ENV="production"
+
+# 3. Create the PRODUCTION schema file from scratch
+# This overwrites whatever is there with the correct PostgreSQL config
+echo "📝 Writing production schema.prisma..."
+cat > prisma/schema.prisma << 'EOF'
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,6 +28,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ... (Your models here - keep them exactly as they were in the previous successful version)
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
@@ -260,8 +275,8 @@ model MedicineReminder {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name      String
   dosage    String?
-  frequency String?  // e.g. "daily", "weekly"
-  times     String   // JSON string of times ["08:00", "20:00"]
+  frequency String?
+  times     String
   startDate DateTime @default(now()) @map("start_date")
   endDate   DateTime? @map("end_date")
   notes     String?
@@ -286,9 +301,9 @@ model PressureLog {
   id        String   @id @default(cuid())
   userId    Int      @map("user_id")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  systolic  Int      // الانقباضي (الرقم العلوي)
-  diastolic Int      // الانبساطي (الرقم السفلي)
-  pulse     Int?     // نبضات القلب
+  systolic  Int
+  diastolic Int
+  pulse     Int?
   date      DateTime @default(now())
   note      String?
   createdAt DateTime @default(now()) @map("created_at")
@@ -305,7 +320,7 @@ model FoodEntry {
   carbs     Float?
   fats      Float?
   date      DateTime @default(now())
-  mealType  String?  @map("meal_type") // breakfast, lunch, dinner, snack
+  mealType  String?  @map("meal_type")
   createdAt DateTime @default(now()) @map("created_at")
   @@map("food_entries")
 }
@@ -316,7 +331,7 @@ model SleepRecord {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   startTime DateTime @map("start_time")
   endTime   DateTime @map("end_time")
-  quality   Int?     // 1-5 rating
+  quality   Int?
   notes     String?
   createdAt DateTime @default(now()) @map("created_at")
   @@map("sleep_records")
@@ -334,12 +349,12 @@ model FCMToken {
 }
 EOF
 
-# 2. Generate Prisma Client
+# 4. Generate Prisma Client
 echo "🔄 Generating Prisma Client..."
 npx prisma generate
 
-# 3. Build Next.js
+# 5. Build Next.js
 echo "🏗️ Building Next.js..."
 npx next build --no-lint
 
-echo "✅ Build completed successfully!"
+echo "✅ Nuclear build completed successfully!"
