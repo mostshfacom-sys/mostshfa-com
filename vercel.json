@@ -4,6 +4,7 @@
   "framework": "nextjs",
   "regions": ["cdg1"],
   "env": {
-    "PRISMA_GENERATE_DATAPROXY": "true"
+    "PRISMA_GENERATE_DATAPROXY": "true",
+    "PUPPETEER_SKIP_DOWNLOAD": "true"
   }
 }
