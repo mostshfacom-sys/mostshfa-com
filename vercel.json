@@ -1,5 +1,5 @@
 {
-  "buildCommand": "node scripts/switch-database.js postgresql && next build --no-lint",
+  "buildCommand": "bash build.sh",
   "installCommand": "npm install --legacy-peer-deps --production=false",
   "framework": "nextjs",
   "regions": ["cdg1"],
