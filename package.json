@@ -60,21 +60,10 @@
     "eslint": "^8.56.0",
     "eslint-config-next": "14.2.35"
   },
-  "optionalDependencies": {
-    "better-sqlite3": "^11.0.0",
-    "puppeteer": "^24.37.5",
-    "puppeteer-cluster": "^0.25.0",
-    "puppeteer-core": "^24.37.3",
-    "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7"
-  },
   "pnpm": {
     "onlyBuiltDependencies": [
       "@prisma/client",
       "@prisma/engines",
-      "better-sqlite3",
       "prisma",
       "sharp",
       "unrs-resolver"
