@@ -2,6 +2,7 @@ import { Header, Footer, Breadcrumb } from '@/components/shared';
 import UniversalHeaderClient, { type HeaderCounterConfig } from '@/components/shared/UniversalHeaderClient';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { HospitalCardPro } from '@/components/hospitals-pro/HospitalCardPro';
 import Link from 'next/link';
 import prisma from '@/lib/db/prisma';
 import { normalizeArabic } from '@/lib/search/arabic-normalization';
@@ -180,63 +181,76 @@ export default async function LabsPage({ searchParams }: PageProps) {
         />
         <div className="container-custom pb-8">
           <Breadcrumb items={[{ label: 'المعامل' }]} className="mb-6" />
-
-          {/* Filters */}
-          <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-            <form className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <input type="hidden" name="search" defaultValue={searchParams.search} />
-              <select
-                name="governorate"
-                defaultValue={searchParams.governorate}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              >
-                <option value="">كل المحافظات</option>
-                {data.governorates.map((g) => (
-                  <option key={g.id} value={g.id}>{g.nameAr}</option>
-                ))}
-              </select>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="homeSampling"
-                  value="true"
-                  defaultChecked={searchParams.homeSampling === 'true'}
-                  className="w-4 h-4 text-primary-500 rounded"
-                />
-                <span className="text-gray-700">سحب منزلي</span>
-              </label>
-              <button type="submit" className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
-                تطبيق الفلاتر
-              </button>
-            </form>
-          </div>
-
-          {/* Labs Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {data.labs.map((lab) => (
-              <Link key={lab.id} href={`/labs/${lab.slug}`}>
-                <Card variant="hover" className="h-full">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                      </svg>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 truncate">{lab.nameAr}</h3>
-                      {lab.governorate && (
-                        <p className="text-sm text-gray-500">{lab.governorate.nameAr}{lab.city ? ` - ${lab.city.nameAr}` : ''}</p>
-                      )}
-                      {lab.phone && <p className="text-sm text-primary-600 mt-1" dir="ltr">{lab.phone}</p>}
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {lab.hasHomeSampling && <Badge variant="success" size="sm">سحب منزلي</Badge>}
-                        {lab.isOpen && <Badge variant="secondary" size="sm">مفتوح</Badge>}
-                      </div>
-                    </div>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[300px_1fr]">
+            <aside className="h-fit lg:sticky lg:top-24">
+              <Card className="p-5">
+                <h2 className="mb-4 text-lg font-bold text-slate-900">تصفية النتائج</h2>
+                <form className="space-y-4">
+                  <input type="hidden" name="search" defaultValue={searchParams.search} />
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-slate-700">المحافظة</label>
+                    <select
+                      name="governorate"
+                      defaultValue={searchParams.governorate}
+                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value="">كل المحافظات</option>
+                      {data.governorates.map((g) => (
+                        <option key={g.id} value={g.id}>{g.nameAr}</option>
+                      ))}
+                    </select>
                   </div>
-                </Card>
-              </Link>
-            ))}
+                  <label className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="homeSampling"
+                      value="true"
+                      defaultChecked={searchParams.homeSampling === 'true'}
+                      className="h-4 w-4 rounded text-primary-500"
+                    />
+                    <span className="text-sm text-slate-700">سحب منزلي</span>
+                  </label>
+                  <button type="submit" className="w-full rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600 transition-colors">
+                    تطبيق الفلاتر
+                  </button>
+                </form>
+              </Card>
+            </aside>
+
+            <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {data.labs.map((lab, index) => {
+                  const mappedLab = {
+                    id: lab.id,
+                    name_ar: lab.nameAr,
+                    logo_url: lab.logo,
+                    hospital_type_name_ar: 'معمل تحاليل',
+                    governorate_name: lab.governorate?.nameAr || '',
+                    city_name: lab.city?.nameAr || '',
+                    rating_avg: lab.ratingAvg,
+                    rating_count: lab.ratingCount,
+                    is_featured: lab.isFeatured,
+                    is_open: lab.isOpen,
+                    has_emergency: lab.hasHomeSampling,
+                    has_ambulance: false,
+                    phone: lab.phone,
+                    branches_count: 0,
+                    specialties: [],
+                  } as any;
+
+                  return (
+                    <HospitalCardPro
+                      key={lab.id}
+                      hospital={mappedLab}
+                      index={index}
+                      href={`/labs/${lab.slug}`}
+                      entityType="lab"
+                      typeLabel="معمل"
+                    />
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           {data.labs.length === 0 && (

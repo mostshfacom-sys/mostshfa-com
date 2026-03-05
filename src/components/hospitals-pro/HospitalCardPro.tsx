@@ -30,9 +30,21 @@ interface HospitalCardProProps {
   index: number;
   isFavorite?: boolean;
   onToggleFavorite?: (id: number) => void;
+  href?: string;
+  entityType?: 'hospital' | 'clinic' | 'lab' | 'pharmacy';
+  typeLabel?: string;
 }
 
-export function HospitalCardPro({ hospital, searchQuery, index, isFavorite = false, onToggleFavorite }: HospitalCardProProps) {
+export function HospitalCardPro({
+  hospital,
+  searchQuery,
+  index,
+  isFavorite = false,
+  onToggleFavorite,
+  href,
+  entityType = 'hospital',
+  typeLabel,
+}: HospitalCardProProps) {
   const [isHovered, setIsHovered] = useState(false);
   
   // Convert rating_avg to number safely
@@ -61,7 +73,7 @@ export function HospitalCardPro({ hospital, searchQuery, index, isFavorite = fal
       onHoverEnd={() => setIsHovered(false)}
     >
       <Link 
-        href={`/hospitals-pro/${hospital.id}`}
+        href={href || `/hospitals-pro/${hospital.id}`}
         className="block group"
       >
         <article className="relative h-[480px] rounded-2xl overflow-hidden bg-white dark:bg-neutral-800 shadow-lg hover:shadow-2xl transition-all duration-300">
@@ -71,7 +83,7 @@ export function HospitalCardPro({ hospital, searchQuery, index, isFavorite = fal
             <EntityImage
               src={hospital.logo_url}
               alt={hospital.name_ar}
-              entityType="hospital"
+              entityType={entityType}
               entityId={hospital.id}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -150,7 +162,7 @@ export function HospitalCardPro({ hospital, searchQuery, index, isFavorite = fal
             {/* Type & Match Context */}
             <div className="flex items-center gap-2 mb-2">
               <span className="px-2.5 py-1 text-xs font-medium bg-white/20 text-white backdrop-blur-sm rounded-lg border border-white/10">
-                {hospital.hospital_type_name_ar || 'مستشفى'}
+                {typeLabel || hospital.hospital_type_name_ar || 'مستشفى'}
               </span>
               
               {hospital.match_context && (

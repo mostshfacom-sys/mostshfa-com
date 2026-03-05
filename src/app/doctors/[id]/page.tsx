@@ -5,6 +5,7 @@ import { Header, Footer, Breadcrumb } from '@/components/shared';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Rating } from '@/components/ui/Rating';
+import DoctorWorkplaceMap from '@/components/doctors/DoctorWorkplaceMap';
 import { prisma } from '@/lib/db/prisma';
 
 interface PageProps {
@@ -27,6 +28,8 @@ async function getStaff(id: number) {
                 slug: true,
                 phone: true,
                 address: true,
+                lat: true,
+                lng: true,
                 governorate: { select: { nameAr: true } },
                 city: { select: { nameAr: true } },
               },
@@ -43,6 +46,8 @@ async function getStaff(id: number) {
                 slug: true,
                 phone: true,
                 addressAr: true,
+                lat: true,
+                lng: true,
                 governorate: { select: { nameAr: true } },
                 city: { select: { nameAr: true } },
               },
@@ -117,6 +122,9 @@ export default async function DoctorDetailPage({ params }: PageProps) {
   const workplaceAddress = staff.hospital?.address || staff.clinic?.addressAr;
   const workplaceLocation = workplace ? 
     [workplace.governorate?.nameAr, workplace.city?.nameAr].filter(Boolean).join('، ') : '';
+  const workplaceLat = staff.hospital?.lat ?? staff.clinic?.lat ?? null;
+  const workplaceLng = staff.hospital?.lng ?? staff.clinic?.lng ?? null;
+  const hasWorkplaceMap = typeof workplaceLat === 'number' && typeof workplaceLng === 'number';
 
   const breadcrumbItems = [
     { label: 'الرئيسية', href: '/' },
@@ -275,6 +283,23 @@ export default async function DoctorDetailPage({ params }: PageProps) {
                           <Badge key={index} variant="secondary">{day}</Badge>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {workplace && hasWorkplaceMap && (
+                    <div className="mb-6">
+                      <h2 className="font-semibold text-gray-900 mb-3">الخريطة التفاعلية</h2>
+                      <DoctorWorkplaceMap
+                        marker={{
+                          id: `${staff.hospital ? 'hospital' : 'clinic'}-${workplace.id}`,
+                          name: workplace.nameAr,
+                          type: staff.hospital ? 'hospital' : 'clinic',
+                          lat: workplaceLat as number,
+                          lng: workplaceLng as number,
+                          slug: workplace.slug,
+                          address: workplaceAddress || undefined,
+                        }}
+                      />
                     </div>
                   )}
                 </div>

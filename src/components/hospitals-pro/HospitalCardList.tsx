@@ -23,9 +23,21 @@ interface HospitalCardListProps {
   index: number;
   isFavorite?: boolean;
   onToggleFavorite?: (id: number) => void;
+  href?: string;
+  entityType?: 'hospital' | 'clinic' | 'lab' | 'pharmacy';
+  typeLabel?: string;
 }
 
-export function HospitalCardList({ hospital, searchQuery, index, isFavorite = false, onToggleFavorite }: HospitalCardListProps) {
+export function HospitalCardList({
+  hospital,
+  searchQuery,
+  index,
+  isFavorite = false,
+  onToggleFavorite,
+  href,
+  entityType = 'hospital',
+  typeLabel,
+}: HospitalCardListProps) {
   // Convert rating_avg to number safely
   const rating = typeof hospital.rating_avg === 'number' 
     ? hospital.rating_avg 
@@ -50,7 +62,7 @@ export function HospitalCardList({ hospital, searchQuery, index, isFavorite = fa
       className="h-full"
     >
       <Link 
-        href={`/hospitals-pro/${hospital.id}`}
+        href={href || `/hospitals-pro/${hospital.id}`}
         className="block group h-full"
       >
         <article className="flex h-full gap-4 p-4 rounded-xl bg-white dark:bg-neutral-800 shadow-md hover:shadow-xl transition-all duration-300 border border-neutral-200 dark:border-neutral-700 hover:border-teal-500 dark:hover:border-teal-500">
@@ -60,7 +72,7 @@ export function HospitalCardList({ hospital, searchQuery, index, isFavorite = fa
             <EntityImage
               src={hospital.logo_url}
               alt={hospital.name_ar}
-              entityType="hospital"
+              entityType={entityType}
               entityId={hospital.id}
               fill
               className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -114,10 +126,10 @@ export function HospitalCardList({ hospital, searchQuery, index, isFavorite = fa
             </div>
 
             {/* Hospital Type */}
-            {hospital.hospital_type_name_ar && (
+            {(typeLabel || hospital.hospital_type_name_ar) && (
               <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
                 <BuildingOffice2Icon className="w-4 h-4" />
-                <span>{hospital.hospital_type_name_ar}</span>
+                <span>{typeLabel || hospital.hospital_type_name_ar}</span>
               </div>
             )}
             
