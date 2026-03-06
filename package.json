@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build --no-lint",
+    "build:vercel": "cp prisma/vercel.prisma prisma/schema.prisma && prisma generate && next build --no-lint",
     "start": "next start",
     "lint": "next lint",
     "db:push": "prisma db push",
