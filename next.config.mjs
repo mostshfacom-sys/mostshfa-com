@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  distDir: '.next-build',
   
   // Webpack configuration to fix module loading issues
   webpack: (config, { dev, isServer }) => {
