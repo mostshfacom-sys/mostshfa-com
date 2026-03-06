@@ -75,7 +75,7 @@ export default async function DoctorsPage({ searchParams }: PageProps) {
   const data = await getDoctors(searchParams);
   const headerSubtitle = data.total > 0 ? `عرض ${data.doctors.length} من ${data.total} طبيب` : 'لا توجد نتائج';
   const headerCounters: HeaderCounterConfig[] = [
-    { id: 'total', label: 'إجمالي الأطباء', value: data.total, icon: 'users', color: '#0ea5e9', isHighlighted: true },
+    { id: 'total', label: 'إجمالي الأطباء', value: data.total, icon: 'group', color: '#0ea5e9', isHighlighted: true },
     { id: 'featured', label: 'أطباء مميزون', value: data.featuredCount, icon: 'star', color: '#f59e0b' },
     { id: 'specialties', label: 'التخصصات', value: data.specialties.length, icon: 'group', color: '#22c55e' },
   ];

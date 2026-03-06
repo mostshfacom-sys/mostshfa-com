@@ -36,6 +36,12 @@
   ],
   "exclude": [
     "node_modules",
-    "tools/scraper"
+    "tools/scraper",
+    "prisma/**/*.ts",
+    "prisma/**/*.js",
+    "prisma/scrapers/**",
+    "scripts/**",
+    "سحب بيانات المستشفيات/**",
+    "سحب بيانات العيادات/**"
   ]
 }
