@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { buildSearchTerms, normalizeArabic } from '@/lib/search/arabic-normalization';
 import { GUIDES } from '@/config/guide-config';
 
@@ -133,9 +133,9 @@ export async function GET(request: NextRequest) {
       prisma.hospital.findMany({
         where: {
           OR: [
-            ...terms.map((term) => ({ nameAr: { contains: term, mode: 'insensitive' } })),
-            ...terms.map((term) => ({ nameEn: { contains: term, mode: 'insensitive' } })),
-            ...terms.map((term) => ({ address: { contains: term, mode: 'insensitive' } }))
+            ...terms.map((term) => ({ nameAr: { contains: term, mode: Prisma.QueryMode.insensitive } })),
+            ...terms.map((term) => ({ nameEn: { contains: term, mode: Prisma.QueryMode.insensitive } })),
+            ...terms.map((term) => ({ address: { contains: term, mode: Prisma.QueryMode.insensitive } }))
           ]
         },
         select: {
