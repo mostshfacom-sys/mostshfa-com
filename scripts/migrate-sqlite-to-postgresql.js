@@ -13,7 +13,9 @@ const fs = require('fs');
 console.log('🔄 بدء عملية نقل البيانات من SQLite إلى PostgreSQL...\n');
 
 // التحقق من وجود قاعدة البيانات SQLite
-const sqlitePath = path.join(__dirname, '..', 'dev.db');
+const sqlitePath = process.argv[2]
+  ? path.resolve(process.argv[2])
+  : (process.env.SQLITE_PATH ? path.resolve(process.env.SQLITE_PATH) : path.join(__dirname, '..', 'dev.db'));
 if (!fs.existsSync(sqlitePath)) {
   console.log('⚠️  قاعدة البيانات SQLite غير موجودة، سيتم إنشاء بيانات تجريبية');
   process.exit(0);
@@ -71,23 +73,50 @@ async function migrateData() {
     const hospitalTypes = sqliteDb.prepare('SELECT * FROM hospital_types').all();
     
     for (const type of hospitalTypes) {
-      await prisma.hospitalType.upsert({
-        where: { id: type.id },
-        update: {},
-        create: {
-          id: type.id,
-          nameAr: type.name_ar,
-          nameEn: type.name_en,
-          slug: type.slug,
-          icon: type.icon,
-          color: type.color,
-          description: type.description,
-          isActive: Boolean(type.is_active),
-          order: type.order,
-          createdAt: new Date(type.created_at),
-          updatedAt: new Date(type.updated_at)
+      const existingBySlug = type.slug
+        ? await prisma.hospitalType.findFirst({ where: { slug: type.slug } })
+        : null;
+
+      if (existingBySlug) {
+        await prisma.hospitalType.update({
+          where: { id: existingBySlug.id },
+          data: {
+            nameAr: type.name_ar,
+            nameEn: type.name_en,
+            icon: type.icon,
+            color: type.color,
+            description: type.description,
+            isActive: Boolean(type.is_active),
+            order: type.order,
+            updatedAt: new Date(type.updated_at)
+          }
+        });
+        continue;
+      }
+
+      try {
+        await prisma.hospitalType.create({
+          data: {
+            id: type.id,
+            nameAr: type.name_ar,
+            nameEn: type.name_en,
+            slug: type.slug,
+            icon: type.icon,
+            color: type.color,
+            description: type.description,
+            isActive: Boolean(type.is_active),
+            order: type.order,
+            createdAt: new Date(type.created_at),
+            updatedAt: new Date(type.updated_at)
+          }
+        });
+      } catch (e) {
+        // In case another record already exists with same slug, skip to keep migration running.
+        if (e && e.code === 'P2002') {
+          continue;
         }
-      });
+        throw e;
+      }
     }
     console.log(`✅ تم نقل ${hospitalTypes.length} نوع مستشفى`);
 
@@ -96,19 +125,41 @@ async function migrateData() {
     const specialties = sqliteDb.prepare('SELECT * FROM specialties').all();
     
     for (const specialty of specialties) {
-      await prisma.specialty.upsert({
-        where: { id: specialty.id },
-        update: {},
-        create: {
-          id: specialty.id,
-          nameAr: specialty.name_ar,
-          nameEn: specialty.name_en,
-          slug: specialty.slug,
-          icon: specialty.icon,
-          createdAt: new Date(specialty.created_at),
-          updatedAt: new Date(specialty.updated_at)
+      const existingBySlug = specialty.slug
+        ? await prisma.specialty.findFirst({ where: { slug: specialty.slug } })
+        : null;
+
+      if (existingBySlug) {
+        await prisma.specialty.update({
+          where: { id: existingBySlug.id },
+          data: {
+            nameAr: specialty.name_ar,
+            nameEn: specialty.name_en,
+            icon: specialty.icon,
+            updatedAt: new Date(specialty.updated_at)
+          }
+        });
+        continue;
+      }
+
+      try {
+        await prisma.specialty.create({
+          data: {
+            id: specialty.id,
+            nameAr: specialty.name_ar,
+            nameEn: specialty.name_en,
+            slug: specialty.slug,
+            icon: specialty.icon,
+            createdAt: new Date(specialty.created_at),
+            updatedAt: new Date(specialty.updated_at)
+          }
+        });
+      } catch (e) {
+        if (e && e.code === 'P2002') {
+          continue;
         }
-      });
+        throw e;
+      }
     }
     console.log(`✅ تم نقل ${specialties.length} تخصص`);
 
