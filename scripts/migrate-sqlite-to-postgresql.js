@@ -29,6 +29,8 @@ async function migrateData() {
   try {
     console.log('📊 بدء نقل البيانات...\n');
 
+    const hospitalTypeIdMap = new Map();
+
     // 1. نقل المحافظات
     console.log('🏛️  نقل المحافظات...');
     const governorates = sqliteDb.prepare('SELECT * FROM governorates').all();
@@ -91,11 +93,13 @@ async function migrateData() {
             updatedAt: new Date(type.updated_at)
           }
         });
+
+        hospitalTypeIdMap.set(type.id, existingBySlug.id);
         continue;
       }
 
       try {
-        await prisma.hospitalType.create({
+        const created = await prisma.hospitalType.create({
           data: {
             id: type.id,
             nameAr: type.name_ar,
@@ -110,9 +114,17 @@ async function migrateData() {
             updatedAt: new Date(type.updated_at)
           }
         });
+
+        hospitalTypeIdMap.set(type.id, created.id);
       } catch (e) {
         // In case another record already exists with same slug, skip to keep migration running.
         if (e && e.code === 'P2002') {
+          const found = type.slug
+            ? await prisma.hospitalType.findFirst({ where: { slug: type.slug } })
+            : null;
+          if (found) {
+            hospitalTypeIdMap.set(type.id, found.id);
+          }
           continue;
         }
         throw e;
@@ -176,7 +188,7 @@ async function migrateData() {
           nameAr: hospital.name_ar,
           nameEn: hospital.name_en,
           slug: hospital.slug,
-          typeId: hospital.type_id,
+          typeId: hospital.type_id ? (hospitalTypeIdMap.get(hospital.type_id) || null) : null,
           governorateId: hospital.governorate_id,
           cityId: hospital.city_id,
           address: hospital.address,
