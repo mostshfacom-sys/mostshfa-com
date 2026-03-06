@@ -158,8 +158,8 @@ export async function GET(request: NextRequest) {
       prisma.governorate.findMany({
         where: {
           OR: [
-            ...terms.map((term) => ({ nameAr: { contains: term, mode: 'insensitive' } })),
-            ...terms.map((term) => ({ nameEn: { contains: term, mode: 'insensitive' } }))
+            ...terms.map((term) => ({ nameAr: { contains: term, mode: Prisma.QueryMode.insensitive } })),
+            ...terms.map((term) => ({ nameEn: { contains: term, mode: Prisma.QueryMode.insensitive } }))
           ]
         },
         select: {
@@ -182,8 +182,8 @@ export async function GET(request: NextRequest) {
       prisma.city.findMany({
         where: {
           OR: [
-            ...terms.map((term) => ({ nameAr: { contains: term, mode: 'insensitive' } })),
-            ...terms.map((term) => ({ nameEn: { contains: term, mode: 'insensitive' } }))
+            ...terms.map((term) => ({ nameAr: { contains: term, mode: Prisma.QueryMode.insensitive } })),
+            ...terms.map((term) => ({ nameEn: { contains: term, mode: Prisma.QueryMode.insensitive } }))
           ]
         },
         select: {
@@ -211,8 +211,8 @@ export async function GET(request: NextRequest) {
       prisma.specialty.findMany({
         where: {
           OR: [
-            ...terms.map((term) => ({ nameAr: { contains: term, mode: 'insensitive' } })),
-            ...terms.map((term) => ({ nameEn: { contains: term, mode: 'insensitive' } }))
+            ...terms.map((term) => ({ nameAr: { contains: term, mode: Prisma.QueryMode.insensitive } })),
+            ...terms.map((term) => ({ nameEn: { contains: term, mode: Prisma.QueryMode.insensitive } }))
           ]
         },
         select: {
@@ -235,8 +235,8 @@ export async function GET(request: NextRequest) {
       prisma.hospitalType.findMany({
         where: {
           OR: [
-            ...terms.map((term) => ({ nameAr: { contains: term, mode: 'insensitive' } })),
-            ...terms.map((term) => ({ nameEn: { contains: term, mode: 'insensitive' } }))
+            ...terms.map((term) => ({ nameAr: { contains: term, mode: Prisma.QueryMode.insensitive } })),
+            ...terms.map((term) => ({ nameEn: { contains: term, mode: Prisma.QueryMode.insensitive } }))
           ],
           isActive: true
         },
@@ -260,8 +260,8 @@ export async function GET(request: NextRequest) {
         where: {
           isPublished: true,
           OR: terms.flatMap((term) => ([
-            { title: { contains: term, mode: 'insensitive' } },
-            { excerpt: { contains: term, mode: 'insensitive' } }
+            { title: { contains: term, mode: Prisma.QueryMode.insensitive } },
+            { excerpt: { contains: term, mode: Prisma.QueryMode.insensitive } }
           ]))
         },
         select: {
@@ -279,8 +279,8 @@ export async function GET(request: NextRequest) {
         where: {
           isActive: true,
           OR: terms.flatMap((term) => ([
-            { nameAr: { contains: term, mode: 'insensitive' } },
-            { descriptionAr: { contains: term, mode: 'insensitive' } }
+            { nameAr: { contains: term, mode: Prisma.QueryMode.insensitive } },
+            { descriptionAr: { contains: term, mode: Prisma.QueryMode.insensitive } }
           ]))
         },
         select: {
@@ -296,8 +296,8 @@ export async function GET(request: NextRequest) {
       prisma.drug.findMany({
         where: {
           OR: terms.flatMap((term) => ([
-            { nameAr: { contains: term, mode: 'insensitive' } },
-            { activeIngredient: { contains: term, mode: 'insensitive' } }
+            { nameAr: { contains: term, mode: Prisma.QueryMode.insensitive } },
+            { activeIngredient: { contains: term, mode: Prisma.QueryMode.insensitive } }
           ]))
         },
         select: {
