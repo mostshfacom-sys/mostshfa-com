@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { toast } from 'react-hot-toast';
 
 interface Stats {
   hospitals: number;
@@ -40,47 +39,10 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isAdSenseEnabled, setIsAdSenseEnabled] = useState(false);
-  const [isUpdatingAdSense, setIsUpdatingAdSense] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
-    fetchAdSenseStatus();
   }, []);
-
-  const fetchAdSenseStatus = async () => {
-    try {
-      const res = await fetch('/api/admin/adsense-config');
-      if (res.ok) {
-        const data = await res.json();
-        setIsAdSenseEnabled(data.enabled);
-      }
-    } catch (error) {
-      console.error('Error fetching AdSense status:', error);
-    }
-  };
-
-  const toggleAdSense = async () => {
-    setIsUpdatingAdSense(true);
-    try {
-      const res = await fetch('/api/admin/adsense-config', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ enabled: !isAdSenseEnabled }),
-      });
-      if (res.ok) {
-        setIsAdSenseEnabled(!isAdSenseEnabled);
-        toast.success(isAdSenseEnabled ? 'تم إيقاف أدسينس مؤقتاً' : 'تم تفعيل أدسينس');
-      } else {
-        toast.error('فشل في تحديث حالة أدسينس');
-      }
-    } catch (error) {
-      console.error('Error toggling AdSense:', error);
-      toast.error('حدث خطأ أثناء التحديث');
-    } finally {
-      setIsUpdatingAdSense(false);
-    }
-  };
 
   const fetchDashboardData = async () => {
     try {
@@ -122,39 +84,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* AdSense Control Card */}
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-orange-100">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isAdSenseEnabled ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'}`}>
-              <span className="text-2xl">💰</span>
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-gray-800">تحكم جوجل أدسينس</h2>
-              <p className="text-sm text-gray-500">تحكم في تفعيل أو إيقاف الإعلانات فوراً لتجنب المشاكل أثناء التصفح المتكرر</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className={`text-sm font-medium ${isAdSenseEnabled ? 'text-green-600' : 'text-gray-500'}`}>
-              {isAdSenseEnabled ? 'مفعل الآن' : 'متوقف حالياً'}
-            </span>
-            <button
-              onClick={toggleAdSense}
-              disabled={isUpdatingAdSense}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
-                isAdSenseEnabled ? 'bg-green-600' : 'bg-gray-200'
-              } ${isUpdatingAdSense ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              <span
-                className={`${
-                  isAdSenseEnabled ? 'translate-x-6' : 'translate-x-1'
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-              />
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {statCards.map((card) => (
