@@ -1,14 +1,7 @@
 'use client';
 
-import { useAdSense } from '@/components/ui/AdSenseProvider';
-import { usePathname } from 'next/navigation';
-
 export default function AdSenseScript() {
-  const { isEnabled, isLoading } = useAdSense();
-  const pathname = usePathname();
-
-  // Exclude admin routes from AdSense
-  if (isLoading || !isEnabled || pathname?.startsWith('/admin')) {
+  if (process.env.NEXT_PUBLIC_ADSENSE_ENABLED !== 'true') {
     return null;
   }
 
