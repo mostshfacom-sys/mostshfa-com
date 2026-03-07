@@ -18,7 +18,6 @@ const sidebarLinks = [
   { href: '/admin/visual-tips', label: 'المعلومات المصورة', icon: 'visual' },
   { href: '/admin/contact-messages', label: 'رسائل التواصل', icon: 'contact' },
   { href: '/admin/users', label: 'المستخدمين', icon: 'users' },
-  { href: '/admin/adsense', label: 'تحكم أدسينس', icon: 'ads' },
   { href: '/admin/audit-log', label: 'سجل التدقيق', icon: 'log' },
 ];
 
