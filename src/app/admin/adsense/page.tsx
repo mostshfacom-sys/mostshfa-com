@@ -36,6 +36,10 @@ export default function AdSenseConfigPage() {
       });
       if (res.ok) {
         setIsEnabled(!isEnabled);
+        try {
+          localStorage.setItem('adsense_enabled', String(!isEnabled));
+          window.dispatchEvent(new Event('storage'));
+        } catch {}
         toast.success(!isEnabled ? 'تم تفعيل أدسينس' : 'تم إيقاف أدسينس مؤقتاً');
       } else {
         toast.error('فشل في تحديث حالة أدسينس');

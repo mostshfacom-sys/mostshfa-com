@@ -70,6 +70,10 @@ export default function AdminDashboard() {
       });
       if (res.ok) {
         setIsAdSenseEnabled(!isAdSenseEnabled);
+        try {
+          localStorage.setItem('adsense_enabled', String(!isAdSenseEnabled));
+          window.dispatchEvent(new Event('storage'));
+        } catch {}
         toast.success(isAdSenseEnabled ? 'تم إيقاف أدسينس مؤقتاً' : 'تم تفعيل أدسينس');
       } else {
         toast.error('فشل في تحديث حالة أدسينس');
