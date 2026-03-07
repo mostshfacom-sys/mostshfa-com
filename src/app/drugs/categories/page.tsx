@@ -5,6 +5,8 @@ import type { Metadata } from 'next';
 import { Card } from '@/components/ui/Card';
 import { BeakerIcon } from '@heroicons/react/24/outline';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'تصنيفات الأدوية | مستشفى.كوم',
   description: 'تصفح جميع تصنيفات الأدوية والمواد الفعالة في دليل الأدوية المصري.',

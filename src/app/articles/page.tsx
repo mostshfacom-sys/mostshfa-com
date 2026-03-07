@@ -5,6 +5,8 @@ import ArticlesClient from './ArticlesClient';
 import prisma from '@/lib/db/prisma';
 import { normalizeArabic } from '@/lib/search/arabic-normalization';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'المقالات الطبية | مستشفى.كوم',
   description: 'مقالات طبية موثوقة ومعلومات صحية شاملة من أطباء متخصصين.',

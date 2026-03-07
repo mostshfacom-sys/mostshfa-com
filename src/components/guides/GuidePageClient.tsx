@@ -32,6 +32,8 @@ import GuideTipsSlider from './GuideTipsSlider';
 import GuideVideosSlider from './GuideVideosSlider';
 import FirstAidSection from './FirstAidSection';
 
+export const dynamic = 'force-dynamic';
+
 const iconMap: Record<string, any> = {
   calculator: CalculatorIcon,
   calendar: CalendarIcon,

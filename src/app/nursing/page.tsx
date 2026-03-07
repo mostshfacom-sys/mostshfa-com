@@ -9,6 +9,8 @@ import prisma from '@/lib/db/prisma';
 import type { Prisma } from '@prisma/client';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'دليل التمريض المنزلي | مستشفى.كوم',
   description:

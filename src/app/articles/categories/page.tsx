@@ -5,6 +5,8 @@ import prisma from '@/lib/db/prisma';
 import type { ArticleCategoryCard } from './ArticlesCategoriesClient';
 import ArticlesCategoriesShell from './ArticlesCategoriesShell';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'تصنيفات المقالات الطبية | مستشفى.كوم',
   description:
