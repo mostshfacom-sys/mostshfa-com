@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils/cn';
 const sidebarLinks = [
   { href: '/admin', label: 'لوحة التحكم', icon: 'dashboard' },
   { href: '/admin/navbar', label: 'إعدادات النافبار', icon: 'navbar' },
+  { href: '/admin/settings/adsense', label: 'إعدادات الإعلانات', icon: 'ads' },
   { href: '/admin/hospitals', label: 'المستشفيات', icon: 'hospital' },
   { href: '/admin/headers', label: 'إعدادات الهيدر', icon: 'image' },
   { href: '/admin/clinics', label: 'العيادات', icon: 'clinic' },
@@ -86,27 +87,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen bg-gray-100">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <aside className={cn(
-        "fixed top-0 right-0 z-50 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 lg:translate-x-0",
-        sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
-      )}>
+      <aside
+        className={cn(
+          'fixed top-0 right-0 z-50 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 lg:translate-x-0',
+          sidebarOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
+        )}
+      >
         <div className="flex items-center justify-between h-16 px-4 border-b">
           <Link href="/admin" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
               </svg>
             </div>
             <span className="font-bold text-primary-600">لوحة التحكم</span>
           </Link>
-          <button 
+          <button
             onClick={() => setSidebarOpen(false)}
             className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
           >
@@ -115,17 +123,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </svg>
           </button>
         </div>
-        
+
         <nav className="p-4 space-y-1">
           {sidebarLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
-                pathname === link.href
-                  ? "bg-primary-50 text-primary-600"
-                  : "text-gray-600 hover:bg-gray-100"
+                'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
+                pathname === link.href ? 'bg-primary-50 text-primary-600' : 'text-gray-600 hover:bg-gray-100'
               )}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,7 +148,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M11 17l-5-5m0 0l5-5m-5 5h12"
+              />
             </svg>
             العودة للموقع
           </Link>
@@ -162,14 +173,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </svg>
           </button>
           <h1 className="text-lg font-semibold text-gray-800">
-            {sidebarLinks.find(l => l.href === pathname)?.label || 'لوحة التحكم'}
+            {sidebarLinks.find((l) => l.href === pathname)?.label || 'لوحة التحكم'}
           </h1>
         </header>
 
         {/* Page content */}
-        <main className="p-4 lg:p-6">
-          {children}
-        </main>
+        <main className="p-4 lg:p-6">{children}</main>
       </div>
     </div>
   );

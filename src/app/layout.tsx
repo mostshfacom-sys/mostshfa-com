@@ -1,9 +1,12 @@
 import type { Metadata, Viewport } from 'next';
 import { Cairo } from 'next/font/google';
+import { headers } from 'next/headers';
+import { unstable_noStore as noStore } from 'next/cache';
 import HomeFloatingActions from '@/components/shared/HomeFloatingActions';
 import MobileBottomNav from '@/components/shared/MobileBottomNav';
 import { ThemeProvider } from '@/components/shared/ThemeProvider';
 import { ImageSettingsProvider } from '@/components/ui/ImageSettingsProvider';
+import { prisma } from '@/lib/db/prisma';
 import './globals.css';
 
 const cairo = Cairo({
@@ -27,7 +30,8 @@ export const metadata: Metadata = {
     default: 'مستشفى - دليل الخدمات الطبية في مصر',
     template: '%s | مستشفى',
   },
-  description: 'دليل شامل للمستشفيات والعيادات والمعامل والصيدليات وخدمات التمريض في مصر. ابحث عن أقرب خدمة طبية إليك.',
+  description:
+    'دليل شامل للمستشفيات والعيادات والمعامل والصيدليات وخدمات التمريض في مصر. ابحث عن أقرب خدمة طبية إليك.',
   keywords: ['مستشفيات', 'عيادات', 'معامل', 'صيدليات', 'تمريض', 'أطباء', 'مصر', 'دليل طبي'],
   authors: [{ name: 'مستشفى' }],
   creator: 'مستشفى',
@@ -50,23 +54,49 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export const dynamic = 'force-dynamic';
+
+async function shouldLoadAdSense(): Promise<boolean> {
+  if (process.env.NEXT_PUBLIC_ADSENSE_ENABLED !== 'true') {
+    return false;
+  }
+
+  const h = await headers();
+  const url = h.get('next-url') || '';
+
+  if (url.startsWith('/admin')) {
+    return false;
+  }
+
+  noStore();
+
+  try {
+    const setting = await prisma.siteSetting.findUnique({
+      where: { key: 'adsense_enabled' },
+    });
+    return setting?.value === 'true';
+  } catch {
+    return false;
+  }
+}
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const loadAdSense = await shouldLoadAdSense();
+
   return (
     <html lang="ar" dir="rtl" className={cairo.variable} suppressHydrationWarning>
       <head>
-        {/* DNS Prefetch for external resources */}
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-        {/* Preconnect for faster font loading */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
         <meta name="google-site-verification" content="D9Q-2z0xhUGdMi8kIkd2DPoN0yIMy5wL6YVHU3Jc_vE" />
-        {process.env.NEXT_PUBLIC_ADSENSE_ENABLED === 'true' ? (
+
+        {loadAdSense ? (
           <script
             async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5755672349927118"
