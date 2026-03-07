@@ -1,11 +1,14 @@
 'use client';
 
 import { useAdSense } from '@/components/ui/AdSenseProvider';
+import { usePathname } from 'next/navigation';
 
 export default function AdSenseScript() {
   const { isEnabled, isLoading } = useAdSense();
+  const pathname = usePathname();
 
-  if (isLoading || !isEnabled) {
+  // Exclude admin routes from AdSense
+  if (isLoading || !isEnabled || pathname?.startsWith('/admin')) {
     return null;
   }
 
