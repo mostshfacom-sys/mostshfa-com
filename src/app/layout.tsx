@@ -4,6 +4,8 @@ import HomeFloatingActions from '@/components/shared/HomeFloatingActions';
 import MobileBottomNav from '@/components/shared/MobileBottomNav';
 import { ThemeProvider } from '@/components/shared/ThemeProvider';
 import { ImageSettingsProvider } from '@/components/ui/ImageSettingsProvider';
+import { AdSenseProvider } from '@/components/ui/AdSenseProvider';
+import AdSenseScript from '@/components/shared/AdSenseScript';
 import './globals.css';
 
 const cairo = Cairo({
@@ -66,22 +68,17 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 
         <meta name="google-site-verification" content="D9Q-2z0xhUGdMi8kIkd2DPoN0yIMy5wL6YVHU3Jc_vE" />
-
-        {process.env.NEXT_PUBLIC_ADSENSE_ENABLED === 'true' ? (
-          <script
-            async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5755672349927118"
-            crossOrigin="anonymous"
-          />
-        ) : null}
+        <AdSenseScript />
       </head>
       <body className="font-cairo antialiased bg-gray-50 text-gray-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen pb-20 md:pb-0 overflow-x-hidden">
         <ThemeProvider>
-          <ImageSettingsProvider>
-            {children}
-            <HomeFloatingActions />
-            <MobileBottomNav />
-          </ImageSettingsProvider>
+          <AdSenseProvider>
+            <ImageSettingsProvider>
+              {children}
+              <HomeFloatingActions />
+              <MobileBottomNav />
+            </ImageSettingsProvider>
+          </AdSenseProvider>
         </ThemeProvider>
       </body>
     </html>
