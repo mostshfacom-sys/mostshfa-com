@@ -8,22 +8,23 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  name      String?
-  phone     String?
-  image     String?
-  role      String   @default("user")
-  isActive  Boolean  @default(true) @map("is_active")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  medicines     MedicineReminder[]
-  weightRecords WeightRecord[]
-  pressureLogs  PressureLog[]
-  foodEntries   FoodEntry[]
-  sleepRecords  SleepRecord[]
+  id            Int                @id @default(autoincrement())
+  email         String             @unique
+  password      String
+  name          String?
+  phone         String?
+  image         String?
+  role          String             @default("user")
+  isActive      Boolean            @default(true) @map("is_active")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
   fcmTokens     FCMToken[]
+  foodEntries   FoodEntry[]
+  medicines     MedicineReminder[]
+  pressureLogs  PressureLog[]
+  sleepRecords  SleepRecord[]
+  weightRecords WeightRecord[]
+
   @@map("users")
 }
 
@@ -31,28 +32,30 @@ model Governorate {
   id         Int        @id @default(autoincrement())
   nameAr     String     @unique @map("name_ar")
   nameEn     String?    @map("name_en")
-  cities     City[]
-  hospitals  Hospital[]
-  clinics    Clinic[]
-  labs       Lab[]
-  pharmacies Pharmacy[]
   createdAt  DateTime   @default(now()) @map("created_at")
   updatedAt  DateTime   @updatedAt @map("updated_at")
+  cities     City[]
+  clinics    Clinic[]
+  hospitals  Hospital[]
+  labs       Lab[]
+  pharmacies Pharmacy[]
+
   @@map("governorates")
 }
 
 model City {
   id            Int         @id @default(autoincrement())
   governorateId Int         @map("governorate_id")
-  governorate   Governorate @relation(fields: [governorateId], references: [id])
   nameAr        String      @map("name_ar")
   nameEn        String?     @map("name_en")
-  hospitals     Hospital[]
-  clinics       Clinic[]
-  labs          Lab[]
-  pharmacies    Pharmacy[]
   createdAt     DateTime    @default(now()) @map("created_at")
   updatedAt     DateTime    @updatedAt @map("updated_at")
+  governorate   Governorate @relation(fields: [governorateId], references: [id])
+  clinics       Clinic[]
+  hospitals     Hospital[]
+  labs          Lab[]
+  pharmacies    Pharmacy[]
+
   @@unique([governorateId, nameAr])
   @@index([governorateId])
   @@map("cities")
@@ -68,9 +71,10 @@ model HospitalType {
   description String?
   isActive    Boolean    @default(true) @map("is_active")
   order       Int        @default(0)
-  hospitals   Hospital[]
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
+  hospitals   Hospital[]
+
   @@map("hospital_types")
 }
 
@@ -80,61 +84,60 @@ model Specialty {
   nameEn    String?    @map("name_en")
   slug      String     @unique
   icon      String?
-  hospitals Hospital[]
-  clinics   Clinic[]
-  staff     Staff[]
   createdAt DateTime   @default(now()) @map("created_at")
   updatedAt DateTime   @updatedAt @map("updated_at")
+  staff     Staff[]
+  clinics   Clinic[]   @relation("ClinicToSpecialty")
+  hospitals Hospital[] @relation("HospitalToSpecialty")
+
   @@map("specialties")
 }
 
 model Hospital {
-  id            Int             @id @default(autoincrement())
-  nameAr        String          @map("name_ar")
-  nameEn        String?         @map("name_en")
-  slug          String          @unique
-  typeId        Int?            @map("type_id")
-  type          HospitalType?   @relation(fields: [typeId], references: [id])
-  governorateId Int?            @map("governorate_id")
-  governorate   Governorate?    @relation(fields: [governorateId], references: [id])
-  cityId        Int?            @map("city_id")
-  city          City?           @relation(fields: [cityId], references: [id])
-  address       String?
-  phone         String?
-  whatsapp      String?
-  website       String?
-  facebook      String?
-  logo          String?
-  description   String?
-  hasEmergency  Boolean         @default(false) @map("has_emergency")
-  isFeatured    Boolean         @default(false) @map("is_featured")
-  ratingAvg     Float           @default(0) @map("rating_avg")
-  ratingCount   Int             @default(0) @map("rating_count")
-  lat           Float?
-  lng           Float?
-  category      String?
-  
-  // الحقول الجديدة للنظام المحسن
-  metadata              String  @default("{}") 
-  workingHours          String  @default("{}") @map("working_hours")
-  services              String  @default("[]")
-  insuranceAccepted     String  @default("[]") @map("insurance_accepted")
-  emergencyServices     String  @default("{}") @map("emergency_services")
-  parkingAvailable      Boolean @default(false) @map("parking_available")
-  wheelchairAccessible  Boolean @default(false) @map("wheelchair_accessible")
-  hasAmbulance          Boolean @default(false) @map("has_ambulance")
-  beds                  Int     @default(0)
-  operator              String?
-  email                 String?
-  languagesSpoken       String  @default("[]") @map("languages_spoken")
-  isVerified            Boolean @default(false) @map("is_verified")
-  
-  reviews       Review[]
-  specialties   Specialty[]
-  hospitalStaff HospitalStaff[]
-  workingHoursList WorkingHour[]
-  createdAt     DateTime        @default(now()) @map("created_at")
-  updatedAt     DateTime        @updatedAt @map("updated_at")
+  id                   Int             @id @default(autoincrement())
+  nameAr               String          @map("name_ar")
+  nameEn               String?         @map("name_en")
+  slug                 String          @unique
+  typeId               Int?            @map("type_id")
+  governorateId        Int?            @map("governorate_id")
+  cityId               Int?            @map("city_id")
+  address              String?
+  phone                String?
+  whatsapp             String?
+  website              String?
+  facebook             String?
+  logo                 String?
+  description          String?
+  hasEmergency         Boolean         @default(false) @map("has_emergency")
+  isFeatured           Boolean         @default(false) @map("is_featured")
+  ratingAvg            Float           @default(0) @map("rating_avg")
+  ratingCount          Int             @default(0) @map("rating_count")
+  lat                  Float?
+  lng                  Float?
+  category             String?
+  metadata             String          @default("{}")
+  workingHours         String          @default("{}") @map("working_hours")
+  services             String          @default("[]")
+  insuranceAccepted    String          @default("[]") @map("insurance_accepted")
+  emergencyServices    String          @default("{}") @map("emergency_services")
+  parkingAvailable     Boolean         @default(false) @map("parking_available")
+  wheelchairAccessible Boolean         @default(false) @map("wheelchair_accessible")
+  hasAmbulance         Boolean         @default(false) @map("has_ambulance")
+  beds                 Int             @default(0)
+  operator             String?
+  email                String?
+  languagesSpoken      String          @default("[]") @map("languages_spoken")
+  isVerified           Boolean         @default(false) @map("is_verified")
+  createdAt            DateTime        @default(now()) @map("created_at")
+  updatedAt            DateTime        @updatedAt @map("updated_at")
+  hospitalStaff        HospitalStaff[]
+  city                 City?           @relation(fields: [cityId], references: [id])
+  governorate          Governorate?    @relation(fields: [governorateId], references: [id])
+  type                 HospitalType?   @relation(fields: [typeId], references: [id])
+  reviews              Review[]
+  workingHoursList     WorkingHour[]
+  specialties          Specialty[]     @relation("HospitalToSpecialty")
+
   @@index([governorateId])
   @@index([cityId])
   @@index([typeId])
@@ -144,80 +147,81 @@ model Hospital {
 }
 
 model Review {
-  id          Int      @id @default(autoincrement())
-  hospitalId  Int      @map("hospital_id")
-  hospital    Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
-  author      String
-  rating      Int
-  text        String?
-  time        String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id         Int      @id @default(autoincrement())
+  hospitalId Int      @map("hospital_id")
+  author     String
+  rating     Int
+  text       String?
+  time       String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  hospital   Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
 
   @@index([hospitalId])
   @@map("reviews")
 }
 
 model WorkingHour {
-  id          Int      @id @default(autoincrement())
-  hospitalId  Int      @map("hospital_id")
-  hospital    Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
-  day         String   // Sunday, Monday, etc.
-  openTime    String?  @map("open_time")
-  closeTime   String?  @map("close_time")
-  isClosed    Boolean  @default(false) @map("is_closed")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id         Int      @id @default(autoincrement())
+  hospitalId Int      @map("hospital_id")
+  day        String
+  openTime   String?  @map("open_time")
+  closeTime  String?  @map("close_time")
+  isClosed   Boolean  @default(false) @map("is_closed")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  hospital   Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
 
   @@unique([hospitalId, day])
   @@map("working_hours_list")
 }
 
 model Clinic {
-  id            Int           @id @default(autoincrement())
-  nameAr        String        @map("name_ar")
-  nameEn        String?       @map("name_en")
-  slug          String        @unique
-  descriptionAr String?       @map("description_ar")
-  phone         String?
-  whatsapp      String?
-  email         String?
-  website       String?
-  facebook      String?
-  instagram     String?
-  twitter       String?
-  linkedin      String?
-  videoUrl      String?       @map("video_url")
-  logo          String?
-  image         String?
-  gallery       String        @default("[]") // Array of image URLs
-  workingHours  String        @default("{}") @map("working_hours")
-  services      String        @default("[]")
-  insuranceCompanies String     @default("[]") @map("insurance_companies")
-  amenities     String        @default("[]") // WiFi, Parking, etc.
-  metadata      String        @default("{}")
-  governorateId Int?          @map("governorate_id")
-  governorate   Governorate?  @relation(fields: [governorateId], references: [id])
-  cityId        Int?          @map("city_id")
-  city          City?         @relation(fields: [cityId], references: [id])
-  addressAr     String?       @map("address_ar")
-  lat           Float?
-  lng           Float?
-  hours         String?
-  emergencyPhone String?      @map("emergency_phone")
-  consultationFee Float?      @map("consultation_fee")
-  waitingTime   String?       @map("waiting_time")
-  parkingAvailable Boolean    @default(false) @map("parking_available")
-  wifiAvailable Boolean       @default(false) @map("wifi_available")
-  isOpen        Boolean       @default(true) @map("is_open")
-  isFeatured    Boolean       @default(false) @map("is_featured")
-  ratingAvg     Float         @default(0) @map("rating_avg")
-  ratingCount   Int           @default(0) @map("rating_count")
-  status        String        @default("published")
-  specialties   Specialty[]
-  clinicStaff   ClinicStaff[]
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @updatedAt @map("updated_at")
+  id                 Int           @id @default(autoincrement())
+  nameAr             String        @map("name_ar")
+  nameEn             String?       @map("name_en")
+  slug               String        @unique
+  descriptionAr      String?       @map("description_ar")
+  phone              String?
+  whatsapp           String?
+  email              String?
+  website            String?
+  facebook           String?
+  instagram          String?
+  twitter            String?
+  linkedin           String?
+  videoUrl           String?       @map("video_url")
+  logo               String?
+  image              String?
+  gallery            String        @default("[]")
+  workingHours       String        @default("{}") @map("working_hours")
+  services           String        @default("[]")
+  insuranceCompanies String        @default("[]") @map("insurance_companies")
+  amenities          String        @default("[]")
+  metadata           String        @default("{}")
+  governorateId      Int?          @map("governorate_id")
+  cityId             Int?          @map("city_id")
+  addressAr          String?       @map("address_ar")
+  lat                Float?
+  lng                Float?
+  hours              String?
+  emergencyPhone     String?       @map("emergency_phone")
+  consultationFee    Float?        @map("consultation_fee")
+  waitingTime        String?       @map("waiting_time")
+  parkingAvailable   Boolean       @default(false) @map("parking_available")
+  wifiAvailable      Boolean       @default(false) @map("wifi_available")
+  isOpen             Boolean       @default(true) @map("is_open")
+  isFeatured         Boolean       @default(false) @map("is_featured")
+  ratingAvg          Float         @default(0) @map("rating_avg")
+  ratingCount        Int           @default(0) @map("rating_count")
+  status             String        @default("published")
+  createdAt          DateTime      @default(now()) @map("created_at")
+  updatedAt          DateTime      @updatedAt @map("updated_at")
+  clinicStaff        ClinicStaff[]
+  city               City?         @relation(fields: [cityId], references: [id])
+  governorate        Governorate?  @relation(fields: [governorateId], references: [id])
+  specialties        Specialty[]   @relation("ClinicToSpecialty")
+
   @@index([governorateId])
   @@index([cityId])
   @@map("clinics")
@@ -236,9 +240,7 @@ model Lab {
   facebook        String?
   logo            String?
   governorateId   Int?         @map("governorate_id")
-  governorate     Governorate? @relation(fields: [governorateId], references: [id])
   cityId          Int?         @map("city_id")
-  city            City?        @relation(fields: [cityId], references: [id])
   addressAr       String?      @map("address_ar")
   lat             Float?
   lng             Float?
@@ -251,6 +253,9 @@ model Lab {
   status          String       @default("published")
   createdAt       DateTime     @default(now()) @map("created_at")
   updatedAt       DateTime     @updatedAt @map("updated_at")
+  city            City?        @relation(fields: [cityId], references: [id])
+  governorate     Governorate? @relation(fields: [governorateId], references: [id])
+
   @@index([governorateId])
   @@index([cityId])
   @@map("labs")
@@ -271,9 +276,7 @@ model Pharmacy {
   logo               String?
   image              String?
   governorateId      Int?         @map("governorate_id")
-  governorate        Governorate? @relation(fields: [governorateId], references: [id])
   cityId             Int?         @map("city_id")
-  city               City?        @relation(fields: [cityId], references: [id])
   addressAr          String?      @map("address_ar")
   lat                Float?
   lng                Float?
@@ -291,6 +294,9 @@ model Pharmacy {
   status             String       @default("published")
   createdAt          DateTime     @default(now()) @map("created_at")
   updatedAt          DateTime     @updatedAt @map("updated_at")
+  city               City?        @relation(fields: [cityId], references: [id])
+  governorate        Governorate? @relation(fields: [governorateId], references: [id])
+
   @@index([governorateId])
   @@index([cityId])
   @@map("pharmacies")
@@ -300,16 +306,16 @@ model DrugCategory {
   id        Int      @id @default(autoincrement())
   name      String   @unique
   legacyId  Int?     @map("legacy_id")
-  drugs     Drug[]
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  drugs     Drug[]
+
   @@map("drug_categories")
 }
 
 model Drug {
   id                Int           @id @default(autoincrement())
   categoryId        Int?          @map("category_id")
-  category          DrugCategory? @relation(fields: [categoryId], references: [id])
   legacyId          Int?          @map("legacy_id")
   nameAr            String        @map("name_ar")
   nameEn            String?       @map("name_en")
@@ -329,63 +335,59 @@ model Drug {
   lastUpdatedPrice  String?       @map("last_updated_price")
   createdAt         DateTime      @default(now()) @map("created_at")
   updatedAt         DateTime      @updatedAt @map("updated_at")
+  category          DrugCategory? @relation(fields: [categoryId], references: [id])
+
   @@index([categoryId])
   @@map("drugs")
 }
 
 model ArticleCategory {
-  id          Int       @id @default(autoincrement())
-  nameAr      String    @map("name_ar")
-  nameEn      String?   @map("name_en")
-  slug        String    @unique
-  icon        String?
-  color       String?
-  
-  // الحقول الجديدة للهيكل الهرمي
-  parentId    Int?             @map("parent_id")
-  parent      ArticleCategory? @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  children    ArticleCategory[] @relation("CategoryHierarchy")
-  order       Int              @default(0)
-  isActive    Boolean          @default(true) @map("is_active")
-  
-  articles    Article[]
-  healthTips  HealthTip[]
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  id         Int               @id @default(autoincrement())
+  nameAr     String            @map("name_ar")
+  nameEn     String?           @map("name_en")
+  slug       String            @unique
+  icon       String?
+  color      String?
+  parentId   Int?              @map("parent_id")
+  order      Int               @default(0)
+  isActive   Boolean           @default(true) @map("is_active")
+  createdAt  DateTime          @default(now()) @map("created_at")
+  updatedAt  DateTime          @updatedAt @map("updated_at")
+  parent     ArticleCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children   ArticleCategory[] @relation("CategoryHierarchy")
+  articles   Article[]
+  healthTips HealthTip[]
+
   @@index([parentId])
   @@index([isActive, order])
   @@map("article_categories")
 }
 
 model Article {
-  id          Int              @id @default(autoincrement())
-  categoryId  Int?             @map("category_id")
-  category    ArticleCategory? @relation(fields: [categoryId], references: [id])
-  title       String
-  slug        String           @unique
-  excerpt     String?
-  content     String?
-  image       String?
-  author      String?
-  tags        String?
-  views       Int              @default(0)
-  isFeatured  Boolean          @default(false) @map("is_featured")
-  isPublished Boolean          @default(true) @map("is_published")
-  publishedAt DateTime?        @map("published_at")
-  
-  // الحقول الجديدة للنظام المحسن
-  readingTime       Int       @default(0) @map("reading_time")
-  difficultyLevel   String    @default("beginner") @map("difficulty_level")
-  medicalSpecialties String   @default("[]") @map("medical_specialties")
-  targetAudience    String    @default("[]") @map("target_audience")
-  factChecked       Boolean  @default(false) @map("fact_checked")
-  medicalDisclaimer Boolean  @default(true) @map("medical_disclaimer")
-  
-  // العلاقات الجديدة
-  tagRelations ArticleTagRelation[]
-  
-  createdAt   DateTime         @default(now()) @map("created_at")
-  updatedAt   DateTime         @updatedAt @map("updated_at")
+  id                 Int                  @id @default(autoincrement())
+  categoryId         Int?                 @map("category_id")
+  title              String
+  slug               String               @unique
+  excerpt            String?
+  content            String?
+  image              String?
+  author             String?
+  tags               String?
+  views              Int                  @default(0)
+  isFeatured         Boolean              @default(false) @map("is_featured")
+  isPublished        Boolean              @default(true) @map("is_published")
+  publishedAt        DateTime?            @map("published_at")
+  readingTime        Int                  @default(0) @map("reading_time")
+  difficultyLevel    String               @default("beginner") @map("difficulty_level")
+  medicalSpecialties String               @default("[]") @map("medical_specialties")
+  targetAudience     String               @default("[]") @map("target_audience")
+  factChecked        Boolean              @default(false) @map("fact_checked")
+  medicalDisclaimer  Boolean              @default(true) @map("medical_disclaimer")
+  createdAt          DateTime             @default(now()) @map("created_at")
+  updatedAt          DateTime             @updatedAt @map("updated_at")
+  tagRelations       ArticleTagRelation[]
+  category           ArticleCategory?     @relation(fields: [categoryId], references: [id])
+
   @@index([categoryId])
   @@index([isPublished])
   @@index([isFeatured])
@@ -399,7 +401,6 @@ model Staff {
   slug            String          @unique
   title           String?
   specialtyId     Int?            @map("specialty_id")
-  specialty       Specialty?      @relation(fields: [specialtyId], references: [id])
   bio             String?
   image           String?
   phone           String?
@@ -415,10 +416,12 @@ model Staff {
   isActive        Boolean         @default(true) @map("is_active")
   ratingAvg       Float           @default(0) @map("rating_avg")
   ratingCount     Int             @default(0) @map("rating_count")
-  hospitalStaff   HospitalStaff[]
-  clinicStaff     ClinicStaff[]
   createdAt       DateTime        @default(now()) @map("created_at")
   updatedAt       DateTime        @updatedAt @map("updated_at")
+  clinicStaff     ClinicStaff[]
+  hospitalStaff   HospitalStaff[]
+  specialty       Specialty?      @relation(fields: [specialtyId], references: [id])
+
   @@index([specialtyId])
   @@map("staff")
 }
@@ -426,13 +429,14 @@ model Staff {
 model HospitalStaff {
   id         Int      @id @default(autoincrement())
   hospitalId Int      @map("hospital_id")
-  hospital   Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
   staffId    Int      @map("staff_id")
-  staff      Staff    @relation(fields: [staffId], references: [id])
   position   String?
   department String?
   isHead     Boolean  @default(false) @map("is_head")
   createdAt  DateTime @default(now()) @map("created_at")
+  hospital   Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  staff      Staff    @relation(fields: [staffId], references: [id])
+
   @@index([hospitalId])
   @@index([staffId])
   @@map("hospital_staff")
@@ -441,25 +445,27 @@ model HospitalStaff {
 model ClinicStaff {
   id        Int      @id @default(autoincrement())
   clinicId  Int      @map("clinic_id")
-  clinic    Clinic   @relation(fields: [clinicId], references: [id])
   staffId   Int      @map("staff_id")
-  staff     Staff    @relation(fields: [staffId], references: [id])
   isOwner   Boolean  @default(false) @map("is_owner")
   createdAt DateTime @default(now()) @map("created_at")
+  clinic    Clinic   @relation(fields: [clinicId], references: [id])
+  staff     Staff    @relation(fields: [staffId], references: [id])
+
   @@index([clinicId])
   @@index([staffId])
   @@map("clinic_staff")
 }
 
 model ArticleTag {
-  id          Int       @id @default(autoincrement())
-  nameAr      String    @unique @map("name_ar")
-  nameEn      String?   @map("name_en")
-  slug        String    @unique
-  color       String    @default("#10B981")
-  usageCount  Int       @default(0) @map("usage_count")
-  articles    ArticleTagRelation[]
-  createdAt   DateTime  @default(now()) @map("created_at")
+  id         Int                  @id @default(autoincrement())
+  nameAr     String               @unique @map("name_ar")
+  nameEn     String?              @map("name_en")
+  slug       String               @unique
+  color      String               @default("#10B981")
+  usageCount Int                  @default(0) @map("usage_count")
+  createdAt  DateTime             @default(now()) @map("created_at")
+  articles   ArticleTagRelation[]
+
   @@map("article_tags")
 }
 
@@ -468,39 +474,41 @@ model ArticleTagRelation {
   tagId     Int        @map("tag_id")
   article   Article    @relation(fields: [articleId], references: [id], onDelete: Cascade)
   tag       ArticleTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
   @@id([articleId, tagId])
   @@map("article_tag_relations")
 }
 
 model MedicalTool {
-  id                String            @id @default(uuid())
-  nameAr            String            @map("name_ar")
-  nameEn            String?           @map("name_en")
-  slug              String            @unique
-  descriptionAr     String            @map("description_ar")
-  descriptionEn     String?           @map("description_en")
-  toolType          String            @map("tool_type")
-  componentName     String            @map("component_name")
-  config            String            @default("{}")
-  medicalSpecialties String           @default("[]") @map("medical_specialties")
-  targetConditions  String            @default("[]") @map("target_conditions")
-  accuracyLevel     String            @map("accuracy_level")
-  icon              String?
-  featuredImage     String?           @map("featured_image")
-  instructionsAr    String?           @map("instructions_ar")
-  instructionsEn    String?           @map("instructions_en")
-  usageCount        Int               @default(0) @map("usage_count")
-  averageRating     Float             @default(0.00) @map("average_rating")
-  ratingCount       Int               @default(0) @map("rating_count")
-  isActive          Boolean           @default(true) @map("is_active")
-  isFeatured        Boolean           @default(false) @map("is_featured")
-  metaTitleAr       String?           @map("meta_title_ar")
-  metaTitleEn       String?           @map("meta_title_en")
-  metaDescriptionAr String?           @map("meta_description_ar")
-  metaDescriptionEn String?           @map("meta_description_en")
-  createdAt         DateTime          @default(now()) @map("created_at")
-  updatedAt         DateTime          @updatedAt @map("updated_at")
-  ratings           Rating[]
+  id                 String   @id @default(uuid())
+  nameAr             String   @map("name_ar")
+  nameEn             String?  @map("name_en")
+  slug               String   @unique
+  descriptionAr      String   @map("description_ar")
+  descriptionEn      String?  @map("description_en")
+  toolType           String   @map("tool_type")
+  componentName      String   @map("component_name")
+  config             String   @default("{}")
+  medicalSpecialties String   @default("[]") @map("medical_specialties")
+  targetConditions   String   @default("[]") @map("target_conditions")
+  accuracyLevel      String   @map("accuracy_level")
+  icon               String?
+  featuredImage      String?  @map("featured_image")
+  instructionsAr     String?  @map("instructions_ar")
+  instructionsEn     String?  @map("instructions_en")
+  usageCount         Int      @default(0) @map("usage_count")
+  averageRating      Float    @default(0.00) @map("average_rating")
+  ratingCount        Int      @default(0) @map("rating_count")
+  isActive           Boolean  @default(true) @map("is_active")
+  isFeatured         Boolean  @default(false) @map("is_featured")
+  metaTitleAr        String?  @map("meta_title_ar")
+  metaTitleEn        String?  @map("meta_title_en")
+  metaDescriptionAr  String?  @map("meta_description_ar")
+  metaDescriptionEn  String?  @map("meta_description_en")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  ratings            Rating[]
+
   @@index([toolType])
   @@index([isActive, isFeatured])
   @@index([usageCount])
@@ -510,7 +518,6 @@ model MedicalTool {
 model MedicineReminder {
   id           Int            @id @default(autoincrement())
   userId       Int            @map("user_id")
-  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   name         String
   dosage       String
   frequency    String
@@ -522,6 +529,8 @@ model MedicineReminder {
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
   doses        MedicineDose[]
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId, isActive])
   @@index([startDate])
   @@map("medicine_reminders")
@@ -530,10 +539,11 @@ model MedicineReminder {
 model MedicineDose {
   id            Int              @id @default(autoincrement())
   medicineId    Int              @map("medicine_id")
-  medicine      MedicineReminder @relation(fields: [medicineId], references: [id], onDelete: Cascade)
   scheduledTime String           @map("scheduled_time")
   takenAt       DateTime         @map("taken_at")
   date          DateTime
+  medicine      MedicineReminder @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+
   @@index([medicineId, date])
   @@map("medicine_doses")
 }
@@ -541,11 +551,12 @@ model MedicineDose {
 model WeightRecord {
   id        Int      @id @default(autoincrement())
   userId    Int      @map("user_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   weight    Float
   date      DateTime
   notes     String?
   createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([userId, date])
   @@index([userId, date])
   @@map("weight_records")
@@ -554,7 +565,6 @@ model WeightRecord {
 model PressureLog {
   id         Int      @id @default(autoincrement())
   userId     Int      @map("user_id")
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   systolic   Int
   diastolic  Int
   pulse      Int?
@@ -562,6 +572,8 @@ model PressureLog {
   status     String
   notes      String?
   createdAt  DateTime @default(now()) @map("created_at")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId, measuredAt])
   @@map("pressure_logs")
 }
@@ -569,7 +581,6 @@ model PressureLog {
 model FoodEntry {
   id        Int      @id @default(autoincrement())
   userId    Int      @map("user_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   meal      String
   food      String
   calories  Int
@@ -579,6 +590,8 @@ model FoodEntry {
   date      DateTime
   time      String
   createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId, date])
   @@index([meal])
   @@map("food_entries")
@@ -587,7 +600,6 @@ model FoodEntry {
 model SleepRecord {
   id        Int      @id @default(autoincrement())
   userId    Int      @map("user_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   bedTime   String   @map("bed_time")
   wakeTime  String   @map("wake_time")
   hours     Float
@@ -595,6 +607,8 @@ model SleepRecord {
   date      DateTime
   notes     String?
   createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([userId, date])
   @@index([userId, date])
   @@map("sleep_records")
@@ -603,28 +617,29 @@ model SleepRecord {
 model FCMToken {
   id         Int      @id @default(autoincrement())
   userId     Int      @map("user_id")
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   token      String   @unique
   deviceType String   @default("web") @map("device_type")
   isActive   Boolean  @default(true) @map("is_active")
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("fcm_tokens")
 }
 
 model ContactMessage {
-  id          Int      @id @default(autoincrement())
-  name        String
-  email       String
-  phone       String?
-  subject     String?
-  message     String
-  status      String   @default("new")
-  isRead      Boolean  @default(false) @map("is_read")
-  adminReply  String?  @map("admin_reply")
-  repliedAt   DateTime? @map("replied_at")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id         Int       @id @default(autoincrement())
+  name       String
+  email      String
+  phone      String?
+  subject    String?
+  message    String
+  status     String    @default("new")
+  isRead     Boolean   @default(false) @map("is_read")
+  adminReply String?   @map("admin_reply")
+  repliedAt  DateTime? @map("replied_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
   @@index([status])
   @@index([isRead])
@@ -640,11 +655,9 @@ model Rating {
   rating      Int
   comment     String?
   isHelpful   Boolean?    @map("is_helpful")
-  
-  // العلاقات
-  medicalTool MedicalTool? @relation(fields: [entityId], references: [id])
-  
   createdAt   DateTime    @default(now()) @map("created_at")
+  medicalTool MedicalTool @relation(fields: [entityId], references: [id])
+
   @@unique([entityType, entityId, userIp])
   @@index([entityType, entityId])
   @@index([createdAt])
@@ -652,11 +665,12 @@ model Rating {
 }
 
 model Favorite {
-  id         Int        @id @default(autoincrement())
-  entityType String     @map("entity_type")
-  entityId   String     @map("entity_id")
-  userIp     String     @map("user_ip")
-  createdAt  DateTime   @default(now()) @map("created_at")
+  id         Int      @id @default(autoincrement())
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  userIp     String   @map("user_ip")
+  createdAt  DateTime @default(now()) @map("created_at")
+
   @@unique([entityType, entityId, userIp])
   @@index([entityType, entityId])
   @@index([userIp])
@@ -664,14 +678,15 @@ model Favorite {
 }
 
 model ViewLog {
-  id         Int        @id @default(autoincrement())
-  entityType String     @map("entity_type")
-  entityId   String     @map("entity_id")
-  userIp     String     @map("user_ip")
-  userAgent  String?    @map("user_agent")
+  id         Int      @id @default(autoincrement())
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  userIp     String   @map("user_ip")
+  userAgent  String?  @map("user_agent")
   referer    String?
-  sessionId  String?    @map("session_id")
-  createdAt  DateTime   @default(now()) @map("created_at")
+  sessionId  String?  @map("session_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
   @@index([entityType, entityId])
   @@index([createdAt])
   @@index([sessionId])
@@ -679,22 +694,23 @@ model ViewLog {
 }
 
 model Analytics {
-  id            Int        @id @default(autoincrement())
-  entityType    String     @map("entity_type")
-  entityId      String     @map("entity_id")
-  date          DateTime
-  views         Int        @default(0)
-  uniqueViews   Int        @default(0) @map("unique_views")
-  timeSpent     Int        @default(0) @map("time_spent")
-  bounceRate    Float      @default(0.00) @map("bounce_rate")
-  likes         Int        @default(0)
-  shares        Int        @default(0)
-  comments      Int        @default(0)
-  directTraffic Int        @default(0) @map("direct_traffic")
-  searchTraffic Int        @default(0) @map("search_traffic")
-  socialTraffic Int        @default(0) @map("social_traffic")
+  id              Int      @id @default(autoincrement())
+  entityType      String   @map("entity_type")
+  entityId        String   @map("entity_id")
+  date            DateTime
+  views           Int      @default(0)
+  uniqueViews     Int      @default(0) @map("unique_views")
+  timeSpent       Int      @default(0) @map("time_spent")
+  bounceRate      Float    @default(0.00) @map("bounce_rate")
+  likes           Int      @default(0)
+  shares          Int      @default(0)
+  comments        Int      @default(0)
+  directTraffic   Int      @default(0) @map("direct_traffic")
+  searchTraffic   Int      @default(0) @map("search_traffic")
+  socialTraffic   Int      @default(0) @map("social_traffic")
   referralTraffic Int      @default(0) @map("referral_traffic")
-  createdAt     DateTime   @default(now()) @map("created_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+
   @@unique([entityType, entityId, date])
   @@index([date])
   @@map("analytics")
@@ -707,7 +723,6 @@ model HealthTip {
   contentAr     String           @map("content_ar")
   contentEn     String?          @map("content_en")
   categoryId    Int?             @map("category_id")
-  category      ArticleCategory? @relation(fields: [categoryId], references: [id])
   frequency     String           @default("daily")
   scheduledDate DateTime?        @map("scheduled_date")
   isSeasonal    Boolean          @default(false) @map("is_seasonal")
@@ -720,6 +735,8 @@ model HealthTip {
   isActive      Boolean          @default(true) @map("is_active")
   createdAt     DateTime         @default(now()) @map("created_at")
   updatedAt     DateTime         @updatedAt @map("updated_at")
+  category      ArticleCategory? @relation(fields: [categoryId], references: [id])
+
   @@index([categoryId])
   @@index([scheduledDate])
   @@index([isActive, scheduledDate])
@@ -735,23 +752,25 @@ model VisualTip {
   sortOrder Int      @default(0) @map("sort_order")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+
   @@index([isActive, sortOrder])
   @@map("visual_tips")
 }
 
 model YoutubeVideo {
-  id            Int      @id @default(autoincrement())
-  channelId     String   @map("channel_id")
-  videoId       String   @unique @map("video_id")
-  title         String
-  description   String?
-  thumbnailUrl  String?  @map("thumbnail_url")
-  videoUrl      String   @map("video_url")
-  channelTitle  String?  @map("channel_title")
-  publishedAt   DateTime? @map("published_at")
-  durationSec   Int?     @map("duration_sec")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  id           Int       @id @default(autoincrement())
+  channelId    String    @map("channel_id")
+  videoId      String    @unique @map("video_id")
+  title        String
+  description  String?
+  thumbnailUrl String?   @map("thumbnail_url")
+  videoUrl     String    @map("video_url")
+  channelTitle String?   @map("channel_title")
+  publishedAt  DateTime? @map("published_at")
+  durationSec  Int?      @map("duration_sec")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
   @@index([channelId, publishedAt])
   @@map("youtube_videos")
 }
@@ -764,26 +783,24 @@ model YoutubeSyncState {
   lastError     String?   @map("last_error")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
+
   @@map("youtube_sync_state")
 }
 
 model Guide {
-  id          Int      @id @default(autoincrement())
-  slug        String   @unique
-  title       String
-  subtitle    String?
-  description String?
-  icon        String?  // Icon name from HeroIcons
-  color       String?  // Theme color name (rose, violet, etc.)
-  keywords    String   @default("[]") // JSON array of keywords
-  isActive    Boolean  @default(true) @map("is_active")
-  
-  // Relations configurations (JSON)
-  relatedSpecialties String @default("[]") @map("related_specialties") // Slugs of specialties
-  
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  
+  id                 Int      @id @default(autoincrement())
+  slug               String   @unique
+  title              String
+  subtitle           String?
+  description        String?
+  icon               String?
+  color              String?
+  keywords           String   @default("[]")
+  isActive           Boolean  @default(true) @map("is_active")
+  relatedSpecialties String   @default("[]") @map("related_specialties")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
   @@map("guides")
 }
 
