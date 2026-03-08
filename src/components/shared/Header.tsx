@@ -31,7 +31,6 @@ import {
 } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils/cn';
 import UniversalSearch from '@/components/ui/UniversalSearch';
-import { ServerSwitcher } from './ServerSwitcher';
 import {
   NavbarConfig,
   NavbarItem,
@@ -515,8 +514,6 @@ export function Header() {
               </div>
             )}
 
-            <ServerSwitcher />
-
             {config.actions.showThemeToggle && (
               <button
                 type="button"
@@ -554,7 +551,7 @@ export function Header() {
             )}
 
             <div className="flex items-center">
-               <ServerSwitcher />
+              
             </div>
 
             <button

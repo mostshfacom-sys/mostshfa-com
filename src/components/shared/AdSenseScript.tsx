@@ -5,16 +5,22 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function AdSenseScript() {
-  if (process.env.NEXT_PUBLIC_ADSENSE_ENABLED !== 'true') {
-    return null;
-  }
-
   const pathname = usePathname();
   const [enabled, setEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const envEnabled = process.env.NEXT_PUBLIC_ADSENSE_ENABLED === 'true';
+
   useEffect(() => {
     let cancelled = false;
+
+    if (!envEnabled) {
+      setLoading(false);
+      setEnabled(false);
+      return () => {
+        cancelled = true;
+      };
+    }
 
     async function load() {
       try {
@@ -33,7 +39,11 @@ export default function AdSenseScript() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [envEnabled]);
+
+  if (!envEnabled) {
+    return null;
+  }
 
   if (pathname?.startsWith('/admin')) {
     return null;
