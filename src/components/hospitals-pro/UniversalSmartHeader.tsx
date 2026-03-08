@@ -351,7 +351,7 @@ export const UniversalSmartHeader: React.FC<UniversalSmartHeaderProps> = ({
       )}
       
 
-      <div className="relative z-10 px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative z-10 px-4 sm:px-6 lg:px-8 py-6">
         {/* Header Content */}
         <div className="max-w-7xl mx-auto">
           {/* Title Section */}
@@ -359,9 +359,9 @@ export const UniversalSmartHeader: React.FC<UniversalSmartHeaderProps> = ({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="text-center mb-10 sm:mb-12 px-4"
+            className="text-center mb-6 sm:mb-8 px-4"
           >
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white leading-tight mb-3 text-center whitespace-nowrap overflow-hidden text-ellipsis">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight mb-2 text-center break-words">
               {title}
             </h1>
 
@@ -374,9 +374,9 @@ export const UniversalSmartHeader: React.FC<UniversalSmartHeaderProps> = ({
 
           {/* Counters */}
           {counters && counters.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-4 mb-8">
+            <div className="flex flex-nowrap justify-center gap-3 mb-6">
               {counters.map((counter) => (
-                <div key={counter.id} className="min-w-[140px]">
+                <div key={counter.id} className="min-w-[120px]">
                    <CounterCard counter={counter} />
                 </div>
               ))}
@@ -384,12 +384,12 @@ export const UniversalSmartHeader: React.FC<UniversalSmartHeaderProps> = ({
           )}
 
           {/* Search and Controls */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
             {/* Search Bar */}
             <form onSubmit={handleSearchSubmit} className="mb-4">
               <div className="relative">
                 <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                  <MagnifyingGlassIcon className="h-5 w-5 text-white/70" />
+                  <MagnifyingGlassIcon className="h-4 w-4 text-white/70" />
                 </div>
 
                 <input
@@ -398,7 +398,7 @@ export const UniversalSmartHeader: React.FC<UniversalSmartHeaderProps> = ({
                   onChange={(e) => onSearchChange?.(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder={searchPlaceholder}
-                  className="w-full pl-4 pr-12 py-4 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all duration-200"
+                  className="w-full pl-4 pr-10 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 transition-all duration-200 text-sm"
                 />
 
                 {showVoiceSearch && (
@@ -425,16 +425,16 @@ export const UniversalSmartHeader: React.FC<UniversalSmartHeaderProps> = ({
                 {showFilters && onFiltersToggle && (
                   <button
                     onClick={onFiltersToggle}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 text-sm ${
                       filtersActive
                         ? 'bg-white text-gray-900'
                         : 'bg-white/20 text-white hover:bg-white/30'
                     }`}
                   >
-                    <AdjustmentsHorizontalIcon className="h-5 w-5" />
+                    <AdjustmentsHorizontalIcon className="h-4 w-4" />
                     <span className="font-medium">فلترة</span>
                     {activeFiltersCount > 0 && (
-                      <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                      <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
                         {activeFiltersCount}
                       </span>
                     )}
@@ -447,7 +447,7 @@ export const UniversalSmartHeader: React.FC<UniversalSmartHeaderProps> = ({
                     <select
                       value={sortValue}
                       onChange={(e) => onSortChange(e.target.value)}
-                      className="appearance-none bg-white/20 text-white border border-white/30 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-white/50"
+                      className="appearance-none bg-white/20 text-white border border-white/30 rounded-lg px-3 py-1.5 pr-8 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm"
                     >
                       {sortOptions.map((option) => (
                         <option key={option.value} value={option.value} className="text-gray-900">
@@ -455,7 +455,7 @@ export const UniversalSmartHeader: React.FC<UniversalSmartHeaderProps> = ({
                         </option>
                       ))}
                     </select>
-                    <ChevronDownIcon className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/70 pointer-events-none" />
+                    <ChevronDownIcon className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-white/70 pointer-events-none" />
                   </div>
                 )}
               </div>
@@ -467,15 +467,15 @@ export const UniversalSmartHeader: React.FC<UniversalSmartHeaderProps> = ({
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                     onClick={handleQuickFiltersToggle}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all shadow-lg whitespace-nowrap ${
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all shadow-md whitespace-nowrap text-sm ${
                       quickFiltersExpanded
                         ? 'bg-purple-500/30 border-purple-300/60 text-white'
                         : 'bg-purple-500/20 border-purple-300/40 text-white hover:bg-purple-500/30'
                     }`}
                     type="button"
                   >
-                    <FunnelIcon className="h-4 w-4" />
-                    <span className="text-sm font-medium">{quickFiltersLabel}</span>
+                    <FunnelIcon className="h-3.5 w-3.5" />
+                    <span className="text-xs font-medium">{quickFiltersLabel}</span>
                     <span className="hidden sm:block w-2 h-2 bg-purple-200 rounded-full animate-pulse" />
                   </motion.button>
                 )}
@@ -485,18 +485,18 @@ export const UniversalSmartHeader: React.FC<UniversalSmartHeaderProps> = ({
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                     onClick={() => setIsMapOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-cyan-300/50 bg-gradient-to-r from-cyan-500/30 to-blue-500/30 text-white shadow-lg hover:from-cyan-500/40 hover:to-blue-500/40 transition-all whitespace-nowrap"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-cyan-300/50 bg-gradient-to-r from-cyan-500/30 to-blue-500/30 text-white shadow-md hover:from-cyan-500/40 hover:to-blue-500/40 transition-all whitespace-nowrap text-sm"
                     type="button"
                   >
-                    <MapIcon className="h-4 w-4" />
-                    <span className="text-sm font-medium">{mapButtonLabel}</span>
+                    <MapIcon className="h-3.5 w-3.5" />
+                    <span className="text-xs font-medium">{mapButtonLabel}</span>
                     <span className="hidden sm:block w-2 h-2 bg-cyan-200 rounded-full animate-pulse" />
                   </motion.button>
                 )}
 
                 {shouldShowResultsCount && (
-                  <div className="flex items-center gap-2 px-3 py-2 bg-white/15 backdrop-blur-md border border-white/30 rounded-lg text-white text-sm">
-                    <MapPinIcon className="h-4 w-4" />
+                  <div className="flex items-center gap-2 px-2.5 py-1.5 bg-white/15 backdrop-blur-md border border-white/30 rounded-lg text-white text-xs">
+                    <MapPinIcon className="h-3.5 w-3.5" />
                     <span className="font-medium">{resultsTotal.toLocaleString('ar-EG')} نتيجة</span>
                   </div>
                 )}
@@ -505,7 +505,7 @@ export const UniversalSmartHeader: React.FC<UniversalSmartHeaderProps> = ({
                   <div className="flex items-center bg-white/20 rounded-lg p-1">
                     <button
                       onClick={() => onViewModeChange('grid')}
-                      className={`p-2 rounded-md transition-all duration-200 ${
+                      className={`p-1.5 rounded-md transition-all duration-200 ${
                         viewMode === 'grid'
                           ? 'bg-white text-gray-900'
                           : 'text-white/70 hover:text-white hover:bg-white/20'
@@ -513,12 +513,12 @@ export const UniversalSmartHeader: React.FC<UniversalSmartHeaderProps> = ({
                       title="عرض شبكي"
                       type="button"
                     >
-                      <ViewColumnsIcon className="h-5 w-5" />
+                      <ViewColumnsIcon className="h-4 w-4" />
                     </button>
 
                     <button
                       onClick={() => onViewModeChange('list')}
-                      className={`p-2 rounded-md transition-all duration-200 ${
+                      className={`p-1.5 rounded-md transition-all duration-200 ${
                         viewMode === 'list'
                           ? 'bg-white text-gray-900'
                           : 'text-white/70 hover:text-white hover:bg-white/20'
@@ -526,12 +526,12 @@ export const UniversalSmartHeader: React.FC<UniversalSmartHeaderProps> = ({
                       title="عرض قائمة"
                       type="button"
                     >
-                      <ListBulletIcon className="h-5 w-5" />
+                      <ListBulletIcon className="h-4 w-4" />
                     </button>
 
                     <button
                       onClick={() => onViewModeChange('map')}
-                      className={`p-2 rounded-md transition-all duration-200 ${
+                      className={`p-1.5 rounded-md transition-all duration-200 ${
                         viewMode === 'map'
                           ? 'bg-white text-gray-900'
                           : 'text-white/70 hover:text-white hover:bg-white/20'
@@ -665,7 +665,7 @@ const CounterCard: React.FC<CounterCardProps> = ({ counter }) => {
   const IconComponent = counter.icon;
 
   return (
-    <div className={`bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 text-center transition-all duration-300 hover:bg-white/20 hover:scale-105 ${
+    <div className={`bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 text-center transition-all duration-300 hover:bg-white/20 hover:scale-105 min-w-0 ${
       counter.isHighlighted ? 'ring-2 ring-white/50' : ''
     }`}>
       <div className="flex items-center justify-center mb-2">
@@ -674,12 +674,12 @@ const CounterCard: React.FC<CounterCardProps> = ({ counter }) => {
           style={{ backgroundColor: counter.color + '20' }}
         >
           <div style={{ color: counter.color }}>
-            <IconComponent className="h-6 w-6" />
+            <IconComponent className="h-5 w-5" />
           </div>
         </div>
       </div>
       
-      <div className="text-2xl font-bold text-white mb-1">
+      <div className="text-xl sm:text-2xl font-bold text-white mb-1">
         {animatedValue.toLocaleString('ar-EG')}
         {counter.trend && (
           <span className={`text-sm ml-1 ${counter.trend.isPositive ? 'text-green-300' : 'text-red-300'}`}>
@@ -688,12 +688,12 @@ const CounterCard: React.FC<CounterCardProps> = ({ counter }) => {
         )}
       </div>
       
-      <div className="text-sm text-white/80 font-medium">
+      <div className="text-xs sm:text-sm text-white/80 font-medium leading-tight break-words px-1">
         {counter.label}
       </div>
       
       {counter.description && (
-        <div className="text-xs text-white/60 mt-1">
+        <div className="text-[11px] text-white/60 mt-1 leading-tight break-words px-1">
           {counter.description}
         </div>
       )}

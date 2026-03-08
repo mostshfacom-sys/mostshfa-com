@@ -86,14 +86,14 @@ function StatCard({ stat, isVisible }: { stat: StatItem; isVisible: boolean }) {
   const count = useCountUp(stat.value, 2000, isVisible);
   
   return (
-    <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100">
+    <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 min-w-0">
       <div className="inline-flex items-center justify-center w-12 h-12 bg-primary-100 text-primary-600 rounded-xl mb-4">
         {stat.icon}
       </div>
-      <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-1">
+      <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-1 break-words">
         {count.toLocaleString('ar-EG')}{stat.suffix}
       </div>
-      <div className="text-gray-500">{stat.label}</div>
+      <div className="text-gray-500 break-words leading-tight">{stat.label}</div>
     </div>
   );
 }

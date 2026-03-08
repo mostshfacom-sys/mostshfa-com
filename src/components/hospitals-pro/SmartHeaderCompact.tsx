@@ -65,8 +65,6 @@ function CompactStat({
     minimumFractionDigits: decimalPlaces,
     maximumFractionDigits: decimalPlaces,
   });
-  const minWidthCh = Math.max(formattedTarget.length, 3);
-  const valueWidth = `${minWidthCh}ch`;
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
@@ -122,11 +120,11 @@ function CompactStat({
         }
       }}
       whileHover={{ 
-        scale: 1.08,
-        y: -5,
-        boxShadow: "0 12px 24px rgba(0,0,0,0.2)"
+        scale: 1.04,
+        y: -3,
+        boxShadow: "0 10px 20px rgba(0,0,0,0.18)"
       }}
-      className="flex flex-col items-center gap-1 px-2 py-3 sm:gap-2 sm:flex-row sm:items-center sm:px-3 sm:py-5 bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border-2 border-white/30 rounded-xl hover:border-white/50 transition-all shadow-lg hover:shadow-xl whitespace-nowrap w-full sm:w-[165px] sm:flex-none text-center"
+      className="flex flex-col items-center gap-1 px-2 py-2.5 sm:px-2.5 sm:py-3 bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border-2 border-white/30 rounded-xl hover:border-white/50 transition-all shadow-md hover:shadow-lg w-full sm:w-[140px] sm:flex-none text-center min-w-0"
     >
       <motion.div
         animate={{ 
@@ -139,17 +137,16 @@ function CompactStat({
           ease: "easeInOut"
         }}
       >
-        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white drop-shadow-lg" />
+        <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white drop-shadow-lg" />
       </motion.div>
-      <div className="flex flex-col items-center gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
+      <div className="flex flex-col items-center gap-0.5 min-w-0">
         <span
-          className="text-base sm:text-lg lg:text-xl font-black text-white drop-shadow-md tabular-nums text-center inline-block"
-          style={{ width: valueWidth }}
+          className="text-sm sm:text-base lg:text-lg font-black text-white drop-shadow-md tabular-nums text-center"
           dir="ltr"
         >
           {formattedValue}
         </span>
-        <span className="text-[11px] sm:text-sm text-white/80 font-medium">
+        <span className="text-[10px] sm:text-xs text-white/80 font-medium leading-tight text-center max-w-[6.5rem] sm:max-w-[7.5rem] break-words">
           {label}
         </span>
       </div>
@@ -426,11 +423,11 @@ export function SmartHeader({
       </div>
 
       {/* Content */}
-      <div className="relative container mx-auto px-4 sm:px-6 py-14 sm:py-20 lg:py-24 pb-6 sm:pb-12 lg:pb-10">
-        <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12">
+      <div className="relative container mx-auto px-4 sm:px-6 pt-12 pb-6 sm:pt-16 sm:pb-8 lg:pt-18 lg:pb-8">
+        <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
           
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-white/70 text-xs mt-3 sm:-mt-16">
+          <div className="flex items-center gap-2 text-white/70 text-xs mt-2 sm:-mt-10">
             <BuildingOffice2Icon className="w-3 h-3 text-white" />
             <span>الرئيسية</span>
             <span>/</span>
@@ -438,7 +435,7 @@ export function SmartHeader({
           </div>
 
           {/* Main Row: Title + Stats */}
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 sm:gap-10 lg:gap-12 xl:gap-16 w-full">
+          <div className="flex flex-col lg:flex-row lg:flex-wrap items-start lg:items-center justify-between gap-6 sm:gap-8 lg:gap-10 xl:gap-12 w-full">
             
             {/* Title */}
             <motion.div
@@ -446,14 +443,14 @@ export function SmartHeader({
               animate={{ opacity: 1, x: 0 }}
               className="flex-1 min-w-0 w-full text-center lg:text-right"
             >
-              <div className="hidden sm:inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-4 sm:mb-5 border border-white/20 shadow-sm -mt-12 sm:-mt-14">
-                <BuildingOffice2Icon className="w-5 h-5 text-white" />
-                <span className="text-sm font-medium">مستشفيات موثوقة</span>
+              <div className="hidden sm:inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 mb-3 sm:mb-4 border border-white/20 shadow-sm -mt-8 sm:-mt-10">
+                <BuildingOffice2Icon className="w-4 h-4 text-white" />
+                <span className="text-xs font-medium">مستشفيات موثوقة</span>
               </div>
-              <h1 className="text-[2.9rem] sm:text-4xl lg:text-5xl font-black text-white leading-tight mb-2 text-center lg:text-right">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight mb-2 text-center lg:text-right break-words">
                 {bannerTitle}
               </h1>
-              <p className="text-sm sm:text-base text-white/80 mt-6 sm:mt-7 lg:mt-6 text-center lg:text-right">
+              <p className="text-sm sm:text-base text-white/80 mt-3 sm:mt-4 text-center lg:text-right">
                 {bannerSubtitle}
               </p>
             </motion.div>
@@ -463,7 +460,7 @@ export function SmartHeader({
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="grid grid-cols-4 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3 lg:flex-nowrap lg:justify-end lg:flex-1 w-full sm:w-auto"
+              className="grid grid-cols-2 gap-2 sm:flex sm:flex-nowrap sm:items-center sm:gap-2.5 lg:flex-nowrap lg:justify-end lg:flex-1 w-full sm:w-auto"
             >
               <CompactStat
                 value={headerTotalCount}
@@ -495,38 +492,38 @@ export function SmartHeader({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="w-full mt-12 sm:mt-24"
+          className="w-full mt-6 sm:mt-10"
         >
           {/* Search Row + Controls */}
-          <div className="flex flex-col gap-3 sm:gap-5">
-            <div className="flex flex-col lg:flex-row lg:items-stretch lg:justify-between gap-4 sm:gap-5 lg:gap-6 xl:gap-8">
+          <div className="flex flex-col gap-3 sm:gap-4">
+            <div className="flex flex-col lg:flex-row lg:items-stretch lg:justify-between gap-3 sm:gap-4 lg:gap-4 xl:gap-6">
               <div className="flex w-full items-stretch gap-2 lg:max-w-lg xl:max-w-xl">
                 <div className="relative flex-1 min-w-0 cursor-text">
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 z-10 pointer-events-none">
-                    <MagnifyingGlassIcon className="w-5 h-5 text-white" />
+                  <div className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/60 z-10 pointer-events-none">
+                    <MagnifyingGlassIcon className="w-4 h-4 text-white" />
                   </div>
                   <input
                     type="text"
                     value={searchValue}
                     onChange={(e) => onSearchChange(e.target.value)}
                     placeholder="اكتب اي شيء تتذكره للبحث عن مستشفى"
-                    className="w-full h-full pr-11 pl-4 py-3 text-right bg-white/15 backdrop-blur-xl border-2 border-white/30 rounded-lg focus:outline-none focus:border-white/50 focus:bg-white/20 transition-all text-white placeholder-white/60 text-sm shadow-lg cursor-text"
+                    className="w-full h-full pr-9 pl-3 py-2.5 text-right bg-white/15 backdrop-blur-xl border-2 border-white/30 rounded-lg focus:outline-none focus:border-white/50 focus:bg-white/20 transition-all text-white placeholder-white/60 text-sm shadow-lg cursor-text"
                   />
                   {searchValue && (
                     <button
                       type="button"
                       onClick={() => onSearchChange('')}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 p-1 rounded-md bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 transition-colors text-white z-10"
+                      className="absolute left-2.5 top-1/2 -translate-y-1/2 p-1 rounded-md bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 transition-colors text-white z-10"
                       aria-label="مسح البحث"
                       title="مسح"
                     >
-                      <XMarkIcon className="w-4 h-4" />
+                      <XMarkIcon className="w-3.5 h-3.5" />
                     </button>
                   )}
                 </div>
                 <VoiceSearchButton
                   onVoiceResult={onSearchChange}
-                  className="inline-flex items-center justify-center rounded-lg border-2 border-white/30 bg-white/15 p-3 text-white hover:bg-white/20 transition-colors"
+                  className="inline-flex items-center justify-center rounded-lg border-2 border-white/30 bg-white/15 p-2.5 text-white hover:bg-white/20 transition-colors"
                 />
               </div>
 
@@ -536,14 +533,14 @@ export function SmartHeader({
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => setShowQuickFilters(!showQuickFilters)}
-                  className={`flex items-center gap-2 px-4 py-3 bg-gradient-to-r backdrop-blur-md border-2 rounded-lg font-medium transition-all shadow-lg whitespace-nowrap cursor-pointer w-full sm:w-auto ${
+                  className={`flex items-center gap-2 px-3 py-2.5 bg-gradient-to-r backdrop-blur-md border-2 rounded-lg font-medium transition-all shadow-md whitespace-nowrap cursor-pointer w-full sm:w-auto ${
                     showQuickFilters
                       ? 'from-purple-500/30 to-pink-500/30 border-purple-400/50 hover:shadow-purple-500/20'
                       : 'from-purple-500/20 to-pink-500/20 border-purple-400/30 hover:from-purple-500/30 hover:to-pink-500/30 hover:border-purple-400/50 hover:shadow-purple-500/20'
                   }`}
                 >
-                  <FunnelIcon className="w-5 h-5 text-white" />
-                  <span className="text-sm">فلاتر سريعة</span>
+                  <FunnelIcon className="w-4 h-4 text-white" />
+                  <span className="text-xs">فلاتر سريعة</span>
                   <div className="hidden sm:block w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
                 </motion.button>
 
@@ -555,9 +552,9 @@ export function SmartHeader({
                 {/* Results Count + View Mode */}
                 <div className="flex items-stretch gap-2 w-full sm:w-auto">
                   {/* Results Count */}
-                  <div className="flex items-center gap-2 px-3 bg-white/15 backdrop-blur-md border-2 border-white/30 rounded-lg">
-                    <MapPinIcon className="w-4 h-4 text-white" />
-                    <span className="font-medium text-xs">
+                  <div className="flex items-center gap-2 px-2.5 py-2 bg-white/15 backdrop-blur-md border-2 border-white/30 rounded-lg">
+                    <MapPinIcon className="w-3.5 h-3.5 text-white" />
+                    <span className="font-medium text-[11px]">
                       {(resultsCount || 0).toLocaleString('ar-EG')} نتيجة
                     </span>
                   </div>
@@ -566,25 +563,25 @@ export function SmartHeader({
                   <div className="hidden sm:flex items-center gap-1 bg-white/15 backdrop-blur-md border-2 border-white/30 rounded-lg p-1">
                     <button
                       onClick={() => onViewModeChange('grid')}
-                      className={`p-2.5 rounded-lg transition-all shadow-md cursor-pointer ${
+                      className={`p-2 rounded-lg transition-all shadow-md cursor-pointer ${
                         viewMode === 'grid'
                           ? 'bg-white/30 text-white'
                           : 'bg-white/10 text-white/70 hover:bg-white/20'
                       }`}
                       aria-label="عرض شبكي"
                     >
-                      <Squares2X2Icon className="w-4 h-4 text-white" />
+                      <Squares2X2Icon className="w-3.5 h-3.5 text-white" />
                     </button>
                     <button
                       onClick={() => onViewModeChange('list')}
-                      className={`p-2.5 rounded-lg transition-all shadow-md cursor-pointer ${
+                      className={`p-2 rounded-lg transition-all shadow-md cursor-pointer ${
                         viewMode === 'list'
                           ? 'bg-white/30 text-white'
                           : 'bg-white/10 text-white/70 hover:bg-white/20'
                       }`}
                       aria-label="عرض قائمة"
                     >
-                      <ListBulletIcon className="w-4 h-4 text-white" />
+                      <ListBulletIcon className="w-3.5 h-3.5 text-white" />
                     </button>
                   </div>
                 </div>
@@ -631,7 +628,7 @@ export function SmartHeader({
             </div>
 
             {/* Quick Filters Bar - Fixed Height */}
-            <div className="relative min-h-[64px] sm:min-h-[64px]">
+            <div className="relative min-h-[44px] sm:min-h-[44px]">
               <motion.div
                 initial={false}
                 animate={{ opacity: showQuickFilters ? 1 : 0, y: showQuickFilters ? 0 : -6 }}

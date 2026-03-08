@@ -801,7 +801,7 @@ export default async function HomePage() {
             gradientTo="to-emerald-600"
             className="mb-8"
             titleClassName="text-[2rem] sm:text-4xl lg:text-5xl whitespace-nowrap"
-            contentClassName="pt-6 pb-6 sm:py-20 lg:py-24"
+            contentClassName="pt-6 pb-3 sm:pt-20 sm:pb-10 lg:pt-24 lg:pb-12"
             breadcrumbClassName="mt-0 sm:-mt-16"
           />
         </Suspense>

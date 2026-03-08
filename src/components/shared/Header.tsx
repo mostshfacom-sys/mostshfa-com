@@ -286,18 +286,18 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/70 bg-gradient-to-l from-white/95 via-white/90 to-emerald-50/70 shadow-[0_10px_30px_-24px_rgba(15,23,42,0.2)] backdrop-blur-xl dark:border-white/10 dark:bg-black/90 dark:bg-none dark:from-black/90 dark:via-black/90 dark:to-black/90 dark:shadow-[0_16px_36px_-26px_rgba(0,0,0,0.8)]">
       <div className="container-custom">
-        <div className="flex items-center justify-between gap-4 h-[72px]">
-          <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center justify-between gap-2 min-h-[60px] py-1.5 2xl:gap-3 2xl:py-0">
+          <div className="flex flex-wrap items-center gap-3 2xl:flex-nowrap 2xl:gap-5">
             <Link href={config.brand.href} className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 text-white shadow-lg shadow-primary-500/30">
-                <BuildingOffice2Icon className="h-5 w-5" />
+              <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 text-white shadow-lg shadow-primary-500/30">
+                <BuildingOffice2Icon className="h-4 w-4" />
               </span>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">
+              <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
                 {config.brand.label}
               </span>
             </Link>
 
-            <nav className="hidden lg:flex items-center gap-2 flex-nowrap whitespace-nowrap overflow-visible">
+            <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 flex-wrap 2xl:flex-nowrap whitespace-nowrap overflow-visible">
               {config.primaryLinks.map((link) => {
                 const Icon = resolveIcon(link.icon);
                 return (
@@ -305,9 +305,9 @@ export function Header() {
                     key={link.id}
                     href={link.href}
                     {...(link.isExternal ? { target: '_blank', rel: 'noreferrer' } : {})}
-                    className="flex shrink-0 items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold text-gray-700 hover:text-primary-700 hover:bg-white/70 transition-colors dark:text-gray-200 dark:hover:text-white dark:hover:bg-white/10"
+                    className="flex shrink-0 items-center gap-2 px-2.5 xl:px-3 py-1 rounded-full text-xs xl:text-sm font-semibold text-gray-700 hover:text-primary-700 hover:bg-white/70 transition-colors dark:text-gray-200 dark:hover:text-white dark:hover:bg-white/10"
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-3.5 h-3.5" />
                     <span>{link.label}</span>
                     {renderBadge(link.badge)}
                   </Link>
@@ -335,15 +335,15 @@ export function Header() {
                       href={SECTION_LINKS[sectionKey]}
                       aria-haspopup="true"
                       aria-expanded={isOpen}
-                      className="flex shrink-0 items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold text-gray-700 hover:text-gray-900 hover:bg-white/70 transition-colors dark:text-gray-200 dark:hover:text-white dark:hover:bg-white/10"
+                      className="flex shrink-0 items-center gap-2 px-2.5 xl:px-3 py-1 rounded-full text-xs xl:text-sm font-semibold text-gray-700 hover:text-gray-900 hover:bg-white/70 transition-colors dark:text-gray-200 dark:hover:text-white dark:hover:bg-white/10"
                     >
-                      <span className={cn('flex h-8 w-8 items-center justify-center rounded-full', styles.badge)}>
-                        <SectionIcon className="h-4 w-4" />
+                      <span className={cn('flex h-7 w-7 items-center justify-center rounded-full', styles.badge)}>
+                        <SectionIcon className="h-3.5 w-3.5" />
                       </span>
                       <span>{section.label}</span>
                       <ChevronDownIcon
                         className={cn(
-                          'h-4 w-4 text-gray-400 transition-transform',
+                          'h-3.5 w-3.5 text-gray-400 transition-transform',
                           isOpen && 'rotate-180 text-gray-600 dark:text-gray-300'
                         )}
                       />
@@ -353,7 +353,7 @@ export function Header() {
                       onMouseEnter={() => handleDesktopEnter(sectionKey)}
                       onMouseLeave={handleDesktopLeave}
                       className={cn(
-                        'absolute top-full right-0 mt-4 w-[22rem] sm:w-[28rem] transition duration-200 z-50',
+                        'absolute top-full right-0 mt-3 w-[22rem] sm:w-[26rem] lg:w-[28rem] max-w-[92vw] transition duration-200 z-50',
                         isOpen
                           ? 'opacity-100 translate-y-0 pointer-events-auto'
                           : 'opacity-0 translate-y-2 pointer-events-none'
@@ -361,22 +361,22 @@ export function Header() {
                     >
                       <div className="relative rounded-2xl border border-white/80 bg-white/95 shadow-xl backdrop-blur-xl overflow-hidden dark:bg-slate-900/95 dark:border-white/10">
                         <div className={cn('absolute inset-0 rounded-2xl bg-gradient-to-br opacity-70', styles.glow)} />
-                        <div className="relative p-5">
-                          <div className="flex items-center gap-3 mb-4">
-                            <span className={cn('flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm', styles.accent)}>
-                              <SectionIcon className="h-5 w-5" />
+                        <div className="relative p-4">
+                          <div className="flex items-center gap-2.5 mb-3">
+                            <span className={cn('flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-sm', styles.accent)}>
+                              <SectionIcon className="h-4 w-4" />
                             </span>
                             <div>
                               <p className="text-sm font-semibold text-gray-900 dark:text-white">{section.label}</p>
                               {section.description && (
-                                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
                                   {section.description}
                                 </p>
                               )}
                             </div>
                           </div>
                           {featuredItems.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mb-4">
+                            <div className="flex flex-wrap gap-2 mb-3">
                               {featuredItems.map((item) => {
                                 const ItemIcon = resolveIcon(item.icon ?? section.icon);
                                 return (
@@ -384,16 +384,16 @@ export function Header() {
                                     key={item.id}
                                     href={item.href}
                                     {...(item.isExternal ? { target: '_blank', rel: 'noreferrer' } : {})}
-                                    className="flex flex-wrap items-center gap-2 rounded-2xl px-4 py-2 text-sm font-semibold bg-white text-gray-900 shadow-sm hover:shadow-md transition-all dark:bg-slate-800 dark:text-white"
+                                    className="flex flex-wrap items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold bg-white text-gray-900 shadow-sm hover:shadow-md transition-all dark:bg-slate-800 dark:text-white"
                                   >
-                                    <ItemIcon className="h-4 w-4" />
+                                    <ItemIcon className="h-3.5 w-3.5" />
                                     <span className="break-words whitespace-normal">{item.label}</span>
                                   </Link>
                                 );
                               })}
                             </div>
                           )}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                             {regularItems.map((item) => {
                               const ItemIcon = resolveIcon(item.icon ?? section.icon);
                               return (
@@ -402,22 +402,22 @@ export function Header() {
                                   href={item.href}
                                   {...(item.isExternal ? { target: '_blank', rel: 'noreferrer' } : {})}
                                   className={cn(
-                                    'group flex items-start gap-3 rounded-xl px-3 py-3 transition-all overflow-hidden',
+                                    'group flex items-start gap-2.5 rounded-xl px-2.5 py-2.5 transition-all overflow-hidden',
                                     'hover:bg-white',
                                     'bg-white/70 dark:bg-slate-900/70 dark:hover:bg-slate-800/80'
                                   )}
                                 >
-                                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/80 text-primary-700 shadow-sm group-hover:shadow-md dark:bg-slate-800 dark:text-primary-300">
-                                    <ItemIcon className="h-5 w-5" />
+                                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/80 text-primary-700 shadow-sm group-hover:shadow-md dark:bg-slate-800 dark:text-primary-300">
+                                    <ItemIcon className="h-4 w-4" />
                                   </span>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between gap-2">
-                                      <p className="text-sm font-semibold text-gray-900 dark:text-white break-words whitespace-normal">
+                                      <p className="text-xs font-semibold text-gray-900 dark:text-white break-words whitespace-normal">
                                         {item.label}
                                       </p>
                                     </div>
                                     {item.description && (
-                                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed break-words whitespace-normal">
+                                      <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 leading-relaxed break-words whitespace-normal">
                                         {item.description}
                                       </p>
                                     )}
@@ -435,16 +435,16 @@ export function Header() {
             </nav>
           </div>
 
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-1.5">
             {config.actions.showSearch && (
               <button
                 type="button"
                 onClick={() => setIsSearchOpen(true)}
-                className="flex h-10 w-10 items-center justify-center text-gray-600 hover:text-primary-700 transition-colors dark:text-gray-200 dark:hover:text-white"
+                className="flex h-9 w-9 items-center justify-center text-gray-600 hover:text-primary-700 transition-colors dark:text-gray-200 dark:hover:text-white"
                 aria-label="بحث سريع"
                 title="بحث سريع"
               >
-                <MagnifyingGlassIcon className="h-6 w-6" />
+                <MagnifyingGlassIcon className="h-5 w-5" />
               </button>
             )}
 
@@ -452,11 +452,11 @@ export function Header() {
               <Link
                 href={config.contactLink.href}
                 {...(config.contactLink.isExternal ? { target: '_blank', rel: 'noreferrer' } : {})}
-                className="flex h-10 w-10 items-center justify-center text-primary-700 hover:text-primary-800 transition-colors dark:text-primary-200 dark:hover:text-white"
+                className="flex h-9 w-9 items-center justify-center text-primary-700 hover:text-primary-800 transition-colors dark:text-primary-200 dark:hover:text-white"
                 aria-label={config.contactLink.label}
                 title={config.contactLink.label}
               >
-                <PhoneIcon className="h-6 w-6" />
+                <PhoneIcon className="h-5 w-5" />
               </Link>
             )}
 
@@ -470,14 +470,14 @@ export function Header() {
                   type="button"
                   aria-haspopup="true"
                   aria-expanded={isAuthMenuOpen}
-                  className="flex h-10 items-center gap-1.5 px-3 py-2 rounded-full text-gray-600 hover:text-primary-700 hover:bg-white/70 transition-colors dark:text-gray-200 dark:hover:text-white dark:hover:bg-white/10"
+                  className="flex h-9 items-center gap-1.5 px-2.5 py-1.5 rounded-full text-gray-600 hover:text-primary-700 hover:bg-white/70 transition-colors dark:text-gray-200 dark:hover:text-white dark:hover:bg-white/10"
                   aria-label="الحساب"
                   title="الحساب"
                 >
-                  <UserCircleIcon className="h-6 w-6" />
+                  <UserCircleIcon className="h-5 w-5" />
                   <ChevronDownIcon
                     className={cn(
-                      'h-4 w-4 text-gray-400 transition-transform',
+                      'h-3.5 w-3.5 text-gray-400 transition-transform',
                       isAuthMenuOpen && 'rotate-180 text-gray-600 dark:text-gray-300'
                     )}
                   />
@@ -486,9 +486,9 @@ export function Header() {
                   onMouseEnter={handleAuthEnter}
                   onMouseLeave={handleAuthLeave}
                   className={cn(
-                    'absolute top-full right-0 mt-3 w-48 transition duration-200 z-50',
+                    'absolute top-full left-0 right-auto mt-2 w-40 max-w-[calc(100vw-1rem)] transition duration-200 z-50 origin-top-left',
                     isAuthMenuOpen
-                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      ? 'opacity-100 translate-y-0 pointer-events-auto translate-x-2'
                       : 'opacity-0 translate-y-2 pointer-events-none'
                   )}
                 >
@@ -497,14 +497,14 @@ export function Header() {
                       <Link
                         href="/login"
                         onClick={() => setIsAuthMenuOpen(false)}
-                        className="flex items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-primary-50 hover:text-primary-700 transition-colors dark:text-gray-200 dark:hover:bg-white/10"
+                        className="flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-primary-50 hover:text-primary-700 transition-colors dark:text-gray-200 dark:hover:bg-white/10"
                       >
                         تسجيل الدخول
                       </Link>
                       <Link
                         href="/register"
                         onClick={() => setIsAuthMenuOpen(false)}
-                        className="flex items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold bg-primary-600 text-white hover:bg-primary-700 transition-colors"
+                        className="flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold bg-primary-600 text-white hover:bg-primary-700 transition-colors"
                       >
                         إنشاء حساب
                       </Link>
@@ -518,15 +518,15 @@ export function Header() {
               <button
                 type="button"
                 onClick={cycleTheme}
-                className="flex h-10 w-10 items-center justify-center text-gray-600 hover:text-primary-700 transition-colors dark:text-gray-200 dark:hover:text-white"
+                className="flex h-9 w-9 items-center justify-center text-gray-600 hover:text-primary-700 transition-colors dark:text-gray-200 dark:hover:text-white"
                 aria-label="تبديل الثيم"
               >
-                <ThemeIcon className="h-6 w-6" />
+                <ThemeIcon className="h-5 w-5" />
               </button>
             )}
           </div>
 
-          <div className="flex items-center gap-2 lg:hidden">
+          <div className="flex items-center gap-1.5 lg:hidden">
             {config.actions.showSearch && (
               <button
                 type="button"
@@ -534,9 +534,9 @@ export function Header() {
                   setIsSearchOpen(true);
                   setIsMobileMenuOpen(false);
                 }}
-                className="flex h-10 w-10 items-center justify-center text-gray-600 hover:text-primary-700 transition-colors dark:text-gray-200"
+                className="flex h-9 w-9 items-center justify-center text-gray-600 hover:text-primary-700 transition-colors dark:text-gray-200"
               >
-                <MagnifyingGlassIcon className="h-6 w-6" />
+                <MagnifyingGlassIcon className="h-5 w-5" />
               </button>
             )}
 
@@ -544,9 +544,9 @@ export function Header() {
               <button
                 type="button"
                 onClick={cycleTheme}
-                className="flex h-10 w-10 items-center justify-center text-gray-600 hover:text-primary-700 transition-colors dark:text-gray-200"
+                className="flex h-9 w-9 items-center justify-center text-gray-600 hover:text-primary-700 transition-colors dark:text-gray-200"
               >
-                <ThemeIcon className="h-6 w-6" />
+                <ThemeIcon className="h-5 w-5" />
               </button>
             )}
 
@@ -556,10 +556,10 @@ export function Header() {
 
             <button
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-gray-600 hover:text-primary-700 hover:bg-white transition-colors dark:bg-white/10 dark:text-gray-200"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/80 text-gray-600 hover:text-primary-700 hover:bg-white transition-colors dark:bg-white/10 dark:text-gray-200"
               aria-label="القائمة"
             >
-              {isMobileMenuOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
+              {isMobileMenuOpen ? <XMarkIcon className="h-5 w-5" /> : <Bars3Icon className="h-5 w-5" />}
             </button>
           </div>
         </div>

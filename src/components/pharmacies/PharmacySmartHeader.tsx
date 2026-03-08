@@ -51,20 +51,18 @@ function CompactStat({
 
   return (
     <motion.div
-      whileHover={{ scale: 1.05, y: -2 }}
-      className="flex items-center gap-3 px-4 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl transition-all"
+      whileHover={{ scale: 1.04, y: -2 }}
+      className="flex flex-col items-center gap-1 px-3 py-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl transition-all min-w-0 text-center"
     >
-      <div className="p-2 bg-white/20 rounded-xl">
-        <Icon className="w-5 h-5 text-white" />
+      <div className="p-1.5 bg-white/20 rounded-xl">
+        <Icon className="w-4 h-4 text-white" />
       </div>
-      <div className="flex flex-col">
-        <span className="text-xl font-black text-white leading-none">
-          {formattedValue}
-        </span>
-        <span className="text-xs text-white/70 font-medium">
-          {label}
-        </span>
-      </div>
+      <span className="text-base sm:text-lg font-black text-white leading-none">
+        {formattedValue}
+      </span>
+      <span className="text-[10px] sm:text-xs text-white/70 font-medium leading-tight break-words max-w-[7.5rem]">
+        {label}
+      </span>
     </motion.div>
   );
 }
@@ -129,7 +127,7 @@ export function PharmacySmartHeader({
   };
 
   return (
-    <div className="relative bg-teal-900 pt-32 pb-20 overflow-hidden">
+    <div className="relative bg-teal-900 pt-20 pb-12 overflow-hidden">
       {/* Background Image with Overlay */}
       <div 
         className="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-1000 scale-105"
@@ -140,21 +138,21 @@ export function PharmacySmartHeader({
       <div className="container mx-auto px-4 relative z-20">
         <div className="max-w-6xl mx-auto">
           {/* Header Content */}
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
-            <div className="space-y-4 text-center lg:text-right">
+          <div className="flex flex-col lg:flex-row lg:flex-wrap lg:items-end justify-between gap-6 mb-8">
+            <div className="space-y-3 text-center lg:text-right">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 bg-teal-500/20 backdrop-blur-md border border-teal-400/30 rounded-full text-teal-100 text-sm font-bold"
+                className="inline-flex items-center gap-2 px-3 py-1 bg-teal-500/20 backdrop-blur-md border border-teal-400/30 rounded-full text-teal-100 text-xs font-bold"
               >
-                <SparklesIcon className="w-4 h-4" />
+                <SparklesIcon className="w-3.5 h-3.5" />
                 <span>دليل الصيدليات المعتمد</span>
               </motion.div>
               <motion.h1 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-4xl lg:text-6xl font-black text-white"
+                className="text-3xl lg:text-5xl font-black text-white break-words"
               >
                 ابحث عن <span className="text-teal-400">أقرب صيدلية</span>
               </motion.h1>
@@ -162,14 +160,14 @@ export function PharmacySmartHeader({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="text-lg text-teal-100/80 max-w-2xl"
+                className="text-base text-teal-100/80 max-w-2xl"
               >
                 تصفح أكثر من 500 صيدلية في جميع محافظات مصر، مع تفاصيل التوصيل والخدمات التمريضية.
               </motion.p>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 lg:flex lg:flex-nowrap lg:justify-end">
               <CompactStat value={headerTotalCount} label="صيدلية مسجلة" icon={BoltIcon} />
               <CompactStat value={header24hCount} label="خدمة 24 ساعة" icon={ClockIcon} />
               <CompactStat value={headerOpenCount || resultsCount} label="متاحة الآن" icon={SparklesIcon} />
@@ -181,25 +179,25 @@ export function PharmacySmartHeader({
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white/10 backdrop-blur-xl border border-white/20 p-4 rounded-3xl shadow-2xl space-y-4"
+            className="bg-white/10 backdrop-blur-xl border border-white/20 p-3 rounded-2xl shadow-2xl space-y-3"
           >
             <div className="flex flex-col md:flex-row gap-4">
               {/* Search Input */}
               <div className="flex-1 relative group">
-                <MagnifyingGlassIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-teal-400 group-focus-within:text-teal-300 transition-colors" />
+                <MagnifyingGlassIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-teal-400 group-focus-within:text-teal-300 transition-colors" />
                 <input
                   type="text"
                   value={searchValue}
                   onChange={(e) => onSearchChange(e.target.value)}
                   placeholder="ابحث باسم الصيدلية أو المنطقة..."
-                  className="w-full pr-14 pl-6 py-4 bg-white/10 border-2 border-white/10 rounded-2xl text-white placeholder:text-white/40 focus:bg-white/20 focus:border-teal-400/50 focus:outline-none transition-all text-lg"
+                  className="w-full pr-12 pl-4 py-3 bg-white/10 border-2 border-white/10 rounded-2xl text-white placeholder:text-white/40 focus:bg-white/20 focus:border-teal-400/50 focus:outline-none transition-all text-base"
                 />
                 {searchValue && (
                   <button 
                     onClick={() => onSearchChange('')}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full text-white/60 hover:text-white"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full text-white/60 hover:text-white"
                   >
-                    <XMarkIcon className="w-5 h-5" />
+                    <XMarkIcon className="w-4 h-4" />
                   </button>
                 )}
               </div>
@@ -209,15 +207,15 @@ export function PharmacySmartHeader({
                 <div className="flex bg-white/10 p-1 rounded-xl border border-white/10">
                   <button
                     onClick={() => onViewModeChange('grid')}
-                    className={`p-3 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-teal-500 text-white shadow-lg' : 'text-white/60 hover:text-white'}`}
+                    className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-teal-500 text-white shadow-lg' : 'text-white/60 hover:text-white'}`}
                   >
-                    <Squares2X2Icon className="w-6 h-6" />
+                    <Squares2X2Icon className="w-5 h-5" />
                   </button>
                   <button
                     onClick={() => onViewModeChange('list')}
-                    className={`p-3 rounded-lg transition-all ${viewMode === 'list' ? 'bg-teal-500 text-white shadow-lg' : 'text-white/60 hover:text-white'}`}
+                    className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-teal-500 text-white shadow-lg' : 'text-white/60 hover:text-white'}`}
                   >
-                    <ListBulletIcon className="w-6 h-6" />
+                    <ListBulletIcon className="w-5 h-5" />
                   </button>
                 </div>
 

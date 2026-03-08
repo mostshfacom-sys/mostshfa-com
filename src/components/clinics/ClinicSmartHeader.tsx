@@ -64,8 +64,6 @@ function CompactStat({
     minimumFractionDigits: decimalPlaces,
     maximumFractionDigits: decimalPlaces,
   });
-  const minWidthCh = Math.max(formattedTarget.length, 3);
-  const valueWidth = `${minWidthCh}ch`;
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
@@ -121,11 +119,11 @@ function CompactStat({
         }
       }}
       whileHover={{ 
-        scale: 1.08,
-        y: -5,
-        boxShadow: "0 12px 24px rgba(0,0,0,0.2)"
+        scale: 1.04,
+        y: -3,
+        boxShadow: "0 10px 20px rgba(0,0,0,0.18)"
       }}
-      className="flex flex-col items-center gap-1 px-2 py-3 sm:gap-2 sm:flex-row sm:items-center sm:px-3 sm:py-5 bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border-2 border-white/30 rounded-xl hover:border-white/50 transition-all shadow-lg hover:shadow-xl whitespace-nowrap w-full sm:w-[165px] sm:flex-none text-center"
+      className="flex flex-col items-center gap-1 px-2 py-2.5 sm:px-2.5 sm:py-3 bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border-2 border-white/30 rounded-xl hover:border-white/50 transition-all shadow-md hover:shadow-lg w-full sm:w-[140px] sm:flex-none text-center min-w-0"
     >
       <motion.div
         animate={{ 
@@ -138,17 +136,16 @@ function CompactStat({
           ease: "easeInOut"
         }}
       >
-        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white drop-shadow-lg" />
+        <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white drop-shadow-lg" />
       </motion.div>
-      <div className="flex flex-col items-center gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
+      <div className="flex flex-col items-center gap-0.5 min-w-0">
         <span
-          className="text-base sm:text-lg lg:text-xl font-black text-white drop-shadow-md tabular-nums text-center inline-block"
-          style={{ width: valueWidth }}
+          className="text-sm sm:text-base lg:text-lg font-black text-white drop-shadow-md tabular-nums text-center"
           dir="ltr"
         >
           {formattedValue}
         </span>
-        <span className="text-[11px] sm:text-sm text-white/80 font-medium">
+        <span className="text-[10px] sm:text-xs text-white/80 font-medium leading-tight text-center max-w-[6.5rem] sm:max-w-[7.5rem] break-words">
           {label}
         </span>
       </div>
@@ -232,7 +229,7 @@ export function ClinicSmartHeader({
   const bannerSubtitle = clinicsBannerSubtitle?.trim() || 'احجز أو استكشف أفضل العيادات المتخصصة بالقرب منك';
 
   return (
-    <header className="relative text-white overflow-hidden bg-neutral-900 min-h-[450px] flex flex-col">
+    <header className="relative text-white overflow-hidden bg-neutral-900 min-h-[360px] flex flex-col">
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 scale-105"
@@ -306,21 +303,21 @@ export function ClinicSmartHeader({
             <span className="text-white font-medium">العيادات</span>
           </div>
 
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 sm:gap-10 lg:gap-12 xl:gap-16 w-full">
+          <div className="flex flex-col lg:flex-row lg:flex-wrap items-start lg:items-center justify-between gap-6 sm:gap-8 lg:gap-10 xl:gap-12 w-full">
             {/* Title Section */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               className="flex-1 min-w-0 w-full text-center lg:text-right"
             >
-              <div className="hidden sm:inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-4 sm:mb-5 border border-white/20 shadow-sm -mt-12 sm:-mt-14">
-                <BuildingOffice2Icon className="w-5 h-5 text-white" />
-                <span className="text-sm font-medium">عيادات موثوقة</span>
+              <div className="hidden sm:inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 mb-3 sm:mb-4 border border-white/20 shadow-sm -mt-8 sm:-mt-10">
+                <BuildingOffice2Icon className="w-4 h-4 text-white" />
+                <span className="text-xs font-medium">عيادات موثوقة</span>
               </div>
-              <h1 className="text-[2.9rem] sm:text-4xl lg:text-5xl font-black text-white leading-tight mb-2 text-center lg:text-right">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight mb-2 text-center lg:text-right break-words">
                 {bannerTitle}
               </h1>
-              <p className="text-sm sm:text-base text-white/80 mt-6 sm:mt-7 lg:mt-6 text-center lg:text-right">
+              <p className="text-sm sm:text-base text-white/80 mt-3 sm:mt-4 text-center lg:text-right">
                 {bannerSubtitle}
               </p>
             </motion.div>
@@ -330,7 +327,7 @@ export function ClinicSmartHeader({
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="grid grid-cols-4 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3 lg:flex-nowrap lg:justify-end lg:flex-1 w-full sm:w-auto"
+              className="grid grid-cols-2 gap-2 sm:flex sm:flex-nowrap sm:items-center sm:gap-2.5 lg:flex-nowrap lg:justify-end lg:flex-1 w-full sm:w-auto"
             >
               <CompactStat 
                 value={headerTotalCount} 
@@ -360,30 +357,30 @@ export function ClinicSmartHeader({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="w-full mt-12 sm:mt-24"
+            className="w-full mt-6 sm:mt-10"
           >
-            <div className="flex flex-col md:flex-row gap-4 items-stretch">
+            <div className="flex flex-col md:flex-row gap-3 items-stretch">
               {/* Search Input */}
               <div className="flex-1 relative group">
                 <div className="absolute inset-0 bg-white/10 blur-xl rounded-2xl group-hover:bg-white/20 transition-all" />
-                <div className="relative flex items-center bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-1.5 shadow-2xl">
-                  <div className="pl-3 pr-4 text-white/60">
-                    <MagnifyingGlassIcon className="w-6 h-6" />
+                <div className="relative flex items-center bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-1 shadow-2xl">
+                  <div className="pl-3 pr-3 text-white/60">
+                    <MagnifyingGlassIcon className="w-5 h-5" />
                   </div>
                   <input
                     type="text"
                     value={searchValue}
                     onChange={(e) => onSearchChange(e.target.value)}
                     placeholder="ابحث باسم العيادة، التخصص، أو المنطقة..."
-                    className="flex-1 bg-transparent border-none text-white placeholder:text-white/50 focus:ring-0 text-lg py-2 px-3"
+                    className="flex-1 bg-transparent border-none text-white placeholder:text-white/50 focus:ring-0 text-base py-2 px-2.5"
                   />
                   <div className="flex items-center gap-2 border-r border-white/10 pr-2 mr-2">
                     {searchValue && (
                       <button
                         onClick={() => onSearchChange('')}
-                        className="p-2 hover:bg-white/10 rounded-xl text-white/60 hover:text-white transition-colors"
+                        className="p-1.5 hover:bg-white/10 rounded-xl text-white/60 hover:text-white transition-colors"
                       >
-                        <XMarkIcon className="w-5 h-5" />
+                        <XMarkIcon className="w-4 h-4" />
                       </button>
                     )}
                     <VoiceSearchButton onVoiceResult={onSearchChange} />
@@ -398,24 +395,24 @@ export function ClinicSmartHeader({
                 <div className="flex bg-white/10 backdrop-blur-md rounded-xl p-1 border border-white/20 h-full">
                   <button
                     onClick={() => onViewModeChange('grid')}
-                    className={`p-2.5 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-teal-900 shadow-lg' : 'text-white hover:bg-white/10'}`}
+                    className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-teal-900 shadow-lg' : 'text-white hover:bg-white/10'}`}
                     title="عرض شبكي"
                   >
-                    <Squares2X2Icon className="w-6 h-6" />
+                    <Squares2X2Icon className="w-5 h-5" />
                   </button>
                   <button
                     onClick={() => onViewModeChange('list')}
-                    className={`p-2.5 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white text-teal-900 shadow-lg' : 'text-white hover:bg-white/10'}`}
+                    className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white text-teal-900 shadow-lg' : 'text-white hover:bg-white/10'}`}
                     title="عرض قائمة"
                   >
-                    <ListBulletIcon className="w-6 h-6" />
+                    <ListBulletIcon className="w-5 h-5" />
                   </button>
                 </div>
               </div>
             </div>
 
             {/* Quick Filters */}
-            <div className="flex flex-wrap items-center gap-3 mt-6">
+            <div className="flex flex-wrap items-center gap-2.5 mt-4">
               <QuickFilterButton
                 icon={ClockIcon}
                 label="مفتوح الآن"
