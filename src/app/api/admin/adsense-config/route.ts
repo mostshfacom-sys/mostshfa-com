@@ -16,6 +16,23 @@ const defaultConfig = {
   },
 };
 
+const normalizeClientId = (value: unknown) => {
+  if (typeof value !== 'string') return defaultConfig.clientId;
+  const rawValue = value.trim();
+  if (!rawValue) return defaultConfig.clientId;
+  if (rawValue.startsWith('ca-pub-')) return rawValue;
+  if (rawValue.startsWith('pub-')) return `ca-${rawValue}`;
+  if (/^\d+$/.test(rawValue)) return `ca-pub-${rawValue}`;
+  return defaultConfig.clientId;
+};
+
+const normalizeSlot = (value: unknown) => {
+  if (typeof value !== 'string') return '';
+  const rawValue = value.trim();
+  if (!rawValue) return '';
+  return rawValue.replace(/[^\d]/g, '');
+};
+
 const normalizeConfig = (raw: any) => {
   const base = raw && typeof raw === 'object' ? raw : {};
   const mergedPlacements: Record<string, any> = { ...defaultConfig.placements };
@@ -24,10 +41,19 @@ const normalizeConfig = (raw: any) => {
       mergedPlacements[key] = { ...mergedPlacements[key], ...base.placements[key] };
     });
   }
+  const normalizedPlacements: Record<string, any> = {};
+  Object.keys(mergedPlacements).forEach((key) => {
+    const placement = mergedPlacements[key] || {};
+    normalizedPlacements[key] = {
+      ...placement,
+      slot: normalizeSlot(placement.slot),
+    };
+  });
   return {
     ...defaultConfig,
     ...base,
-    placements: mergedPlacements,
+    clientId: normalizeClientId(base.clientId),
+    placements: normalizedPlacements,
   };
 };
 
