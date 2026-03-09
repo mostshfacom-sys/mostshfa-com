@@ -177,7 +177,7 @@ export default async function MedicalVideosPage({
 
   const data = await getMedicalVideosData({ q, length, sort });
 
-  const headerSubtitle = data.channelId
+  const headerSubtitle = data.totalVideos > 0
     ? 'فيديوهات طبية قصيرة ومفيدة يتم تحديثها تلقائياً من قناة يوتيوب.'
     : 'فيديوهات طبية قصيرة ومفيدة (تأكد من ضبط YOUTUBE_CHANNEL_ID لعرض أحدث الفيديوهات).';
 

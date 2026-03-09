@@ -253,14 +253,15 @@ const fallbackVideoHighlights: HomeVideoHighlight[] = [
 async function getHomeVideoHighlights(): Promise<HomeVideoHighlight[]> {
   try {
     const channelId = process.env.YOUTUBE_CHANNEL_ID;
-    if (!channelId) {
-      return fallbackVideoHighlights;
+    
+    // محاولة المزامنة إذا توفر المعرف
+    if (channelId) {
+      await syncYoutubeVideosOnce(channelId);
     }
 
-    await syncYoutubeVideosOnce(channelId);
-
+    // جلب الفيديوهات من قاعدة البيانات
     const videos = await prisma.youtubeVideo.findMany({
-      where: { channelId },
+      where: channelId ? { channelId } : {}, // إذا لم يتوفر المعرف، اجلب أي فيديوهات موجودة
       orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
       take: 12,
     });

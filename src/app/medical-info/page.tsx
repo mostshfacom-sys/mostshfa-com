@@ -793,24 +793,28 @@ async function getMedicalInfoData({
 
   let videoCandidates: VideoHighlight[] = [];
   const channelId = process.env.YOUTUBE_CHANNEL_ID;
+  
   if (channelId) {
     await syncYoutubeVideosOnce(channelId);
-    const videos = await prisma.youtubeVideo.findMany({
-      where: { channelId },
-      orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
-      take: 16,
-    });
-    videoCandidates = videos.map((video) => ({
-      id: `youtube-${video.videoId}`,
-      title: video.title,
-      duration: formatDuration(video.durationSec),
-      doctor: video.channelTitle ?? 'قناة يوتيوب',
-      href: video.videoUrl,
-      thumbnail: video.thumbnailUrl || `https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`,
-      tag: 'فيديو طبي',
-      videoId: video.videoId,
-    }));
   }
+
+  const videos = await prisma.youtubeVideo.findMany({
+    where: channelId ? { channelId } : {},
+    orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
+    take: 16,
+  });
+
+  videoCandidates = videos.map((video) => ({
+    id: `youtube-${video.videoId}`,
+    title: video.title,
+    duration: formatDuration(video.durationSec),
+    doctor: video.channelTitle ?? 'قناة يوتيوب',
+    href: video.videoUrl,
+    thumbnail: video.thumbnailUrl || `https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`,
+    tag: 'فيديو طبي',
+    videoId: video.videoId,
+  }));
+
   if (!videoCandidates.length) {
     videoCandidates = FALLBACK_MEDICAL_VIDEOS;
   }
