@@ -99,7 +99,8 @@ export default function AdSensePlacement({
 
   const clientId =
     config?.clientId || process.env.NEXT_PUBLIC_ADSENSE_ID || 'ca-pub-5755672349927118';
-  const formatValue = placement?.format || format || 'auto';
+  const rawFormat = placement?.format || format || 'auto';
+  const formatValue = rawFormat === 'fluid' ? 'fluid' : 'auto';
   const responsiveValue = placement?.responsive || responsive || 'true';
 
   return (

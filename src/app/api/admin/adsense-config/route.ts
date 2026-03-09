@@ -33,6 +33,16 @@ const normalizeSlot = (value: unknown) => {
   return rawValue.replace(/[^\d]/g, '');
 };
 
+const normalizeFormat = (value: unknown) => {
+  if (value === 'fluid') return 'fluid';
+  return 'auto';
+};
+
+const normalizeResponsive = (value: unknown) => {
+  if (value === 'false') return 'false';
+  return 'true';
+};
+
 const normalizeConfig = (raw: any) => {
   const base = raw && typeof raw === 'object' ? raw : {};
   const mergedPlacements: Record<string, any> = { ...defaultConfig.placements };
@@ -47,6 +57,8 @@ const normalizeConfig = (raw: any) => {
     normalizedPlacements[key] = {
       ...placement,
       slot: normalizeSlot(placement.slot),
+      format: normalizeFormat(placement.format),
+      responsive: normalizeResponsive(placement.responsive),
     };
   });
   return {
