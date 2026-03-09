@@ -43,6 +43,7 @@ export default function AdSensePlacement({
   className,
   label,
 }: AdSensePlacementProps) {
+  const envDisabled = process.env.NEXT_PUBLIC_ADSENSE_ENABLED === 'false';
   const [enabled, setEnabled] = useState(false);
   const [config, setConfig] = useState<AdSenseConfig | null>(null);
   const [loading, setLoading] = useState(true);
@@ -75,7 +76,7 @@ export default function AdSensePlacement({
     return config?.placements?.[placementKey] || {};
   }, [config, placementKey]);
 
-  if (loading || !enabled) {
+  if (envDisabled || loading || !enabled) {
     return null;
   }
 
@@ -88,7 +89,8 @@ export default function AdSensePlacement({
     return null;
   }
 
-  const clientId = config?.clientId || 'ca-pub-5755672349927118';
+  const clientId =
+    config?.clientId || process.env.NEXT_PUBLIC_ADSENSE_ID || 'ca-pub-5755672349927118';
   const formatValue = placement?.format || format || 'auto';
   const responsiveValue = placement?.responsive || responsive || 'true';
 

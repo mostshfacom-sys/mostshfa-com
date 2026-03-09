@@ -6,22 +6,14 @@ import { useEffect, useState } from 'react';
 
 export default function AdSenseScript() {
   const pathname = usePathname();
+  const envDisabled = process.env.NEXT_PUBLIC_ADSENSE_ENABLED === 'false';
+  const initialClientId = process.env.NEXT_PUBLIC_ADSENSE_ID || 'ca-pub-5755672349927118';
   const [enabled, setEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [clientId, setClientId] = useState('ca-pub-5755672349927118');
-
-  const envEnabled = process.env.NEXT_PUBLIC_ADSENSE_ENABLED === 'true';
+  const [clientId, setClientId] = useState(initialClientId);
 
   useEffect(() => {
     let cancelled = false;
-
-    if (!envEnabled) {
-      setLoading(false);
-      setEnabled(false);
-      return () => {
-        cancelled = true;
-      };
-    }
 
     async function load() {
       try {
@@ -45,13 +37,13 @@ export default function AdSenseScript() {
     return () => {
       cancelled = true;
     };
-  }, [envEnabled]);
+  }, []);
 
-  if (!envEnabled) {
+  if (pathname?.startsWith('/admin')) {
     return null;
   }
 
-  if (pathname?.startsWith('/admin')) {
+  if (envDisabled) {
     return null;
   }
 
