@@ -20,7 +20,6 @@ export default function AdSenseUnit({
   const adRef = useRef<HTMLModElement>(null);
 
   useEffect(() => {
-    // Only push if AdSense is loaded and the element is present
     try {
       if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
         (window as any).adsbygoogle.push({});
@@ -30,20 +29,22 @@ export default function AdSenseUnit({
     }
   }, []);
 
-  // Use the publisher ID from the script
   const publisherId = "ca-pub-5755672349927118";
 
   return (
-    <div className={`adsense-container my-6 overflow-hidden flex justify-center ${className}`}>
-      <ins
-        ref={adRef}
-        className="adsbygoogle"
-        style={style}
-        data-ad-client={publisherId}
-        data-ad-slot={slot}
-        data-ad-format={format}
-        data-full-width-responsive={responsive}
-      />
+    <div className={`adsense-wrapper my-8 flex flex-col items-center ${className}`}>
+      <span className="text-[10px] text-gray-300 mb-1 uppercase tracking-widest font-sans">إعلان</span>
+      <div className="adsense-container w-full bg-gray-50/50 dark:bg-slate-800/20 rounded-xl border border-dashed border-gray-200 dark:border-slate-700/50 p-2 flex justify-center overflow-hidden min-h-[100px]">
+        <ins
+          ref={adRef}
+          className="adsbygoogle"
+          style={style}
+          data-ad-client={publisherId}
+          data-ad-slot={slot}
+          data-ad-format={format}
+          data-full-width-responsive={responsive}
+        />
+      </div>
     </div>
   );
 }

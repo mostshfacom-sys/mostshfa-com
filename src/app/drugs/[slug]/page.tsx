@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { Header, Footer, Breadcrumb } from '@/components/shared';
+import AdSenseUnit from '@/components/shared/AdSenseUnit';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { DrugAlternatives, DrugInteractions, PriceHistory } from '@/components/drugs';
@@ -162,6 +163,9 @@ export default async function DrugDetailPage({ params }: PageProps) {
                   </div>
                 </Card>
               )}
+
+              {/* Ad after usage */}
+              <AdSenseUnit slot="5678901234" className="my-6" />
 
               {/* Dosage Section */}
               {drug.dosage && (

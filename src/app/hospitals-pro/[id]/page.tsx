@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, notFound } from 'next/navigation';
 import { motion } from 'framer-motion';
+import AdSenseUnit from '@/components/shared/AdSenseUnit';
 import {
   ArrowRightIcon,
   MapPinIcon,
@@ -300,6 +301,9 @@ function OverviewTab({ hospital }: { hospital: Hospital }) {
             {hospital.description || 'لا يوجد وصف متاح حالياً.'}
           </p>
         </div>
+
+        {/* Ad in overview tab */}
+        <AdSenseUnit slot="1234567891" className="my-4" />
       </div>
 
       <div className="space-y-6">
