@@ -807,21 +807,9 @@ model Guide {
 model SiteSetting {
   id        Int      @id @default(autoincrement())
   key       String   @unique
-  value     String   @db.Text
+  value     String   @default("")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("site_settings")
-}
-
-model AdConfig {
-  id          Int      @id @default(autoincrement())
-  slotName    String   @unique @map("slot_name")
-  adSlot      String?  @map("ad_slot")
-  isEnabled   Boolean  @default(true) @map("is_enabled")
-  description String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  @@map("ad_configs")
 }

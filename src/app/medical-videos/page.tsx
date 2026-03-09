@@ -1,4 +1,5 @@
 import { Header, Footer, Breadcrumb } from '@/components/shared';
+import AdSensePlacement from '@/components/shared/AdSensePlacement';
 import { Suspense } from 'react';
 import Link from 'next/link';
 import prisma from '@/lib/db/prisma';
@@ -343,6 +344,8 @@ export default async function MedicalVideosPage({
               </div>
             )}
           </section>
+
+          <AdSensePlacement placementKey="medical_videos_list" fallbackSlot="" className="mb-12" />
 
           <section id="articles" className="mb-12">
             <div className="flex items-center justify-between flex-wrap gap-3 mb-6">

@@ -1,61 +1,96 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/db/prisma';
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/db/prisma';
+
+const defaultConfig = {
+  clientId: 'ca-pub-5755672349927118',
+  placements: {
+    home_between_tips: { enabled: true, slot: '1234567890', format: 'auto', responsive: 'true' },
+    home_footer: { enabled: true, slot: '9876543210', format: 'horizontal', responsive: 'true' },
+    article_after_excerpt: { enabled: true, slot: '7841529630', format: 'auto', responsive: 'true' },
+    article_mid: { enabled: true, slot: '', format: 'fluid', responsive: 'true' },
+    article_bottom: { enabled: true, slot: '8952147361', format: 'auto', responsive: 'true' },
+    drug_after_usage: { enabled: true, slot: '5678901234', format: 'auto', responsive: 'true' },
+    hospital_overview: { enabled: true, slot: '1234567891', format: 'auto', responsive: 'true' },
+    articles_list: { enabled: false, slot: '', format: 'auto', responsive: 'true' },
+    medical_videos_list: { enabled: false, slot: '', format: 'auto', responsive: 'true' },
+  },
+};
+
+const normalizeConfig = (raw: any) => {
+  const base = raw && typeof raw === 'object' ? raw : {};
+  const mergedPlacements: Record<string, any> = { ...defaultConfig.placements };
+  if (base.placements && typeof base.placements === 'object') {
+    Object.keys(base.placements).forEach((key) => {
+      mergedPlacements[key] = { ...mergedPlacements[key], ...base.placements[key] };
+    });
+  }
+  return {
+    ...defaultConfig,
+    ...base,
+    placements: mergedPlacements,
+  };
+};
 
 export async function GET() {
   try {
-    const configs = await prisma.adConfig.findMany();
-    const settings = await prisma.siteSetting.findMany({
-      where: {
-        key: {
-          in: ['adsense_publisher_id', 'adsense_enabled', 'adsense_auto_ads_enabled']
-        }
-      }
+    const [enabledSetting, configSetting] = await Promise.all([
+      prisma.siteSetting.findUnique({
+        where: { key: 'adsense_enabled' },
+      }),
+      prisma.siteSetting.findUnique({
+        where: { key: 'adsense_config' },
+      }),
+    ]);
+    const rawConfig = configSetting?.value ? JSON.parse(configSetting.value) : null;
+    const config = normalizeConfig(rawConfig);
+    return NextResponse.json({
+      enabled: enabledSetting?.value === 'true',
+      config,
     });
-
-    return NextResponse.json({ configs, settings });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch ad config' }, { status: 500 });
+    return NextResponse.json({ enabled: false, config: defaultConfig }, { status: 500 });
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const { settings, configs } = await request.json();
+    const payload = await request.json();
+    const updates: Promise<any>[] = [];
 
-    // Update global settings
-    if (settings) {
-      for (const [key, value] of Object.entries(settings)) {
-        await prisma.siteSetting.upsert({
-          where: { key },
-          update: { value: String(value) },
-          create: { key, value: String(value) },
-        });
-      }
+    if (typeof payload.enabled === 'boolean') {
+      const value = payload.enabled ? 'true' : 'false';
+      updates.push(
+        prisma.siteSetting.upsert({
+          where: { key: 'adsense_enabled' },
+          update: { value },
+          create: { key: 'adsense_enabled', value },
+        })
+      );
     }
 
-    // Update individual ad slots
-    if (configs) {
-      for (const config of configs) {
-        await prisma.adConfig.upsert({
-          where: { slotName: config.slotName },
-          update: { 
-            adSlot: config.adSlot, 
-            isEnabled: config.isEnabled,
-            description: config.description 
-          },
-          create: { 
-            slotName: config.slotName, 
-            adSlot: config.adSlot, 
-            isEnabled: config.isEnabled,
-            description: config.description 
-          },
-        });
-      }
+    if (payload.config && typeof payload.config === 'object') {
+      const config = normalizeConfig(payload.config);
+      updates.push(
+        prisma.siteSetting.upsert({
+          where: { key: 'adsense_config' },
+          update: { value: JSON.stringify(config) },
+          create: { key: 'adsense_config', value: JSON.stringify(config) },
+        })
+      );
     }
 
-    return NextResponse.json({ success: true });
+    await Promise.all(updates);
+
+    const enabledSetting = await prisma.siteSetting.findUnique({
+      where: { key: 'adsense_enabled' },
+    });
+    const configSetting = await prisma.siteSetting.findUnique({
+      where: { key: 'adsense_config' },
+    });
+    const rawConfig = configSetting?.value ? JSON.parse(configSetting.value) : null;
+    const config = normalizeConfig(rawConfig);
+    return NextResponse.json({ success: true, enabled: enabledSetting?.value === 'true', config });
   } catch (error) {
-    console.error('Ad config update error:', error);
-    return NextResponse.json({ error: 'Failed to update ad config' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to update setting' }, { status: 500 });
   }
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter, notFound } from 'next/navigation';
 import { motion } from 'framer-motion';
-import AdSenseUnit from '@/components/shared/AdSenseUnit';
+import AdSensePlacement from '@/components/shared/AdSensePlacement';
 import {
   ArrowRightIcon,
   MapPinIcon,
@@ -303,7 +303,7 @@ function OverviewTab({ hospital }: { hospital: Hospital }) {
         </div>
 
         {/* Ad in overview tab */}
-        <AdSenseUnit slot="1234567891" className="my-4" />
+        <AdSensePlacement placementKey="hospital_overview" fallbackSlot="1234567891" className="my-4" />
       </div>
 
       <div className="space-y-6">

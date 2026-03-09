@@ -6,53 +6,65 @@ import { useEffect, useState } from 'react';
 
 export default function AdSenseScript() {
   const pathname = usePathname();
-  const [config, setConfig] = useState<{
-    enabled: boolean;
-    autoAdsEnabled: boolean;
-    publisherId: string;
-  }>({
-    enabled: true,
-    autoAdsEnabled: true,
-    publisherId: 'ca-pub-5755672349927118',
-  });
+  const [enabled, setEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [clientId, setClientId] = useState('ca-pub-5755672349927118');
+
+  const envEnabled = process.env.NEXT_PUBLIC_ADSENSE_ENABLED === 'true';
 
   useEffect(() => {
-    async function fetchConfig() {
-      try {
-        const res = await fetch('/api/admin/adsense-config');
-        const data = await res.json();
-        
-        const settings = data.settings || [];
-        const enabled = settings.find((s: any) => s.key === 'adsense_enabled')?.value !== 'false';
-        const autoAdsEnabled = settings.find((s: any) => s.key === 'adsense_auto_ads_enabled')?.value !== 'false';
-        const publisherId = settings.find((s: any) => s.key === 'adsense_publisher_id')?.value || 'ca-pub-5755672349927118';
+    let cancelled = false;
 
-        setConfig({ enabled, autoAdsEnabled, publisherId });
-      } catch (error) {
-        console.error('Failed to fetch AdSense config:', error);
+    if (!envEnabled) {
+      setLoading(false);
+      setEnabled(false);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    async function load() {
+      try {
+        const res = await fetch('/api/admin/adsense-config', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled) {
+          setEnabled(Boolean(data?.enabled));
+          if (data?.config?.clientId) {
+            setClientId(data.config.clientId);
+          }
+        }
+      } catch {
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
 
-    fetchConfig();
-  }, []);
+    load();
 
-  if (loading || !config.enabled || pathname?.startsWith('/admin')) {
+    return () => {
+      cancelled = true;
+    };
+  }, [envEnabled]);
+
+  if (!envEnabled) {
     return null;
   }
 
-  // URL with or without auto-ads logic
-  // Note: AdSense typically uses the same script, but Auto-Ads are controlled 
-  // by the absence of specific parameters or via the AdSense dashboard.
-  // We provide the publisher ID, and user can toggle Auto-Ads in their dashboard.
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
+
+  if (loading || !enabled) {
+    return null;
+  }
+
   return (
     <Script
       id="adsense-script"
       strategy="afterInteractive"
       async
-      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${config.publisherId}`}
+      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clientId}`}
       crossOrigin="anonymous"
     />
   );

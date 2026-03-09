@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Header, Footer, Breadcrumb } from '@/components/shared';
-import AdSenseUnit from '@/components/shared/AdSenseUnit';
+import AdSensePlacement from '@/components/shared/AdSensePlacement';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 // Direct imports to avoid barrel export issues with Next.js 14 Server Components
@@ -91,6 +91,21 @@ function calculateReadingTime(content: string | null): number {
   return Math.max(1, Math.ceil(wordCount / wordsPerMinute));
 }
 
+function splitContent(html: string): string[] {
+  const parts = html.split('</p>');
+  const blocks: string[] = [];
+  parts.forEach((part) => {
+    const trimmed = part.trim();
+    if (!trimmed) return;
+    const block = trimmed.endsWith('</p>') ? trimmed : `${trimmed}</p>`;
+    blocks.push(block);
+  });
+  if (!blocks.length) {
+    blocks.push(html);
+  }
+  return blocks;
+}
+
 export default async function ArticleDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const article = await getArticle(slug);
@@ -101,6 +116,8 @@ export default async function ArticleDetailPage({ params }: PageProps) {
 
   const readingTime = calculateReadingTime(article.content);
   const tags = article.tags?.split(',').map((t: string) => t.trim()).filter(Boolean) || [];
+  const contentBlocks = article.content ? splitContent(article.content) : [];
+  const midIndex = contentBlocks.length >= 6 ? Math.floor(contentBlocks.length / 2) : -1;
 
   const breadcrumbItems = [
     { label: 'الرئيسية', href: '/' },
@@ -190,41 +207,28 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                     </p>
                   )}
 
-                  {/* Ad after excerpt */}
-                  <AdSenseUnit slotName="article_top" className="my-8" />
+                  <AdSensePlacement
+                    placementKey="article_after_excerpt"
+                    fallbackSlot="7841529630"
+                    className="my-8"
+                  />
 
-                  {/* Content */}
                   {article.content && (
-                    <>
-                      {(() => {
-                        const content = article.content || '';
-                        const paragraphs = content.split(/<\/p>/);
-                        if (paragraphs.length > 4) {
-                          const middleIndex = Math.floor(paragraphs.length / 2);
-                          const firstHalf = paragraphs.slice(0, middleIndex).join('</p>') + '</p>';
-                          const secondHalf = paragraphs.slice(middleIndex).join('</p>');
-                          return (
-                            <>
-                              <div 
-                                className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-li:text-gray-600 prose-a:text-primary-600"
-                                dangerouslySetInnerHTML={{ __html: firstHalf }}
-                              />
-                              <AdSenseUnit slotName="article_middle" className="my-10" />
-                              <div 
-                                className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-li:text-gray-600 prose-a:text-primary-600"
-                                dangerouslySetInnerHTML={{ __html: secondHalf }}
-                              />
-                            </>
-                          );
-                        }
-                        return (
-                          <div 
-                            className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-li:text-gray-600 prose-a:text-primary-600"
-                            dangerouslySetInnerHTML={{ __html: content }}
-                          />
-                        );
-                      })()}
-                    </>
+                    <div className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-li:text-gray-600 prose-a:text-primary-600">
+                      {contentBlocks.map((block, index) => (
+                        <div key={`block-${index}`}>
+                          <div dangerouslySetInnerHTML={{ __html: block }} />
+                          {index === midIndex ? (
+                            <AdSensePlacement
+                              placementKey="article_mid"
+                              fallbackSlot=""
+                              format="fluid"
+                              className="my-8"
+                            />
+                          ) : null}
+                        </div>
+                      ))}
+                    </div>
                   )}
 
                   {/* Tags */}
@@ -247,8 +251,11 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                     <ArticleRating articleId={article.id} />
                   </div>
 
-                  {/* Bottom Ad */}
-                  <AdSenseUnit slotName="article_bottom" className="mt-8" />
+                  <AdSensePlacement
+                    placementKey="article_bottom"
+                    fallbackSlot="8952147361"
+                    className="mt-8"
+                  />
 
                   {/* Share */}
                   <div className="mt-8 pt-6 border-t border-gray-100">

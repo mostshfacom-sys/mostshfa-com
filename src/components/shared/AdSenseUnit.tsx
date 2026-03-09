@@ -1,99 +1,52 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface AdSenseUnitProps {
-  slotId?: string; // Optional: used for dynamic loading from DB
-  slotName?: string; // Used to identify in DB
-  slot?: string; // Direct slot ID (fallback)
+  slot: string;
+  clientId: string;
   format?: 'auto' | 'fluid' | 'rectangle' | 'vertical' | 'horizontal';
   responsive?: 'true' | 'false';
   style?: React.CSSProperties;
   className?: string;
+  label?: string;
 }
 
 export default function AdSenseUnit({
-  slotName,
   slot,
+  clientId,
   format = 'auto',
   responsive = 'true',
   style = { display: 'block' },
   className = '',
+  label = 'إعلان',
 }: AdSenseUnitProps) {
   const adRef = useRef<HTMLModElement>(null);
-  const [adConfig, setAdConfig] = useState<{ adSlot: string | null; isEnabled: boolean } | null>(null);
-  const [publisherId, setPublisherId] = useState<string>('ca-pub-5755672349927118');
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchAdConfig() {
-      try {
-        const res = await fetch('/api/admin/adsense-config');
-        const data = await res.json();
-        
-        // Find publisher ID
-        const pubSetting = data.settings?.find((s: any) => s.key === 'adsense_publisher_id');
-        if (pubSetting) setPublisherId(pubSetting.value);
-
-        // Check if ads globally enabled
-        const enabledSetting = data.settings?.find((s: any) => s.key === 'adsense_enabled');
-        if (enabledSetting && enabledSetting.value === 'false') {
-          setAdConfig({ adSlot: null, isEnabled: false });
-          setLoading(false);
-          return;
-        }
-
-        // Find specific slot config if slotName provided
-        if (slotName) {
-          const config = data.configs?.find((c: any) => c.slotName === slotName);
-          if (config) {
-            setAdConfig({ adSlot: config.adSlot, isEnabled: config.isEnabled });
-          } else {
-            // Fallback to direct slot if not in DB
-            setAdConfig({ adSlot: slot || null, isEnabled: !!slot });
-          }
-        } else {
-          setAdConfig({ adSlot: slot || null, isEnabled: !!slot });
-        }
-      } catch (error) {
-        // Silent fallback to direct slot on error
-        setAdConfig({ adSlot: slot || null, isEnabled: !!slot });
-      } finally {
-        setLoading(false);
+    try {
+      if (typeof window !== 'undefined') {
+        const adsbygoogle = (window as any).adsbygoogle || [];
+        (window as any).adsbygoogle = adsbygoogle;
+        adsbygoogle.push({});
       }
+    } catch (err) {
+      console.error('AdSense error:', err);
     }
-
-    fetchAdConfig();
-  }, [slotName, slot]);
-
-  useEffect(() => {
-    if (!loading && adConfig?.isEnabled && adConfig?.adSlot) {
-      try {
-        if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
-          (window as any).adsbygoogle.push({});
-        }
-      } catch (err) {
-        console.error('AdSense error:', err);
-      }
-    }
-  }, [loading, adConfig]);
-
-  if (loading || !adConfig?.isEnabled || !adConfig?.adSlot) {
-    return null;
-  }
+  }, []);
 
   return (
-    <div className={`adsense-wrapper my-10 flex flex-col items-center group transition-all duration-300 ${className}`}>
-      <span className="text-[9px] text-gray-400 dark:text-slate-500 mb-1.5 uppercase tracking-[0.2em] font-medium opacity-50 group-hover:opacity-100 transition-opacity">
-        إعلان
+    <div className={`adsense-wrapper my-8 flex flex-col items-center ${className}`}>
+      <span className="text-[10px] text-gray-400 dark:text-slate-400 mb-1 uppercase tracking-widest font-sans">
+        {label}
       </span>
-      <div className="adsense-container w-full bg-slate-50/80 dark:bg-slate-900/40 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 p-3 flex justify-center overflow-hidden min-h-[120px] shadow-sm group-hover:shadow-md group-hover:border-primary-500/20 transition-all">
+      <div className="adsense-container w-full bg-white/80 dark:bg-slate-900/60 rounded-xl border border-dashed border-gray-200/80 dark:border-slate-700/70 p-2 flex justify-center overflow-hidden min-h-[100px] shadow-sm">
         <ins
           ref={adRef}
           className="adsbygoogle"
           style={style}
-          data-ad-client={publisherId}
-          data-ad-slot={adConfig.adSlot}
+          data-ad-client={clientId}
+          data-ad-slot={slot}
           data-ad-format={format}
           data-full-width-responsive={responsive}
         />

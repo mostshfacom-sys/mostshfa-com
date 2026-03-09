@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import AdSensePlacement from '@/components/shared/AdSensePlacement';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface Article {
@@ -234,6 +235,8 @@ export default function ArticlesClient({
             ))}
           </div>
         )}
+
+        <AdSensePlacement placementKey="articles_list" fallbackSlot="" className="mt-8" />
 
         {/* Load More Button */}
         {hasMore && (

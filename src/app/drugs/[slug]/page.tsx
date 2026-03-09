@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { Header, Footer, Breadcrumb } from '@/components/shared';
-import AdSenseUnit from '@/components/shared/AdSenseUnit';
+import AdSensePlacement from '@/components/shared/AdSensePlacement';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { DrugAlternatives, DrugInteractions, PriceHistory } from '@/components/drugs';
@@ -165,7 +165,7 @@ export default async function DrugDetailPage({ params }: PageProps) {
               )}
 
               {/* Ad after usage */}
-              <AdSenseUnit slotName="drug_usage" className="my-6" />
+              <AdSensePlacement placementKey="drug_after_usage" fallbackSlot="5678901234" className="my-6" />
 
               {/* Dosage Section */}
               {drug.dosage && (
