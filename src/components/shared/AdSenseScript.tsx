@@ -58,7 +58,7 @@ export default function AdSenseScript() {
       id="adsense-script"
       strategy="afterInteractive"
       async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5755672349927118"
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4632551404111306"
       crossOrigin="anonymous"
     />
   );

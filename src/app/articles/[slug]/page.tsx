@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Header, Footer, Breadcrumb } from '@/components/shared';
+import AdSenseUnit from '@/components/shared/AdSenseUnit';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 // Direct imports to avoid barrel export issues with Next.js 14 Server Components
@@ -189,6 +190,9 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                     </p>
                   )}
 
+                  {/* Ad after excerpt */}
+                  <AdSenseUnit slot="7841529630" className="my-8" />
+
                   {/* Content */}
                   {article.content && (
                     <div 
@@ -216,6 +220,9 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                     <h3 className="font-semibold text-gray-900 mb-3">قيّم هذا المقال</h3>
                     <ArticleRating articleId={article.id} />
                   </div>
+
+                  {/* Bottom Ad */}
+                  <AdSenseUnit slot="8952147361" className="mt-8" />
 
                   {/* Share */}
                   <div className="mt-8 pt-6 border-t border-gray-100">

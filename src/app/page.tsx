@@ -4,6 +4,7 @@ import prisma from '@/lib/db/prisma';
 import { formatDuration, syncYoutubeVideosOnce } from '@/lib/youtube/youtubeSync';
 import { Header } from '@/components/shared/Header';
 import { Footer } from '@/components/shared/Footer';
+import AdSenseUnit from '@/components/shared/AdSenseUnit';
 import UniversalHeaderClient, { type HeaderCounterConfig } from '@/components/shared/UniversalHeaderClient';
 import AutoScrollRow from '@/components/shared/AutoScrollRow';
 import MedicalTipsTicker, { type MedicalTipTickerItem } from '@/components/home/MedicalTipsTicker';
@@ -966,6 +967,11 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* Ad between tips and articles */}
+        <div className="container-custom">
+          <AdSenseUnit slot="1234567890" className="py-4" />
+        </div>
+
         <section className="py-12 bg-slate-50 dark:bg-slate-900/40">
           <div className="container-custom">
             <div className="flex flex-wrap items-end justify-between gap-3 mb-8">
@@ -1139,7 +1145,12 @@ export default async function HomePage() {
           </div>
         </section>
       </main>
-      <Footer />
+      {/* Final Ad before footer */}
+        <div className="container-custom py-10">
+          <AdSenseUnit slot="9876543210" format="horizontal" />
+        </div>
+
+        <Footer />
     </>
   );
 }
