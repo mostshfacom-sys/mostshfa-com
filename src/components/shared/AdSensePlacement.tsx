@@ -54,12 +54,20 @@ export default function AdSensePlacement({
     async function load() {
       try {
         const res = await fetch('/api/admin/adsense-config', { cache: 'no-store' });
-        if (!res.ok) return;
+        if (!res.ok) {
+          if (!cancelled) {
+            setEnabled(true);
+          }
+          return;
+        }
         const data = await res.json();
         if (cancelled) return;
         setEnabled(Boolean(data?.enabled));
         setConfig(data?.config || null);
       } catch {
+        if (!cancelled) {
+          setEnabled(true);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
