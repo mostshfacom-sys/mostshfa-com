@@ -969,7 +969,7 @@ export default async function HomePage() {
 
         {/* Ad between tips and articles */}
         <div className="container-custom">
-          <AdSenseUnit slot="1234567890" className="py-4" />
+          <AdSenseUnit slotName="home_middle" className="py-4" />
         </div>
 
         <section className="py-12 bg-slate-50 dark:bg-slate-900/40">
@@ -1147,7 +1147,7 @@ export default async function HomePage() {
       </main>
       {/* Final Ad before footer */}
         <div className="container-custom py-10">
-          <AdSenseUnit slot="9876543210" format="horizontal" />
+          <AdSenseUnit slotName="home_footer" format="horizontal" />
         </div>
 
         <Footer />

@@ -165,7 +165,7 @@ export default async function DrugDetailPage({ params }: PageProps) {
               )}
 
               {/* Ad after usage */}
-              <AdSenseUnit slot="5678901234" className="my-6" />
+              <AdSenseUnit slotName="drug_usage" className="my-6" />
 
               {/* Dosage Section */}
               {drug.dosage && (

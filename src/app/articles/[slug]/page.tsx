@@ -191,14 +191,40 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                   )}
 
                   {/* Ad after excerpt */}
-                  <AdSenseUnit slot="7841529630" className="my-8" />
+                  <AdSenseUnit slotName="article_top" className="my-8" />
 
                   {/* Content */}
                   {article.content && (
-                    <div 
-                      className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-li:text-gray-600 prose-a:text-primary-600"
-                      dangerouslySetInnerHTML={{ __html: article.content }}
-                    />
+                    <>
+                      {(() => {
+                        const content = article.content || '';
+                        const paragraphs = content.split(/<\/p>/);
+                        if (paragraphs.length > 4) {
+                          const middleIndex = Math.floor(paragraphs.length / 2);
+                          const firstHalf = paragraphs.slice(0, middleIndex).join('</p>') + '</p>';
+                          const secondHalf = paragraphs.slice(middleIndex).join('</p>');
+                          return (
+                            <>
+                              <div 
+                                className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-li:text-gray-600 prose-a:text-primary-600"
+                                dangerouslySetInnerHTML={{ __html: firstHalf }}
+                              />
+                              <AdSenseUnit slotName="article_middle" className="my-10" />
+                              <div 
+                                className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-li:text-gray-600 prose-a:text-primary-600"
+                                dangerouslySetInnerHTML={{ __html: secondHalf }}
+                              />
+                            </>
+                          );
+                        }
+                        return (
+                          <div 
+                            className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-li:text-gray-600 prose-a:text-primary-600"
+                            dangerouslySetInnerHTML={{ __html: content }}
+                          />
+                        );
+                      })()}
+                    </>
                   )}
 
                   {/* Tags */}
@@ -222,7 +248,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                   </div>
 
                   {/* Bottom Ad */}
-                  <AdSenseUnit slot="8952147361" className="mt-8" />
+                  <AdSenseUnit slotName="article_bottom" className="mt-8" />
 
                   {/* Share */}
                   <div className="mt-8 pt-6 border-t border-gray-100">

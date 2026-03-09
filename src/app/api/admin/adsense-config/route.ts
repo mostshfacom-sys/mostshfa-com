@@ -1,30 +1,61 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db/prisma';
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/db/prisma';
 
 export async function GET() {
   try {
-    const setting = await prisma.siteSetting.findUnique({
-      where: { key: 'adsense_enabled' },
+    const configs = await prisma.adConfig.findMany();
+    const settings = await prisma.siteSetting.findMany({
+      where: {
+        key: {
+          in: ['adsense_publisher_id', 'adsense_enabled', 'adsense_auto_ads_enabled']
+        }
+      }
     });
-    return NextResponse.json({ enabled: setting?.value === 'true' });
+
+    return NextResponse.json({ configs, settings });
   } catch (error) {
-    return NextResponse.json({ enabled: false }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch ad config' }, { status: 500 });
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const { enabled } = await request.json();
-    const value = enabled ? 'true' : 'false';
+    const { settings, configs } = await request.json();
 
-    await prisma.siteSetting.upsert({
-      where: { key: 'adsense_enabled' },
-      update: { value },
-      create: { key: 'adsense_enabled', value },
-    });
+    // Update global settings
+    if (settings) {
+      for (const [key, value] of Object.entries(settings)) {
+        await prisma.siteSetting.upsert({
+          where: { key },
+          update: { value: String(value) },
+          create: { key, value: String(value) },
+        });
+      }
+    }
 
-    return NextResponse.json({ success: true, enabled });
+    // Update individual ad slots
+    if (configs) {
+      for (const config of configs) {
+        await prisma.adConfig.upsert({
+          where: { slotName: config.slotName },
+          update: { 
+            adSlot: config.adSlot, 
+            isEnabled: config.isEnabled,
+            description: config.description 
+          },
+          create: { 
+            slotName: config.slotName, 
+            adSlot: config.adSlot, 
+            isEnabled: config.isEnabled,
+            description: config.description 
+          },
+        });
+      }
+    }
+
+    return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to update setting' }, { status: 500 });
+    console.error('Ad config update error:', error);
+    return NextResponse.json({ error: 'Failed to update ad config' }, { status: 500 });
   }
 }
