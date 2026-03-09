@@ -31,7 +31,7 @@ export default function AdSenseUnit({
   }, []);
 
   // Use the publisher ID from the script
-  const publisherId = "ca-pub-4632551404111306";
+  const publisherId = "ca-pub-5755672349927118";
 
   return (
     <div className={`adsense-container my-6 overflow-hidden flex justify-center ${className}`}>
