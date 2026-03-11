@@ -42,6 +42,7 @@ export function NearbySearch({
     clinic: { label: 'عيادات', icon: '🏨' },
     lab: { label: 'معامل', icon: '🔬' },
     pharmacy: { label: 'صيدليات', icon: '💊' },
+    doctor: { label: 'أطباء', icon: '👨‍⚕️' },
     ambulance: { label: 'إسعاف', icon: '🚑' },
   };
 

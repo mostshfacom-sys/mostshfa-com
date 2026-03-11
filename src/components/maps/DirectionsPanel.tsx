@@ -36,6 +36,7 @@ export function DirectionsPanel({
       lab: '🔬',
       pharmacy: '💊',
       ambulance: '🚑',
+      doctor: '👨‍⚕️',
     };
     return icons[type] || '📍';
   };
