@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
           id: true, nameAr: true, slug: true, address: true,
           lat: true, lng: true, ratingAvg: true, phone: true,
         },
-        take: 100,
+        take: 500, // Increased from 100 to 500 to show more hospitals
       });
       hospitals.forEach((h) => {
         if (h.lat && h.lng) {
