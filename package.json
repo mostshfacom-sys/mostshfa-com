@@ -40,6 +40,7 @@
     "motion-dom": "^11.18.1",
     "motion-utils": "^11.18.1",
     "next": "14.2.35",
+    "open-location-code": "^1.0.3",
     "pg": "^8.11.3",
     "postcss": "^8.4.35",
     "prisma": "5.22.0",
