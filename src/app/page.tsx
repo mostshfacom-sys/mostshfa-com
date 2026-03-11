@@ -1055,9 +1055,9 @@ export default async function HomePage() {
                   href={video.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="group min-w-[260px] sm:min-w-[300px] lg:min-w-[340px] snap-start"
+                  className="group min-w-[260px] sm:min-w-[300px] lg:min-w-[340px] w-[260px] sm:w-[300px] lg:w-[340px] snap-start h-full"
                 >
-                  <Card className="h-full overflow-hidden dark:border-white/10 dark:bg-slate-900/80">
+                  <Card className="h-full overflow-hidden dark:border-white/10 dark:bg-slate-900/80 flex flex-col">
                     <div
                       className="relative h-48 bg-cover bg-center"
                       style={{ backgroundImage: `url(${video.thumbnail})` }}
@@ -1072,14 +1072,14 @@ export default async function HomePage() {
                         {video.duration}
                       </span>
                     </div>
-                    <div className="p-4">
+                    <div className="p-4 flex flex-col gap-2 flex-1">
                       <Badge variant="secondary" size="sm" className="mb-2">
                         {video.tag}
                       </Badge>
                       <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2 dark:text-white">
                         {video.title}
                       </h3>
-                      <p className="text-sm text-gray-500 dark:text-slate-300">{video.doctor}</p>
+                      <p className="text-sm text-gray-500 dark:text-slate-300 mt-auto">{video.doctor}</p>
                     </div>
                   </Card>
                 </a>

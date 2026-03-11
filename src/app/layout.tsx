@@ -27,6 +27,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://mostshfa.com'),
   title: {
     default: 'مستشفى - دليل الخدمات الطبية في مصر',
     template: '%s | مستشفى',
@@ -36,6 +37,9 @@ export const metadata: Metadata = {
   keywords: ['مستشفيات', 'عيادات', 'معامل', 'صيدليات', 'تمريض', 'أطباء', 'مصر', 'دليل طبي'],
   authors: [{ name: 'مستشفى' }],
   creator: 'مستشفى',
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     type: 'website',
     locale: 'ar_EG',
@@ -43,11 +47,20 @@ export const metadata: Metadata = {
     siteName: 'مستشفى',
     title: 'مستشفى - دليل الخدمات الطبية في مصر',
     description: 'دليل شامل للمستشفيات والعيادات والمعامل والصيدليات وخدمات التمريض في مصر',
+    images: [
+      {
+        url: '/icon.svg',
+        width: 512,
+        height: 512,
+        alt: 'مستشفى.كوم',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'مستشفى - دليل الخدمات الطبية في مصر',
     description: 'دليل شامل للمستشفيات والعيادات والمعامل والصيدليات وخدمات التمريض في مصر',
+    images: ['/icon.svg'],
   },
   robots: {
     index: true,

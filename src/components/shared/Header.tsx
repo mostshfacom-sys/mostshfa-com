@@ -123,6 +123,19 @@ export function Header() {
   const [openDesktopSection, setOpenDesktopSection] = useState<string | null>(null);
   const [isAuthMenuOpen, setIsAuthMenuOpen] = useState(false);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const BrandIcon = useMemo(() => {
+    const icons = [
+      BuildingOffice2Icon,
+      HeartIcon,
+      BeakerIcon,
+      SparklesIcon,
+      ClipboardDocumentListIcon,
+      ShieldCheckIcon,
+      BoltIcon,
+      UserGroupIcon,
+    ];
+    return icons[Math.floor(Math.random() * icons.length)];
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -290,7 +303,7 @@ export function Header() {
           <div className="flex flex-wrap items-center gap-3 2xl:flex-nowrap 2xl:gap-5">
             <Link href={config.brand.href} className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 text-white shadow-lg shadow-primary-500/30">
-                <BuildingOffice2Icon className="h-4 w-4" />
+                <BrandIcon className="h-4 w-4" />
               </span>
               <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
                 {config.brand.label}
@@ -396,6 +409,7 @@ export function Header() {
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                             {regularItems.map((item) => {
                               const ItemIcon = resolveIcon(item.icon ?? section.icon);
+                              const description = item.description?.trim();
                               return (
                                 <Link
                                   key={item.id}
@@ -416,11 +430,11 @@ export function Header() {
                                         {item.label}
                                       </p>
                                     </div>
-                                    {item.description && (
+                                    {description ? (
                                       <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 leading-relaxed break-words whitespace-normal">
-                                        {item.description}
+                                        {description}
                                       </p>
-                                    )}
+                                    ) : null}
                                   </div>
                                 </Link>
                               );

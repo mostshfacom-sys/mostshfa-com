@@ -415,7 +415,7 @@ export default function MedicalTipsTicker({ tips, className }: MedicalTipsTicker
         <AutoScrollRow
           className="px-5 py-4"
           loop
-          speed={0.09}
+          speed={0.06}
           pauseOnHover
           dir="rtl"
           scrollStep={240}

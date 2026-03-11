@@ -115,6 +115,7 @@ export const DEFAULT_NAVBAR_CONFIG: NavbarConfig = {
           href: '/drugs',
           description: 'بحث شامل عن الأدوية',
           icon: 'pill',
+          isFeatured: true,
         },
         {
           id: 'hospitals-pro',
