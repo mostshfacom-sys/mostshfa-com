@@ -43,6 +43,7 @@ export function InteractiveMap({
   const [mapHeight, setMapHeight] = useState('360px');
   const [filterType, setFilterType] = useState<EntityType | 'all'>('all');
   const [isPickingLocation, setIsPickingLocation] = useState(false);
+  const [mapBounds, setMapBounds] = useState<{ minLat: number; maxLat: number; minLng: number; maxLng: number } | null>(null);
 
   // Load initial markers from API
   useEffect(() => {
@@ -55,6 +56,14 @@ export function InteractiveMap({
         if (resolvedEntityTypes.length > 0) {
           params.set('types', resolvedEntityTypes.join(','));
         }
+        
+        if (mapBounds) {
+          params.set('minLat', mapBounds.minLat.toString());
+          params.set('maxLat', mapBounds.maxLat.toString());
+          params.set('minLng', mapBounds.minLng.toString());
+          params.set('maxLng', mapBounds.maxLng.toString());
+        }
+
         const query = params.toString();
         const response = await fetch(`/api/map/markers${query ? `?${query}` : ''}`);
         if (response.ok) {
@@ -82,7 +91,7 @@ export function InteractiveMap({
     return () => {
       isMounted = false;
     };
-  }, [resolvedInitialMarkers, entityTypesKey, resolvedEntityTypes]);
+  }, [resolvedInitialMarkers, entityTypesKey, resolvedEntityTypes, mapBounds]);
 
   useEffect(() => {
     if (filterType !== 'all' && !resolvedEntityTypes.includes(filterType)) {
@@ -139,6 +148,10 @@ export function InteractiveMap({
     updateMapHeight();
     window.addEventListener('resize', updateMapHeight);
     return () => window.removeEventListener('resize', updateMapHeight);
+  }, []);
+
+  const handleMapBoundsChange = useCallback((bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number }) => {
+    setMapBounds(bounds);
   }, []);
 
   return (
@@ -239,6 +252,7 @@ export function InteractiveMap({
               className={`min-h-[260px] ${isPickingLocation ? 'cursor-crosshair' : ''}`}
               enableLocationPick={isPickingLocation}
               onMapClick={handleMapClick}
+              onBoundsChange={handleMapBoundsChange}
             />
           ) : (
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">

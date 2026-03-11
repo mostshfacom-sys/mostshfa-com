@@ -37,6 +37,7 @@ interface MapContainerProps {
   userLocation?: { lat: number; lng: number } | null;
   enableLocationPick?: boolean;
   onMapClick?: (location: { lat: number; lng: number }) => void;
+  onBoundsChange?: (bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number }) => void;
   className?: string;
   height?: string;
 }
@@ -50,6 +51,7 @@ export function MapContainer({
   userLocation,
   enableLocationPick = false,
   onMapClick,
+  onBoundsChange,
   className = '',
   height = '400px',
 }: MapContainerProps) {
@@ -155,6 +157,22 @@ export function MapContainer({
       chunkedLoading: true,
       maxClusterRadius: 50
     }).addTo(map);
+
+    const handleMoveEnd = () => {
+      if (onBoundsChange) {
+        const bounds = map.getBounds();
+        onBoundsChange({
+          minLat: bounds.getSouth(),
+          maxLat: bounds.getNorth(),
+          minLng: bounds.getWest(),
+          maxLng: bounds.getEast()
+        });
+      }
+    };
+
+    map.on('moveend', handleMoveEnd);
+    // Initial bounds
+    handleMoveEnd();
 
     setTimeout(() => map.invalidateSize(), 0);
     setTimeout(() => map.invalidateSize(), 350);

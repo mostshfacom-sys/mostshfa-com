@@ -18,18 +18,31 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const types = searchParams.get('types')?.split(',') || ['hospital', 'clinic', 'lab', 'pharmacy'];
-    const limit = parseInt(searchParams.get('limit') || '2000');
+    const limit = parseInt(searchParams.get('limit') || '500');
+    
+    // Viewport-based filtering
+    const minLat = searchParams.get('minLat') ? parseFloat(searchParams.get('minLat')!) : null;
+    const maxLat = searchParams.get('maxLat') ? parseFloat(searchParams.get('maxLat')!) : null;
+    const minLng = searchParams.get('minLng') ? parseFloat(searchParams.get('minLng')!) : null;
+    const maxLng = searchParams.get('maxLng') ? parseFloat(searchParams.get('maxLng')!) : null;
 
     const markers: Marker[] = [];
 
+    const viewportFilter = (minLat !== null && maxLat !== null && minLng !== null && maxLng !== null) 
+      ? {
+          lat: { gte: minLat, lte: maxLat },
+          lng: { gte: minLng, lte: maxLng }
+        }
+      : { lat: { not: null }, lng: { not: null } };
+
     if (types.includes('hospital')) {
       const hospitals = await prisma.hospital.findMany({
-        where: { lat: { not: null }, lng: { not: null } },
+        where: { ...viewportFilter },
         select: {
           id: true, nameAr: true, slug: true, address: true,
           lat: true, lng: true, ratingAvg: true, phone: true,
         },
-        take: 100, // Hospitals are fewer, 100 is usually enough
+        take: 100,
       });
       hospitals.forEach((h) => {
         if (h.lat && h.lng) {
@@ -45,8 +58,7 @@ export async function GET(request: NextRequest) {
     if (types.includes('clinic')) {
       const clinics = await prisma.clinic.findMany({
         where: { 
-          lat: { not: null }, 
-          lng: { not: null },
+          ...viewportFilter,
           status: 'published'
         },
         select: {
@@ -83,7 +95,7 @@ export async function GET(request: NextRequest) {
 
     if (types.includes('lab')) {
       const labs = await prisma.lab.findMany({
-        where: { lat: { not: null }, lng: { not: null } },
+        where: { ...viewportFilter },
         select: {
           id: true, nameAr: true, slug: true, addressAr: true,
           lat: true, lng: true, ratingAvg: true, phone: true,
@@ -103,7 +115,7 @@ export async function GET(request: NextRequest) {
 
     if (types.includes('pharmacy')) {
       const pharmacies = await prisma.pharmacy.findMany({
-        where: { lat: { not: null }, lng: { not: null } },
+        where: { ...viewportFilter },
         select: {
           id: true, nameAr: true, slug: true, addressAr: true,
           lat: true, lng: true, ratingAvg: true, phone: true, is24h: true,
