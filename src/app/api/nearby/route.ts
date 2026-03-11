@@ -21,20 +21,38 @@ function calculateDistance(
   return R * c;
 }
 
+function getBoundingBox(lat: number, lng: number, distanceKm: number) {
+  const clampedDistance = Math.max(0, Number.isFinite(distanceKm) ? distanceKm : 0);
+  const deltaLat = clampedDistance / 111;
+  const latRad = (lat * Math.PI) / 180;
+  const denom = 111 * Math.max(0.000001, Math.cos(latRad));
+  const deltaLng = clampedDistance / denom;
+
+  return {
+    minLat: lat - deltaLat,
+    maxLat: lat + deltaLat,
+    minLng: lng - deltaLng,
+    maxLng: lng + deltaLng,
+  };
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const lat = parseFloat(searchParams.get('lat') || '0');
-    const lng = parseFloat(searchParams.get('lng') || '0');
+    const lat = parseFloat(searchParams.get('lat') || '');
+    const lng = parseFloat(searchParams.get('lng') || '');
     const distance = parseFloat(searchParams.get('distance') || '10');
     const types = searchParams.get('types')?.split(',') || ['hospital', 'clinic', 'lab', 'pharmacy'];
 
-    if (!lat || !lng) {
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
       return NextResponse.json(
         { error: 'يرجى تحديد الموقع' },
         { status: 400 }
       );
     }
+
+    const safeDistance = Number.isFinite(distance) ? Math.min(Math.max(distance, 0.25), 100) : 10;
+    const bbox = getBoundingBox(lat, lng, safeDistance);
 
     const results: any[] = [];
 
@@ -42,8 +60,8 @@ export async function GET(request: NextRequest) {
     if (types.includes('hospital')) {
       const hospitals = await prisma.hospital.findMany({
         where: {
-          lat: { not: null },
-          lng: { not: null },
+          lat: { not: null, gte: bbox.minLat, lte: bbox.maxLat },
+          lng: { not: null, gte: bbox.minLng, lte: bbox.maxLng },
         },
         select: {
           id: true,
@@ -60,7 +78,7 @@ export async function GET(request: NextRequest) {
       hospitals.forEach((h) => {
         if (h.lat && h.lng) {
           const dist = calculateDistance(lat, lng, h.lat, h.lng);
-          if (dist <= distance) {
+          if (dist <= safeDistance) {
             results.push({
               id: `hospital-${h.id}`,
               name: h.nameAr,
@@ -82,8 +100,8 @@ export async function GET(request: NextRequest) {
     if (types.includes('clinic')) {
       const clinics = await prisma.clinic.findMany({
         where: {
-          lat: { not: null },
-          lng: { not: null },
+          lat: { not: null, gte: bbox.minLat, lte: bbox.maxLat },
+          lng: { not: null, gte: bbox.minLng, lte: bbox.maxLng },
         },
         select: {
           id: true,
@@ -100,7 +118,7 @@ export async function GET(request: NextRequest) {
       clinics.forEach((c) => {
         if (c.lat && c.lng) {
           const dist = calculateDistance(lat, lng, c.lat, c.lng);
-          if (dist <= distance) {
+          if (dist <= safeDistance) {
             results.push({
               id: `clinic-${c.id}`,
               name: c.nameAr,
@@ -122,8 +140,8 @@ export async function GET(request: NextRequest) {
     if (types.includes('lab')) {
       const labs = await prisma.lab.findMany({
         where: {
-          lat: { not: null },
-          lng: { not: null },
+          lat: { not: null, gte: bbox.minLat, lte: bbox.maxLat },
+          lng: { not: null, gte: bbox.minLng, lte: bbox.maxLng },
         },
         select: {
           id: true,
@@ -140,7 +158,7 @@ export async function GET(request: NextRequest) {
       labs.forEach((l) => {
         if (l.lat && l.lng) {
           const dist = calculateDistance(lat, lng, l.lat, l.lng);
-          if (dist <= distance) {
+          if (dist <= safeDistance) {
             results.push({
               id: `lab-${l.id}`,
               name: l.nameAr,
@@ -162,8 +180,8 @@ export async function GET(request: NextRequest) {
     if (types.includes('pharmacy')) {
       const pharmacies = await prisma.pharmacy.findMany({
         where: {
-          lat: { not: null },
-          lng: { not: null },
+          lat: { not: null, gte: bbox.minLat, lte: bbox.maxLat },
+          lng: { not: null, gte: bbox.minLng, lte: bbox.maxLng },
         },
         select: {
           id: true,
@@ -181,7 +199,7 @@ export async function GET(request: NextRequest) {
       pharmacies.forEach((p) => {
         if (p.lat && p.lng) {
           const dist = calculateDistance(lat, lng, p.lat, p.lng);
-          if (dist <= distance) {
+          if (dist <= safeDistance) {
             results.push({
               id: `pharmacy-${p.id}`,
               name: p.nameAr,
@@ -200,6 +218,99 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    if (types.includes('doctor')) {
+      const doctors = await prisma.staff.findMany({
+        where: {
+          isActive: true,
+          clinicStaff: {
+            some: {
+              clinic: {
+                lat: { not: null, gte: bbox.minLat, lte: bbox.maxLat },
+                lng: { not: null, gte: bbox.minLng, lte: bbox.maxLng },
+              },
+            },
+          },
+        },
+        select: {
+          id: true,
+          nameAr: true,
+          slug: true,
+          clinicStaff: {
+            take: 1,
+            select: {
+              clinic: {
+                select: {
+                  lat: true,
+                  lng: true,
+                  addressAr: true,
+                },
+              },
+            },
+          },
+        },
+        take: 600,
+      });
+
+      doctors.forEach((d) => {
+        const clinic = d.clinicStaff[0]?.clinic;
+        if (clinic?.lat && clinic?.lng) {
+          const dist = calculateDistance(lat, lng, clinic.lat, clinic.lng);
+          if (dist <= safeDistance) {
+            results.push({
+              id: `doctor-${d.id}`,
+              name: d.nameAr,
+              type: 'doctor',
+              lat: clinic.lat,
+              lng: clinic.lng,
+              address: clinic.addressAr,
+              slug: d.slug,
+              distance: dist,
+            });
+          }
+        }
+      });
+    }
+
+    if (types.includes('ambulance')) {
+      const hospitalsWithAmbulance = await prisma.hospital.findMany({
+        where: {
+          hasAmbulance: true,
+          lat: { not: null, gte: bbox.minLat, lte: bbox.maxLat },
+          lng: { not: null, gte: bbox.minLng, lte: bbox.maxLng },
+        },
+        select: {
+          id: true,
+          nameAr: true,
+          slug: true,
+          address: true,
+          lat: true,
+          lng: true,
+          phone: true,
+        },
+        take: 300,
+      });
+
+      hospitalsWithAmbulance.forEach((h) => {
+        if (h.lat && h.lng) {
+          const dist = calculateDistance(lat, lng, h.lat, h.lng);
+          if (dist <= safeDistance) {
+            results.push({
+              id: `ambulance-${h.id}`,
+              name: `إسعاف - ${h.nameAr}`,
+              type: 'ambulance',
+              lat: h.lat,
+              lng: h.lng,
+              address: h.address,
+              slug: h.slug,
+              phone: h.phone,
+              distance: dist,
+              isOpen: true,
+            });
+          }
+        }
+      });
+    }
+
     // Sort by distance
     results.sort((a, b) => a.distance - b.distance);
 
@@ -207,7 +318,7 @@ export async function GET(request: NextRequest) {
       results,
       total: results.length,
       center: { lat, lng },
-      radius: distance,
+      radius: safeDistance,
     });
   } catch (error) {
     console.error('Nearby search error:', error);

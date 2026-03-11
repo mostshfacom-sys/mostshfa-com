@@ -3,6 +3,16 @@
 import { useState, useEffect } from 'react';
 import { MapMarker, EntityType, MAP_COLORS } from './MapContainer';
 
+type CachedLocation = {
+  lat: number;
+  lng: number;
+  accuracy?: number;
+  timestamp: number;
+};
+
+const LOCATION_CACHE_KEY = 'mostshfa:lastLocation';
+const LOCATION_CACHE_MAX_AGE_MS = 1000 * 60 * 60 * 6;
+
 interface NearbySearchProps {
   onSearch: (results: MapMarker[]) => void;
   onLocationChange: (location: { lat: number; lng: number } | null) => void;
@@ -25,6 +35,9 @@ export function NearbySearch({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationAccuracy, setLocationAccuracy] = useState<number | null>(null);
+  const [locationUpdatedAt, setLocationUpdatedAt] = useState<number | null>(null);
+  const [cachedLocation, setCachedLocation] = useState<CachedLocation | null>(null);
   const [selectedTypes, setSelectedTypes] = useState<EntityType[]>(entityTypes);
   const [distance, setDistance] = useState(maxDistance);
   const [searchResults, setSearchResults] = useState<MapMarker[]>([]);
@@ -32,10 +45,36 @@ export function NearbySearch({
   useEffect(() => {
     if (location) {
       setUserLocation(location);
+      setLocationAccuracy(null);
+      setLocationUpdatedAt(Date.now());
     } else if (location === null) {
       setUserLocation(null);
+      setLocationAccuracy(null);
+      setLocationUpdatedAt(null);
     }
   }, [location]);
+
+  useEffect(() => {
+    try {
+      if (typeof window === 'undefined') return;
+      const raw = window.localStorage.getItem(LOCATION_CACHE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as CachedLocation;
+      if (!parsed || !Number.isFinite(parsed.lat) || !Number.isFinite(parsed.lng) || !Number.isFinite(parsed.timestamp)) {
+        return;
+      }
+      if (Date.now() - parsed.timestamp > LOCATION_CACHE_MAX_AGE_MS) return;
+      setCachedLocation(parsed);
+      if (!location && !userLocation) {
+        setUserLocation({ lat: parsed.lat, lng: parsed.lng });
+        setLocationAccuracy(Number.isFinite(parsed.accuracy ?? NaN) ? Number(parsed.accuracy) : null);
+        setLocationUpdatedAt(parsed.timestamp);
+        onLocationChange({ lat: parsed.lat, lng: parsed.lng });
+      }
+    } catch {
+      return;
+    }
+  }, []);
 
   const typeLabels: Record<EntityType, { label: string; icon: string }> = {
     hospital: { label: 'مستشفيات', icon: '🏥' },
@@ -73,6 +112,20 @@ export function NearbySearch({
           lng: position.coords.longitude,
         };
         setUserLocation(location);
+        setLocationAccuracy(Number.isFinite(position.coords.accuracy) ? position.coords.accuracy : null);
+        setLocationUpdatedAt(Date.now());
+        const nextCached: CachedLocation = {
+          lat: location.lat,
+          lng: location.lng,
+          accuracy: Number.isFinite(position.coords.accuracy) ? position.coords.accuracy : undefined,
+          timestamp: Date.now(),
+        };
+        setCachedLocation(nextCached);
+        try {
+          window.localStorage.setItem(LOCATION_CACHE_KEY, JSON.stringify(nextCached));
+        } catch {
+          // ignore
+        }
         onLocationChange(location);
         setLoading(false);
         searchNearby(location);
@@ -95,8 +148,8 @@ export function NearbySearch({
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
+        timeout: 12000,
+        maximumAge: 1000 * 30,
       }
     );
   };
@@ -129,6 +182,15 @@ export function NearbySearch({
     }
   };
 
+  useEffect(() => {
+    if (!userLocation) return;
+    if (selectedTypes.length === 0) return;
+    const t = window.setTimeout(() => {
+      searchNearby(userLocation);
+    }, 450);
+    return () => window.clearTimeout(t);
+  }, [distance, selectedTypes.join(','), userLocation?.lat, userLocation?.lng]);
+
   const toggleType = (type: EntityType) => {
     setSelectedTypes((prev) =>
       prev.includes(type)
@@ -154,9 +216,19 @@ export function NearbySearch({
       {/* Location Status */}
       <div className="mb-4">
         {userLocation ? (
-          <div className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-2 rounded-lg">
+          <div className="flex flex-wrap items-center gap-2 text-green-600 bg-green-50 px-3 py-2 rounded-lg">
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
             <span className="text-sm">تم تحديد موقعك</span>
+            {locationAccuracy !== null && (
+              <span className="text-xs text-green-700/90" dir="ltr">
+                دقة: {Math.round(locationAccuracy)}m
+              </span>
+            )}
+            {locationUpdatedAt !== null && (
+              <span className="text-xs text-green-700/80" dir="ltr">
+                {new Date(locationUpdatedAt).toLocaleTimeString('ar-EG')}
+              </span>
+            )}
             <button
               onClick={getCurrentLocation}
               className="mr-auto text-xs text-green-700 hover:underline"
@@ -165,22 +237,40 @@ export function NearbySearch({
             </button>
           </div>
         ) : (
-          <button
-            onClick={getCurrentLocation}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
-          >
-            {loading ? (
-              <>
-                <span className="animate-spin">⏳</span>
-                جاري تحديد الموقع...
-              </>
-            ) : (
-              <>
-                📍 تحديد موقعي الحالي
-              </>
+          <div className="space-y-2">
+            {cachedLocation && (
+              <button
+                onClick={() => {
+                  const next = { lat: cachedLocation.lat, lng: cachedLocation.lng };
+                  setUserLocation(next);
+                  setLocationAccuracy(Number.isFinite(cachedLocation.accuracy ?? NaN) ? Number(cachedLocation.accuracy) : null);
+                  setLocationUpdatedAt(cachedLocation.timestamp);
+                  onLocationChange(next);
+                  searchNearby(next);
+                }}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-2 bg-emerald-500 text-white py-3 px-4 rounded-lg hover:bg-emerald-600 transition-colors disabled:opacity-50"
+                type="button"
+              >
+                📌 استخدام آخر موقع
+              </button>
             )}
-          </button>
+            <button
+              onClick={getCurrentLocation}
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2 bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+              type="button"
+            >
+              {loading ? (
+                <>
+                  <span className="animate-spin">⏳</span>
+                  جاري تحديد الموقع...
+                </>
+              ) : (
+                <>📍 تحديد موقعي الحالي</>
+              )}
+            </button>
+          </div>
         )}
       </div>
 
@@ -235,6 +325,22 @@ export function NearbySearch({
         <label className="block text-sm font-medium text-gray-700 mb-2">
           المسافة: {distance} كم
         </label>
+        <div className="flex flex-wrap gap-2 mb-2">
+          {[2, 5, 10, 25, 50].map((km) => (
+            <button
+              key={km}
+              onClick={() => setDistance(km)}
+              type="button"
+              className={`px-2.5 py-1 rounded-full text-xs font-bold border transition-colors ${
+                distance === km
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+              }`}
+            >
+              {km} كم
+            </button>
+          ))}
+        </div>
         <input
           type="range"
           min="1"
