@@ -25,6 +25,8 @@ export function ClinicLocationMap({ clinic }: ClinicLocationMapProps) {
 
   const lat = clinic.lat;
   const lng = clinic.lng;
+  const name = clinic.nameAr;
+  const address = clinic.addressAr?.replace(//g, '').trim();
 
   if (!mounted) {
     return (
@@ -37,14 +39,20 @@ export function ClinicLocationMap({ clinic }: ClinicLocationMapProps) {
     );
   }
 
-  // If we have coordinates, use Google Maps Embed for better street detail
+  // Generate the best possible search query for Google Maps
+  let searchQuery = '';
   if (lat && lng) {
-    const q = `${lat},${lng}`;
-    const embedUrl = `https://www.google.com/maps/embed/v1/place?key=REPLACE_WITH_YOUR_FREE_GOOGLE_MAPS_EMBED_API_KEY&q=${q}&zoom=16`;
-    
-    // Note: Google Maps Embed API is free but technically requires an API Key. 
-    // However, Google allows a simpler "View" mode via search query which is public.
-    const publicEmbedUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
+    searchQuery = `${lat},${lng}`;
+  } else if (name && address) {
+    // If no lat/lng, try searching by name and address
+    searchQuery = `${name} ${address}`;
+  } else if (address) {
+    searchQuery = address;
+  }
+
+  if (searchQuery) {
+    // Using the more reliable "search" endpoint for public embed
+    const publicEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(searchQuery)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
 
     return (
       <div className="h-96 rounded-xl overflow-hidden shadow-lg border-2 border-neutral-200 dark:border-neutral-700 relative z-0">
@@ -56,12 +64,12 @@ export function ClinicLocationMap({ clinic }: ClinicLocationMapProps) {
           allowFullScreen
           referrerPolicy="no-referrer-when-downgrade"
           src={publicEmbedUrl}
+          title={name}
         />
       </div>
     );
   }
 
-  // Fallback if no coordinates (keep existing Cairo default or message)
   return (
     <div className="h-96 bg-neutral-100 dark:bg-neutral-800 rounded-xl flex items-center justify-center">
       <div className="text-center">
