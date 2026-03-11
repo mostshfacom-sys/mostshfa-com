@@ -45,6 +45,7 @@ export function InteractiveMap({
   const [filterType, setFilterType] = useState<EntityType | 'all'>('all');
   const [isPickingLocation, setIsPickingLocation] = useState(false);
   const [mapBounds, setMapBounds] = useState<{ minLat: number; maxLat: number; minLng: number; maxLng: number } | null>(null);
+  const [focusOnUserLocationToken, setFocusOnUserLocationToken] = useState(0);
 
   // Load initial markers from API
   useEffect(() => {
@@ -103,12 +104,16 @@ export function InteractiveMap({
 
   const handleSearch = (results: MapMarker[]) => {
     setMarkers(results);
+    if (userLocation) {
+      setFocusOnUserLocationToken((t) => t + 1);
+    }
   };
 
   const handleLocationChange = (location: { lat: number; lng: number } | null) => {
     setUserLocation(location);
     if (location) {
       setIsPickingLocation(false);
+      setFocusOnUserLocationToken((t) => t + 1);
     }
   };
 
@@ -124,6 +129,7 @@ export function InteractiveMap({
   const handleMapClick = useCallback((location: { lat: number; lng: number }) => {
     setUserLocation(location);
     setIsPickingLocation(false);
+    setFocusOnUserLocationToken((t) => t + 1);
   }, []);
 
   const filteredMarkers = filterType === 'all' 
@@ -251,6 +257,7 @@ export function InteractiveMap({
             <MapContainer
               markers={filteredMarkers}
               userLocation={userLocation}
+              focusOnUserLocationToken={focusOnUserLocationToken}
               onMarkerClick={handleMarkerClick}
               showDirections={showDirections}
               height={mapHeight}

@@ -44,6 +44,7 @@ interface MapContainerProps {
   onMarkerClick?: (marker: MapMarker) => void;
   showDirections?: boolean;
   userLocation?: { lat: number; lng: number } | null;
+  focusOnUserLocationToken?: number;
   enableLocationPick?: boolean;
   onMapClick?: (location: { lat: number; lng: number }) => void;
   onBoundsChange?: (bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number }) => void;
@@ -58,6 +59,7 @@ export function MapContainer({
   onMarkerClick,
   showDirections = false,
   userLocation,
+  focusOnUserLocationToken,
   enableLocationPick = false,
   onMapClick,
   onBoundsChange,
@@ -252,6 +254,16 @@ export function MapContainer({
     if (!mapInstanceRef.current || markers.length > 0) return;
     mapInstanceRef.current.setView([mapCenter.lat, mapCenter.lng], zoom, { animate: false });
   }, [mapCenter.lat, mapCenter.lng, zoom, markers.length]);
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !userLocation) return;
+    if (typeof focusOnUserLocationToken !== 'number') return;
+
+    const currentZoom = map.getZoom?.() ?? zoom;
+    const nextZoom = Math.max(currentZoom, 13);
+    map.setView([userLocation.lat, userLocation.lng], nextZoom, { animate: true });
+  }, [focusOnUserLocationToken, userLocation?.lat, userLocation?.lng, zoom]);
 
   useEffect(() => {
     if (!L || !mapInstanceRef.current || !markersLayerRef.current) return;
