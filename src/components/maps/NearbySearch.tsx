@@ -65,12 +65,6 @@ export function NearbySearch({
       }
       if (Date.now() - parsed.timestamp > LOCATION_CACHE_MAX_AGE_MS) return;
       setCachedLocation(parsed);
-      if (!location && !userLocation) {
-        setUserLocation({ lat: parsed.lat, lng: parsed.lng });
-        setLocationAccuracy(Number.isFinite(parsed.accuracy ?? NaN) ? Number(parsed.accuracy) : null);
-        setLocationUpdatedAt(parsed.timestamp);
-        onLocationChange({ lat: parsed.lat, lng: parsed.lng });
-      }
     } catch {
       return;
     }
