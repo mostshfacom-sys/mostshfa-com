@@ -44,8 +44,8 @@ interface MapContainerProps {
 
 export function MapContainer({
   markers,
-  center = { lat: 30.0444, lng: 31.2357 }, // Cairo default
-  zoom = 12,
+  center = { lat: 26.8206, lng: 30.8025 }, // Egypt center
+  zoom = 6, // Zoom level to show all of Egypt
   onMarkerClick,
   showDirections = false,
   userLocation,
