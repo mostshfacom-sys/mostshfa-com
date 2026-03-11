@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const types = searchParams.get('types')?.split(',') || ['hospital', 'clinic', 'lab', 'pharmacy'];
-    const limit = parseInt(searchParams.get('limit') || '100');
+    const limit = parseInt(searchParams.get('limit') || '2000');
 
     const markers: Marker[] = [];
 
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
           id: true, nameAr: true, slug: true, address: true,
           lat: true, lng: true, ratingAvg: true, phone: true,
         },
-        take: limit,
+        take: 100, // Hospitals are fewer, 100 is usually enough
       });
       hospitals.forEach((h) => {
         if (h.lat && h.lng) {
@@ -44,7 +44,15 @@ export async function GET(request: NextRequest) {
 
     if (types.includes('clinic')) {
       const clinics = await prisma.clinic.findMany({
-        where: { lat: { not: null }, lng: { not: null } },
+        where: { 
+          lat: { not: null }, 
+          lng: { not: null },
+          // Ensure we don't fetch zeros if that's how missing coords are stored
+          NOT: [
+            { lat: 0 },
+            { lng: 0 }
+          ]
+        },
         select: {
           id: true,
           nameAr: true,
@@ -55,7 +63,7 @@ export async function GET(request: NextRequest) {
           ratingAvg: true,
           phone: true,
         },
-        take: limit,
+        take: limit, // Use the provided or default 2000 limit
       });
       clinics.forEach((c) => {
         if (c.lat && c.lng) {
