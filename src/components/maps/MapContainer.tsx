@@ -13,7 +13,7 @@ const escapeHtml = (value: string) =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 
-export type EntityType = 'hospital' | 'clinic' | 'lab' | 'pharmacy' | 'ambulance';
+export type EntityType = 'hospital' | 'clinic' | 'lab' | 'pharmacy' | 'ambulance' | 'doctor';
 
 export interface MapMarker {
   id: string;
@@ -73,6 +73,7 @@ export function MapContainer({
       lab: '🔬',
       pharmacy: '💊',
       ambulance: '🚑',
+      doctor: '👨‍⚕️',
     };
     return icons[type] || '📍';
   };
@@ -84,6 +85,7 @@ export function MapContainer({
       lab: 'bg-purple-500',
       pharmacy: 'bg-green-500',
       ambulance: 'bg-red-600',
+      doctor: 'bg-teal-500',
     };
     return colors[type] || 'bg-gray-500';
   };
@@ -218,6 +220,7 @@ export function MapContainer({
       lab: '#a855f7',
       pharmacy: '#22c55e',
       ambulance: '#dc2626',
+      doctor: '#14b8a6',
     };
 
     markers.forEach((marker) => {
@@ -328,6 +331,12 @@ export function MapContainer({
             </div>
             <div className="flex items-center gap-1 text-gray-700">
               <span>💊</span><span>صيدلية</span>
+            </div>
+            <div className="flex items-center gap-1 text-gray-700">
+              <span>👨‍⚕️</span><span>طبيب</span>
+            </div>
+            <div className="flex items-center gap-1 text-gray-700">
+              <span>🚑</span><span>إسعاف</span>
             </div>
           </div>
         </div>

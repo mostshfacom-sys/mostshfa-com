@@ -5,7 +5,7 @@ import { MapContainer, MapMarker, EntityType } from './MapContainer';
 import { NearbySearch } from './NearbySearch';
 import { DirectionsPanel } from './DirectionsPanel';
 
-const DEFAULT_ENTITY_TYPES: EntityType[] = ['hospital', 'clinic', 'lab', 'pharmacy'];
+const DEFAULT_ENTITY_TYPES: EntityType[] = ['hospital', 'clinic', 'lab', 'pharmacy', 'doctor', 'ambulance'];
 
 interface InteractiveMapProps {
   initialMarkers?: MapMarker[];
@@ -137,6 +137,7 @@ export function InteractiveMap({
     clinic: { label: 'عيادات', icon: '🏨', color: 'bg-[#3b82f6]', textColor: 'text-[#3b82f6]', borderColor: 'border-[#3b82f6]' },
     lab: { label: 'معامل', icon: '🔬', color: 'bg-[#a855f7]', textColor: 'text-[#a855f7]', borderColor: 'border-[#a855f7]' },
     pharmacy: { label: 'صيدليات', icon: '💊', color: 'bg-[#22c55e]', textColor: 'text-[#22c55e]', borderColor: 'border-[#22c55e]' },
+    doctor: { label: 'أطباء', icon: '👨‍⚕️', color: 'bg-[#14b8a6]', textColor: 'text-[#14b8a6]', borderColor: 'border-[#14b8a6]' },
     ambulance: { label: 'إسعاف', icon: '🚑', color: 'bg-[#dc2626]', textColor: 'text-[#dc2626]', borderColor: 'border-[#dc2626]' },
   };
 

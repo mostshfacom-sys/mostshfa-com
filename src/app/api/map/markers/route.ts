@@ -133,7 +133,74 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    if (types.includes('doctor')) {
+      const doctors = await prisma.staff.findMany({
+        where: {
+          isActive: true,
+          // Since Staff doesn't have lat/lng directly, we might need to link through clinics or hospitals
+          // For now, let's look for staff with bio/image that might be relevant
+        },
+        select: {
+          id: true,
+          nameAr: true,
+          slug: true,
+          title: true,
+          image: true,
+          specialty: {
+            select: {
+              nameAr: true,
+            },
+          },
+          clinicStaff: {
+            take: 1,
+            select: {
+              clinic: {
+                select: {
+                  lat: true,
+                  lng: true,
+                  addressAr: true,
+                },
+              },
+            },
+          },
+        },
+        take: limit,
+      });
+
+      doctors.forEach((d) => {
+        const clinic = d.clinicStaff[0]?.clinic;
+        if (clinic?.lat && clinic?.lng) {
+          markers.push({
+            id: `doctor-${d.id}`,
+            name: d.nameAr,
+            type: 'doctor',
+            lat: clinic.lat,
+            lng: clinic.lng,
+            address: clinic.addressAr || '',
+            slug: d.slug,
+          });
+        }
+      });
+    }
+
     if (types.includes('ambulance')) {
+      // Some hospitals have ambulance services
+      const hospitalsWithAmbulance = await prisma.hospital.findMany({
+        where: {
+          ...viewportFilter,
+          hasAmbulance: true,
+        },
+        select: {
+          id: true,
+          nameAr: true,
+          slug: true,
+          address: true,
+          lat: true,
+          lng: true,
+          phone: true,
+        },
+        take: 50,
+      });
       // Add mock ambulance locations (major hospitals often serve as ambulance points)
       // Comprehensive list covering major governorates
       const ambulancePoints = [
