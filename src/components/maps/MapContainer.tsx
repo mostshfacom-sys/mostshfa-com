@@ -80,12 +80,12 @@ export function MapContainer({
 
   const getMarkerColor = (type: EntityType): string => {
     const colors: Record<EntityType, string> = {
-      hospital: 'bg-red-500',
-      clinic: 'bg-blue-500',
-      lab: 'bg-purple-500',
-      pharmacy: 'bg-green-500',
-      ambulance: 'bg-red-600',
-      doctor: 'bg-teal-500',
+      hospital: 'bg-[#ef4444]',
+      clinic: 'bg-[#3b82f6]',
+      lab: 'bg-[#a855f7]',
+      pharmacy: 'bg-[#22c55e]',
+      ambulance: 'bg-[#b91c1c]',
+      doctor: 'bg-[#0d9488]',
     };
     return colors[type] || 'bg-gray-500';
   };
@@ -219,8 +219,8 @@ export function MapContainer({
       clinic: '#3b82f6',
       lab: '#a855f7',
       pharmacy: '#22c55e',
-      ambulance: '#dc2626',
-      doctor: '#14b8a6',
+      ambulance: '#b91c1c',
+      doctor: '#0d9488',
     };
 
     markers.forEach((marker) => {

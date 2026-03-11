@@ -137,8 +137,8 @@ export function InteractiveMap({
     clinic: { label: 'عيادات', icon: '🏨', color: 'bg-[#3b82f6]', textColor: 'text-[#3b82f6]', borderColor: 'border-[#3b82f6]' },
     lab: { label: 'معامل', icon: '🔬', color: 'bg-[#a855f7]', textColor: 'text-[#a855f7]', borderColor: 'border-[#a855f7]' },
     pharmacy: { label: 'صيدليات', icon: '💊', color: 'bg-[#22c55e]', textColor: 'text-[#22c55e]', borderColor: 'border-[#22c55e]' },
-    doctor: { label: 'أطباء', icon: '👨‍⚕️', color: 'bg-[#14b8a6]', textColor: 'text-[#14b8a6]', borderColor: 'border-[#14b8a6]' },
-    ambulance: { label: 'إسعاف', icon: '🚑', color: 'bg-[#dc2626]', textColor: 'text-[#dc2626]', borderColor: 'border-[#dc2626]' },
+    doctor: { label: 'أطباء', icon: '👨‍⚕️', color: 'bg-[#0d9488]', textColor: 'text-[#0d9488]', borderColor: 'border-[#0d9488]' },
+    ambulance: { label: 'إسعاف', icon: '🚑', color: 'bg-[#b91c1c]', textColor: 'text-[#b91c1c]', borderColor: 'border-[#b91c1c]' },
   };
 
   useEffect(() => {
