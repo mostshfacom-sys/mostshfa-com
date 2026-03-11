@@ -25,7 +25,7 @@ export default function MapPage() {
         <InteractiveMap
           showSearch={true}
           showDirections={true}
-          entityTypes={['hospital', 'clinic', 'lab', 'pharmacy']}
+          entityTypes={['hospital', 'clinic', 'lab', 'pharmacy', 'doctor', 'ambulance']}
         />
 
         {/* Features Section */}

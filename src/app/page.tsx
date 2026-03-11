@@ -790,7 +790,7 @@ export default async function HomePage() {
             quickFilters={quickFilters}
             resultsCount={totalResults}
             showMapButton
-            mapEntityTypes={['hospital', 'clinic', 'lab', 'pharmacy']}
+            mapEntityTypes={['hospital', 'clinic', 'lab', 'pharmacy', 'doctor', 'ambulance']}
             mapTitle="خريطة الخدمات الصحية"
             mapSubtitle="استعرض مواقع المستشفيات والعيادات والمعامل والصيدليات القريبة"
             searchPlaceholder="ابحث عن مستشفى، عيادة، طبيب، أو تخصص..."

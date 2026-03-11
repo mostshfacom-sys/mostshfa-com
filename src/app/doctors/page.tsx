@@ -115,7 +115,7 @@ export default async function DoctorsPage({ searchParams }: PageProps) {
           quickFilters={quickFilters}
           resultsCount={data.total}
           showMapButton
-          mapEntityTypes={['hospital', 'clinic']}
+          mapEntityTypes={['hospital', 'clinic', 'doctor', 'ambulance']}
           mapTitle="خريطة الأطباء"
           mapSubtitle="استعرض أماكن تقديم الخدمة للأطباء"
           searchPlaceholder="ابحث عن طبيب أو تخصص..."
