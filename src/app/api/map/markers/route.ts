@@ -46,17 +46,29 @@ export async function GET(request: NextRequest) {
       const clinics = await prisma.clinic.findMany({
         where: { lat: { not: null }, lng: { not: null } },
         select: {
-          id: true, nameAr: true, slug: true, addressAr: true,
-          lat: true, lng: true, ratingAvg: true, phone: true,
+          id: true,
+          nameAr: true,
+          slug: true,
+          addressAr: true,
+          lat: true,
+          lng: true,
+          ratingAvg: true,
+          phone: true,
         },
         take: limit,
       });
       clinics.forEach((c) => {
         if (c.lat && c.lng) {
           markers.push({
-            id: `clinic-${c.id}`, name: c.nameAr, type: 'clinic',
-            lat: c.lat, lng: c.lng, address: c.addressAr,
-            rating: c.ratingAvg, slug: c.slug, phone: c.phone,
+            id: `clinic-${c.id}`,
+            name: c.nameAr,
+            type: 'clinic',
+            lat: c.lat,
+            lng: c.lng,
+            address: c.addressAr,
+            rating: c.ratingAvg,
+            slug: c.slug,
+            phone: c.phone,
           });
         }
       });
