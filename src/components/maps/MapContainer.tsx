@@ -159,7 +159,50 @@ export function MapContainer({
       zoomToBoundsOnClick: true,
       spiderfyOnMaxZoom: true,
       chunkedLoading: true,
-      maxClusterRadius: 50
+      maxClusterRadius: 50,
+      iconCreateFunction: (cluster: any) => {
+        const children = cluster.getAllChildMarkers?.() ?? [];
+        const counts: Record<string, number> = {};
+        for (const child of children) {
+          const type = (child as any).__entityType as EntityType | undefined;
+          if (!type) continue;
+          counts[type] = (counts[type] ?? 0) + 1;
+        }
+
+        let dominantType: EntityType | null = null;
+        let dominantCount = 0;
+        for (const [type, count] of Object.entries(counts)) {
+          if (count > dominantCount) {
+            dominantCount = count;
+            dominantType = type as EntityType;
+          }
+        }
+
+        const color = dominantType ? MAP_COLORS[dominantType].hex : '#2563eb';
+        const size = 42;
+        const count = cluster.getChildCount?.() ?? 0;
+
+        return L.divIcon({
+          html: `
+            <div style="
+              width:${size}px;
+              height:${size}px;
+              border-radius:9999px;
+              background:${color};
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              color:#fff;
+              font-weight:800;
+              font-size:14px;
+              border:2px solid #fff;
+              box-shadow:0 10px 22px rgba(0,0,0,0.25);
+            ">${count}</div>
+          `,
+          className: 'custom-map-cluster',
+          iconSize: [size, size],
+        });
+      },
     }).addTo(map);
 
     const handleMoveEnd = () => {
@@ -235,6 +278,7 @@ export function MapContainer({
       });
 
       const leafletMarker = L.marker(position, { icon });
+      (leafletMarker as any).__entityType = marker.type;
       const popupHtml = `
         <div style="min-width:200px">
           <h3 style="font-weight:700;font-size:1rem;margin:0 0 6px;">${escapeHtml(marker.name)}</h3>
