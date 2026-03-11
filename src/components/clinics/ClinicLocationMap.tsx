@@ -51,8 +51,8 @@ export function ClinicLocationMap({ clinic }: ClinicLocationMapProps) {
   }
 
   if (searchQuery) {
-    // Using the more reliable "search" endpoint for public embed
-    const publicEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(searchQuery)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+    // Using the legacy but most reliable public embed format for markers and info
+    const publicEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(searchQuery)}&t=&z=16&ie=UTF8&iwloc=B&output=embed`;
 
     return (
       <div className="h-96 rounded-xl overflow-hidden shadow-lg border-2 border-neutral-200 dark:border-neutral-700 relative z-0">
