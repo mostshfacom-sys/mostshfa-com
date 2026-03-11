@@ -45,7 +45,11 @@ export function ClinicLocationMap({ clinic }: ClinicLocationMapProps) {
 
   if (searchQuery && (lat || address)) {
     // This format is the most robust for public embeds without an API key
-    const publicEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(searchQuery)}&output=embed&iwloc=addr`;
+    // Using google.com/maps/search/ instead of google.com/maps?q=
+    const publicEmbedUrl = `https://www.google.com/maps/embed/v1/search?key=REPLACE_WITH_YOUR_FREE_GOOGLE_MAPS_EMBED_API_KEY&q=${encodeURIComponent(searchQuery)}&zoom=16`;
+    
+    // Fallback to a completely public search URL if no API key is provided
+    const noKeyEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(searchQuery)}&output=embed&iwloc=addr`;
 
     return (
       <div className="h-96 rounded-xl overflow-hidden shadow-lg border-2 border-neutral-200 dark:border-neutral-700 relative z-0">
@@ -56,7 +60,7 @@ export function ClinicLocationMap({ clinic }: ClinicLocationMapProps) {
           loading="lazy"
           allowFullScreen
           referrerPolicy="no-referrer-when-downgrade"
-          src={publicEmbedUrl}
+          src={noKeyEmbedUrl}
           title={name}
         />
       </div>
