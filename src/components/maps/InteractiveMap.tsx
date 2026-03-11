@@ -39,6 +39,7 @@ export function InteractiveMap({
   const [selectedMarker, setSelectedMarker] = useState<MapMarker | null>(null);
   const [showDirectionsPanel, setShowDirectionsPanel] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [view, setView] = useState<'map' | 'list'>('map');
   const [mapHeight, setMapHeight] = useState('360px');
   const [filterType, setFilterType] = useState<EntityType | 'all'>('all');
@@ -50,7 +51,7 @@ export function InteractiveMap({
     let isMounted = true;
 
     const loadMarkers = async () => {
-      setLoading(true);
+      if (isInitialLoad) setLoading(true);
       try {
         const params = new URLSearchParams();
         if (resolvedEntityTypes.length > 0) {
@@ -70,6 +71,7 @@ export function InteractiveMap({
           const data = await response.json();
           if (isMounted) {
             setMarkers(data.markers || []);
+            setIsInitialLoad(false);
           }
         }
       } catch (error) {
@@ -337,12 +339,22 @@ export function InteractiveMap({
         </div>
       )}
 
-      {/* Loading Overlay */}
-      {loading && (
-        <div className="fixed inset-0 bg-white/80 z-50 flex items-center justify-center">
+      {/* Loading Overlay - Only on initial load to prevent flashing */}
+      {loading && isInitialLoad && (
+        <div className="fixed inset-0 bg-white/80 z-50 flex items-center justify-center animate-fadeIn">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-gray-600">جاري التحميل...</p>
+            <p className="mt-4 text-gray-600 font-medium">جاري تجهيز الخريطة...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Subtle loader for background updates */}
+      {loading && !isInitialLoad && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[400] pointer-events-none">
+          <div className="bg-white/90 backdrop-blur-sm shadow-lg border border-primary/20 rounded-full px-4 py-1.5 flex items-center gap-2">
+            <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-primary"></div>
+            <span className="text-xs font-medium text-gray-700">جاري التحديث...</span>
           </div>
         </div>
       )}
