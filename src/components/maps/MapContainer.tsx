@@ -64,6 +64,7 @@ export function MapContainer({
   const mapInstanceRef = useRef<any>(null);
   const markersLayerRef = useRef<any>(null);
   const userMarkerRef = useRef<any>(null);
+  const mapBoundsSetRef = useRef<boolean>(false);
 
   const getMarkerIcon = (type: EntityType): string => {
     const icons: Record<EntityType, string> = {
@@ -269,9 +270,14 @@ export function MapContainer({
 
     const map = mapInstanceRef.current;
     if (points.length > 0) {
-      const bounds = L.latLngBounds(points);
-      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13, animate: false });
-    } else {
+      // Don't auto-fit bounds on every update to prevent rubber-banding
+      // Only fit bounds on first load or when user explicitly requests it
+      if (!mapBoundsSetRef.current) {
+        const bounds = L.latLngBounds(points);
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13, animate: false });
+        mapBoundsSetRef.current = true;
+      }
+    } else if (!mapBoundsSetRef.current) {
       map.setView([mapCenter.lat, mapCenter.lng], zoom, { animate: false });
     }
 

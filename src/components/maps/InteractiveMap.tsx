@@ -132,12 +132,12 @@ export function InteractiveMap({
 
   const getTypeCount = (type: EntityType) => markers.filter(m => m.type === type).length;
 
-  const typeLabels: Record<EntityType, { label: string; icon: string; color: string }> = {
-    hospital: { label: 'مستشفيات', icon: '🏥', color: 'bg-red-500' },
-    clinic: { label: 'عيادات', icon: '🏨', color: 'bg-blue-500' },
-    lab: { label: 'معامل', icon: '🔬', color: 'bg-purple-500' },
-    pharmacy: { label: 'صيدليات', icon: '💊', color: 'bg-green-500' },
-    ambulance: { label: 'إسعاف', icon: '🚑', color: 'bg-red-600' },
+  const typeLabels: Record<EntityType, { label: string; icon: string; color: string; textColor: string; borderColor: string }> = {
+    hospital: { label: 'مستشفيات', icon: '🏥', color: 'bg-[#ef4444]', textColor: 'text-[#ef4444]', borderColor: 'border-[#ef4444]' },
+    clinic: { label: 'عيادات', icon: '🏨', color: 'bg-[#3b82f6]', textColor: 'text-[#3b82f6]', borderColor: 'border-[#3b82f6]' },
+    lab: { label: 'معامل', icon: '🔬', color: 'bg-[#a855f7]', textColor: 'text-[#a855f7]', borderColor: 'border-[#a855f7]' },
+    pharmacy: { label: 'صيدليات', icon: '💊', color: 'bg-[#22c55e]', textColor: 'text-[#22c55e]', borderColor: 'border-[#22c55e]' },
+    ambulance: { label: 'إسعاف', icon: '🚑', color: 'bg-[#dc2626]', textColor: 'text-[#dc2626]', borderColor: 'border-[#dc2626]' },
   };
 
   useEffect(() => {
@@ -213,15 +213,17 @@ export function InteractiveMap({
             <button
               key={type}
               onClick={() => setFilterType(type)}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold transition-all border-2 ${
                 filterType === type
-                  ? `${typeLabels[type].color} text-white`
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? `${typeLabels[type].color} text-white ${typeLabels[type].borderColor} shadow-md scale-105`
+                  : `bg-white ${typeLabels[type].textColor} ${typeLabels[type].borderColor} hover:bg-gray-50 opacity-80 hover:opacity-100`
               }`}
             >
-              <span>{typeLabels[type].icon}</span>
+              <span className="text-base">{typeLabels[type].icon}</span>
               <span>{typeLabels[type].label}</span>
-              <span className="opacity-75">({getTypeCount(type)})</span>
+              <span className={`text-xs font-black ${filterType === type ? 'text-white/90' : 'opacity-70'}`}>
+                ({getTypeCount(type)})
+              </span>
             </button>
           ))}
         </div>
