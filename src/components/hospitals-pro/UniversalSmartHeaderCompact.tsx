@@ -11,12 +11,14 @@ import {
   Squares2X2Icon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { useEffect, useState, type ComponentType, type KeyboardEvent } from 'react';
+import { useEffect, useState, type ComponentType, type KeyboardEvent, useCallback, useRef, lazy, Suspense } from 'react';
 import { VoiceSearchButton } from './VoiceSearchButton';
-import { InteractiveMap } from '@/components/maps/InteractiveMap';
 import type { EntityType } from '@/components/maps/MapContainer';
 import type { CounterData, QuickFilterConfig } from './UniversalSmartHeader';
 import { cn } from '@/lib/utils/cn';
+
+// Lazy load the InteractiveMap to improve initial page load and avoid large JS bundles until needed
+const InteractiveMap = lazy(() => import('@/components/maps/InteractiveMap').then(mod => ({ default: mod.InteractiveMap })));
 
 interface UniversalSmartHeaderCompactProps {
   title: string;
@@ -241,6 +243,33 @@ export function UniversalSmartHeaderCompact({
 }: UniversalSmartHeaderCompactProps) {
   const [localQuickFiltersOpen, setLocalQuickFiltersOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
+  const [localSearchValue, setLocalSearchValue] = useState(searchValue);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Sync local search with prop
+  useEffect(() => {
+    setLocalSearchValue(searchValue);
+  }, [searchValue]);
+
+  const handleSearchChange = useCallback((value: string) => {
+    setLocalSearchValue(value);
+    
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      onSearchChange?.(value);
+    }, 400); // 400ms debounce
+  }, [onSearchChange]);
+
+  const handleClearSearch = useCallback(() => {
+    setLocalSearchValue('');
+    onSearchChange?.('');
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+  }, [onSearchChange]);
 
   const resolvedBannerImage = bannerImage?.trim() || HEADER_BACKGROUND_FALLBACK;
   const backgroundLayers = bannerEnabled === false
@@ -462,16 +491,16 @@ export function UniversalSmartHeaderCompact({
                   </div>
                   <input
                     type="text"
-                    value={searchValue}
-                    onChange={(event) => onSearchChange?.(event.target.value)}
+                    value={localSearchValue}
+                    onChange={(event) => handleSearchChange(event.target.value)}
                     onKeyDown={handleSearchKeyDown}
                     placeholder={searchPlaceholder}
                     className="w-full h-full pr-9 pl-3 py-2.5 text-right bg-white/15 backdrop-blur-xl border-2 border-white/30 rounded-lg focus:outline-none focus:border-white/50 focus:bg-white/20 transition-all text-white placeholder-white/60 text-sm shadow-lg cursor-text"
                   />
-                  {searchValue && (
+                  {localSearchValue && (
                     <button
                       type="button"
-                      onClick={() => onSearchChange?.('')}
+                      onClick={handleClearSearch}
                       className="absolute left-2.5 top-1/2 -translate-y-1/2 p-1 rounded-md bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 transition-colors text-white z-10"
                       aria-label="مسح البحث"
                       title="مسح"
@@ -689,12 +718,21 @@ export function UniversalSmartHeaderCompact({
                 </button>
               </div>
               <div className="p-4 flex-1 min-h-0 overflow-y-auto">
-                <InteractiveMap
-                  showSearch
-                  showDirections
-                  entityTypes={mapEntityTypes}
-                  className="rounded-xl overflow-hidden"
-                />
+                <Suspense fallback={
+                  <div className="w-full h-[400px] flex items-center justify-center bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-cyan-500 mx-auto mb-3"></div>
+                      <p className="text-gray-500 text-sm font-medium">جاري تجهيز الخريطة التفاعلية...</p>
+                    </div>
+                  </div>
+                }>
+                  <InteractiveMap
+                    showSearch
+                    showDirections
+                    entityTypes={mapEntityTypes}
+                    className="rounded-xl overflow-hidden"
+                  />
+                </Suspense>
               </div>
             </motion.div>
           </motion.div>

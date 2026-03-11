@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Link from 'next/link';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
 const escapeHtml = (value: string) =>
   value
@@ -55,6 +57,7 @@ export function MapContainer({
   const [mapCenter, setMapCenter] = useState(center);
   const [mounted, setMounted] = useState(false);
   const [L, setL] = useState<any>(null);
+  const [MarkerClusterGroup, setMarkerClusterGroup] = useState<any>(null);
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<any>(null);
   const markersLayerRef = useRef<any>(null);
@@ -116,10 +119,16 @@ export function MapContainer({
 
   useEffect(() => {
     setMounted(true);
-    import('leaflet').then((leaflet) => {
-      setL(leaflet.default);
-      delete (leaflet.default.Icon.Default.prototype as any)._getIconUrl;
-      leaflet.default.Icon.Default.mergeOptions({
+    Promise.all([
+      import('leaflet'),
+      import('leaflet.markercluster')
+    ]).then(([leaflet, _cluster]) => {
+      const leafletLib = leaflet.default;
+      setL(leafletLib);
+      
+      // Fix default icon path issues in Leaflet
+      delete (leafletLib.Icon.Default.prototype as any)._getIconUrl;
+      leafletLib.Icon.Default.mergeOptions({
         iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
         iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
@@ -137,7 +146,15 @@ export function MapContainer({
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
-    markersLayerRef.current = L.layerGroup().addTo(map);
+
+    // Initialize marker cluster group instead of layer group
+    markersLayerRef.current = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: true,
+      spiderfyOnMaxZoom: true,
+      chunkedLoading: true,
+      maxClusterRadius: 50
+    }).addTo(map);
 
     setTimeout(() => map.invalidateSize(), 0);
     setTimeout(() => map.invalidateSize(), 350);

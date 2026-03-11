@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { MapContainer, MapMarker, EntityType } from './MapContainer';
 import { NearbySearch } from './NearbySearch';
 import { DirectionsPanel } from './DirectionsPanel';
@@ -101,19 +101,19 @@ export function InteractiveMap({
     }
   };
 
-  const handleMarkerClick = (marker: MapMarker) => {
+  const handleMarkerClick = useCallback((marker: MapMarker) => {
     setSelectedMarker(marker);
-  };
+  }, []);
 
-  const openDirections = (marker: MapMarker) => {
+  const openDirections = useCallback((marker: MapMarker) => {
     setSelectedMarker(marker);
     setShowDirectionsPanel(true);
-  };
+  }, []);
 
-  const handleMapClick = (location: { lat: number; lng: number }) => {
+  const handleMapClick = useCallback((location: { lat: number; lng: number }) => {
     setUserLocation(location);
     setIsPickingLocation(false);
-  };
+  }, []);
 
   const filteredMarkers = filterType === 'all' 
     ? markers 

@@ -44,6 +44,11 @@ export async function GET(request: NextRequest) {
 
     if (types.includes('clinic')) {
       const clinics = await prisma.clinic.findMany({
+        where: { 
+          lat: { not: null }, 
+          lng: { not: null },
+          status: 'published'
+        },
         select: {
           id: true,
           nameAr: true,
@@ -54,7 +59,7 @@ export async function GET(request: NextRequest) {
           ratingAvg: true,
           phone: true,
         },
-        take: 5000,
+        take: 500, // Reduced from 5000 to 500 for better initial performance
       });
       clinics.forEach((c) => {
         const lat = typeof c.lat === 'number' ? c.lat : parseFloat(String(c.lat));
