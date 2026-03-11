@@ -151,9 +151,10 @@ export function Footer() {
         {/* Bottom */}
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
           <p>© {new Date().getFullYear()} مستشفى.كوم - جميع الحقوق محفوظة.</p>
-          <p className="mt-2 text-[10px] leading-4 font-light text-gray-500 whitespace-nowrap sm:text-xs">
-            تنويه: المعلومات المقدمة لأغراض تثقيفية ولا تغني عن الاستشارة الطبية المتخصصة، والموقع غير مسؤول عن أي استخدام.
-          </p>
+          <div className="mt-2 text-[10px] leading-5 font-light text-gray-500 sm:text-xs">
+            <p className="block sm:inline">تنويه: المعلومات المقدمة لأغراض تثقيفية ولا تغني عن الاستشارة الطبية المتخصصة،</p>
+            <p className="block sm:inline"> والموقع غير مسؤول عن أي استخدام.</p>
+          </div>
         </div>
       </div>
     </footer>
