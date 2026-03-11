@@ -40,19 +40,12 @@ export function ClinicLocationMap({ clinic }: ClinicLocationMapProps) {
   }
 
   // Generate the best possible search query for Google Maps
-  let searchQuery = '';
-  if (lat && lng) {
-    searchQuery = `${lat},${lng}`;
-  } else if (name && address) {
-    // If no lat/lng, try searching by name and address
-    searchQuery = `${name} ${address}`;
-  } else if (address) {
-    searchQuery = address;
-  }
+  // Using name + address is often more reliable for the info panel than raw coordinates
+  const searchQuery = name && address ? `${name} ${address}` : (address || `${lat},${lng}`);
 
-  if (searchQuery) {
-    // Using the legacy but most reliable public embed format for markers and info
-    const publicEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(searchQuery)}&t=&z=16&ie=UTF8&iwloc=addr&output=embed`;
+  if (searchQuery && (lat || address)) {
+    // This format is the most robust for public embeds without an API key
+    const publicEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(searchQuery)}&output=embed&iwloc=addr`;
 
     return (
       <div className="h-96 rounded-xl overflow-hidden shadow-lg border-2 border-neutral-200 dark:border-neutral-700 relative z-0">
