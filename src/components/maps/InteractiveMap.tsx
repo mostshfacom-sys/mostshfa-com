@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useEffect, useCallback } from 'react';
-import { MapContainer, MapMarker, EntityType } from './MapContainer';
+import { MapContainer, MapMarker, EntityType, MAP_COLORS } from './MapContainer';
 import { NearbySearch } from './NearbySearch';
 import { DirectionsPanel } from './DirectionsPanel';
 
@@ -133,12 +133,12 @@ export function InteractiveMap({
   const getTypeCount = (type: EntityType) => markers.filter(m => m.type === type).length;
 
   const typeLabels: Record<EntityType, { label: string; icon: string; color: string; textColor: string; borderColor: string }> = {
-    hospital: { label: 'مستشفيات', icon: '🏥', color: 'bg-[#ef4444]', textColor: 'text-[#ef4444]', borderColor: 'border-[#ef4444]' },
-    clinic: { label: 'عيادات', icon: '🏨', color: 'bg-[#3b82f6]', textColor: 'text-[#3b82f6]', borderColor: 'border-[#3b82f6]' },
-    lab: { label: 'معامل', icon: '🔬', color: 'bg-[#a855f7]', textColor: 'text-[#a855f7]', borderColor: 'border-[#a855f7]' },
-    pharmacy: { label: 'صيدليات', icon: '💊', color: 'bg-[#22c55e]', textColor: 'text-[#22c55e]', borderColor: 'border-[#22c55e]' },
-    doctor: { label: 'أطباء', icon: '👨‍⚕️', color: 'bg-[#0d9488]', textColor: 'text-[#0d9488]', borderColor: 'border-[#0d9488]' },
-    ambulance: { label: 'إسعاف', icon: '🚑', color: 'bg-[#b91c1c]', textColor: 'text-[#b91c1c]', borderColor: 'border-[#b91c1c]' },
+    hospital: { label: 'مستشفيات', icon: '🏥', ...MAP_COLORS.hospital },
+    clinic: { label: 'عيادات', icon: '🏨', ...MAP_COLORS.clinic },
+    lab: { label: 'معامل', icon: '🔬', ...MAP_COLORS.lab },
+    pharmacy: { label: 'صيدليات', icon: '💊', ...MAP_COLORS.pharmacy },
+    doctor: { label: 'أطباء', icon: '👨‍⚕️', ...MAP_COLORS.doctor },
+    ambulance: { label: 'إسعاف', icon: '🚑', ...MAP_COLORS.ambulance },
   };
 
   useEffect(() => {

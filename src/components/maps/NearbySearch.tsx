@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MapMarker, EntityType } from './MapContainer';
+import { MapMarker, EntityType, MAP_COLORS } from './MapContainer';
 
 interface NearbySearchProps {
   onSearch: (results: MapMarker[]) => void;
@@ -44,6 +44,16 @@ export function NearbySearch({
     pharmacy: { label: 'صيدليات', icon: '💊' },
     doctor: { label: 'أطباء', icon: '👨‍⚕️' },
     ambulance: { label: 'إسعاف', icon: '🚑' },
+  };
+
+  const getTypeStyle = (type: EntityType) => {
+    const color = MAP_COLORS[type];
+    return {
+      bg: color.bg,
+      border: color.borderColor,
+      text: color.textColor,
+      hex: color.hex
+    };
   };
 
   const getCurrentLocation = () => {

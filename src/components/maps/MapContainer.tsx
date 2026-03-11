@@ -13,7 +13,16 @@ const escapeHtml = (value: string) =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 
-export type EntityType = 'hospital' | 'clinic' | 'lab' | 'pharmacy' | 'ambulance' | 'doctor';
+  export type EntityType = 'hospital' | 'clinic' | 'lab' | 'pharmacy' | 'doctor' | 'ambulance';
+
+  export const MAP_COLORS: Record<EntityType, { hex: string; bg: string; color: string; textColor: string; borderColor: string }> = {
+    hospital: { hex: '#ef4444', bg: 'bg-[#ef4444]', color: 'bg-[#ef4444]', textColor: 'text-[#ef4444]', borderColor: 'border-[#ef4444]' },
+    clinic: { hex: '#3b82f6', bg: 'bg-[#3b82f6]', color: 'bg-[#3b82f6]', textColor: 'text-[#3b82f6]', borderColor: 'border-[#3b82f6]' },
+    lab: { hex: '#a855f7', bg: 'bg-[#a855f7]', color: 'bg-[#a855f7]', textColor: 'text-[#a855f7]', borderColor: 'border-[#a855f7]' },
+    pharmacy: { hex: '#22c55e', bg: 'bg-[#22c55e]', color: 'bg-[#22c55e]', textColor: 'text-[#22c55e]', borderColor: 'border-[#22c55e]' },
+    doctor: { hex: '#0d9488', bg: 'bg-[#0d9488]', color: 'bg-[#0d9488]', textColor: 'text-[#0d9488]', borderColor: 'border-[#0d9488]' },
+    ambulance: { hex: '#b91c1c', bg: 'bg-[#b91c1c]', color: 'bg-[#b91c1c]', textColor: 'text-[#b91c1c]', borderColor: 'border-[#b91c1c]' },
+  };
 
 export interface MapMarker {
   id: string;
@@ -79,15 +88,7 @@ export function MapContainer({
   };
 
   const getMarkerColor = (type: EntityType): string => {
-    const colors: Record<EntityType, string> = {
-      hospital: 'bg-[#ef4444]',
-      clinic: 'bg-[#3b82f6]',
-      lab: 'bg-[#a855f7]',
-      pharmacy: 'bg-[#22c55e]',
-      ambulance: 'bg-[#b91c1c]',
-      doctor: 'bg-[#0d9488]',
-    };
-    return colors[type] || 'bg-gray-500';
+    return MAP_COLORS[type]?.bg || 'bg-gray-500';
   };
 
   const handleMarkerClick = useCallback((marker: MapMarker) => {
@@ -214,14 +215,9 @@ export function MapContainer({
     markersLayerRef.current.clearLayers();
     const points: Array<[number, number]> = [];
 
-    const typeColors: Record<EntityType, string> = {
-      hospital: '#ef4444',
-      clinic: '#3b82f6',
-      lab: '#a855f7',
-      pharmacy: '#22c55e',
-      ambulance: '#b91c1c',
-      doctor: '#0d9488',
-    };
+    const typeColors: Record<EntityType, string> = Object.entries(MAP_COLORS).reduce((acc, [key, val]) => ({
+      ...acc, [key]: val.hex
+    }), {} as Record<EntityType, string>);
 
     markers.forEach((marker) => {
       const lat = Number.isFinite(marker.lat) ? marker.lat : parseFloat(String(marker.lat));
