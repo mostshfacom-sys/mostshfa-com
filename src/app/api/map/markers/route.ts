@@ -44,15 +44,6 @@ export async function GET(request: NextRequest) {
 
     if (types.includes('clinic')) {
       const clinics = await prisma.clinic.findMany({
-        where: { 
-          lat: { not: null }, 
-          lng: { not: null },
-          // Ensure we don't fetch zeros if that's how missing coords are stored
-          NOT: [
-            { lat: 0 },
-            { lng: 0 }
-          ]
-        },
         select: {
           id: true,
           nameAr: true,
@@ -63,20 +54,23 @@ export async function GET(request: NextRequest) {
           ratingAvg: true,
           phone: true,
         },
-        take: limit, // Use the provided or default 2000 limit
+        take: 5000,
       });
       clinics.forEach((c) => {
-        if (c.lat && c.lng) {
+        const lat = typeof c.lat === 'number' ? c.lat : parseFloat(String(c.lat));
+        const lng = typeof c.lng === 'number' ? c.lng : parseFloat(String(c.lng));
+        
+        if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
           markers.push({
             id: `clinic-${c.id}`,
-            name: c.nameAr,
+            name: c.nameAr || 'عيادة',
             type: 'clinic',
-            lat: c.lat,
-            lng: c.lng,
-            address: c.addressAr,
-            rating: c.ratingAvg,
-            slug: c.slug,
-            phone: c.phone,
+            lat: lat,
+            lng: lng,
+            address: c.addressAr || '',
+            rating: c.ratingAvg || 0,
+            slug: c.slug || '',
+            phone: c.phone || '',
           });
         }
       });
