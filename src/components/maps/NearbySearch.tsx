@@ -293,9 +293,12 @@ export function NearbySearch({
 
       {/* Entity Type Filters */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          نوع المنشأة
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          فلترة نتائج البحث القريب
         </label>
+        <p className="text-xs text-gray-500 mb-2">
+          يحدد الأنواع التي سيتم البحث عنها داخل نصف القطر. يمكنك اختيار أكثر من نوع.
+        </p>
         <div className="flex flex-wrap gap-2">
           {entityTypes.map((type) => (
             <button
