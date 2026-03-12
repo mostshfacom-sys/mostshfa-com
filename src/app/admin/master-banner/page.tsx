@@ -84,6 +84,13 @@ export default function MasterBannerAdmin() {
 
       if (res.ok) {
         setMessage({ type: 'success', text: 'تم حفظ إعدادات الماستر بنجاح!' });
+
+        try {
+          localStorage.removeItem('image_settings_cache_v1');
+          window.dispatchEvent(new Event('image_settings_updated'));
+        } catch {
+          // ignore
+        }
       } else {
         throw new Error('Failed to save');
       }

@@ -287,6 +287,102 @@ const SETTINGS_CACHE_KEY = 'image_settings_cache_v1';
 export function ImageSettingsProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<ImageSettings>(DEFAULT_SETTINGS);
 
+  const loadSettings = async () => {
+    try {
+      const bannerRequests = BANNER_PAGES.map((page) =>
+        fetch(`/api/admin/banner?pageKey=${page.pageKey}`, { cache: 'no-store' })
+      );
+      const [imageRes, masterBannerRes, ...pageBannerRes] = await Promise.allSettled([
+        fetch('/api/admin/image-settings', { cache: 'no-store' }),
+        fetch(`/api/admin/banner?pageKey=${MASTER_BANNER_KEY}`, { cache: 'no-store' }),
+        ...bannerRequests,
+      ]);
+
+      type BannerPayload = {
+        title?: string | null;
+        subtitle?: string | null;
+        imageUrl?: string | null;
+        isEnabled?: boolean | null;
+        overlayColor?: string | null;
+        overlayOpacity?: number | null;
+      };
+
+      const mergeBannerSettings = (
+        current: ImageSettings,
+        banner: BannerPayload | null,
+        prefix: string
+      ): ImageSettings => {
+        if (!banner) {
+          return current;
+        }
+
+        const next = { ...current } as ImageSettings & Record<string, unknown>;
+        const baseKey = `${prefix}Banner`;
+        const assignString = (suffix: string, value?: string | null) => {
+          if (typeof value === 'string' && value.trim()) {
+            next[`${baseKey}${suffix}`] = value.trim();
+          }
+        };
+        const assignBool = (suffix: string, value?: boolean | null) => {
+          if (typeof value === 'boolean') {
+            next[`${baseKey}${suffix}`] = value;
+          }
+        };
+        const assignNumber = (suffix: string, value?: number | null) => {
+          if (Number.isFinite(value)) {
+            next[`${baseKey}${suffix}`] = value as number;
+          }
+        };
+
+        assignString('Image', banner.imageUrl);
+        assignBool('Enabled', banner.isEnabled);
+        assignString('OverlayColor', banner.overlayColor);
+        assignNumber('OverlayOpacity', banner.overlayOpacity);
+        assignString('Title', banner.title);
+        assignString('Subtitle', banner.subtitle);
+        return next;
+      };
+
+      const imageData =
+        imageRes.status === 'fulfilled' && imageRes.value.ok ? await imageRes.value.json() : null;
+      const masterBannerData =
+        masterBannerRes.status === 'fulfilled' && masterBannerRes.value.ok
+          ? await masterBannerRes.value.json()
+          : null;
+      const pageBannerData = await Promise.all(
+        pageBannerRes.map((result) =>
+          result.status === 'fulfilled' && result.value.ok ? result.value.json() : null
+        )
+      );
+
+      setSettings((prev) => {
+        let next = { ...prev };
+
+        if (imageData?.settings) {
+          next = { ...next, ...imageData.settings };
+        }
+
+        BANNER_PAGES.forEach((page) => {
+          next = mergeBannerSettings(next, masterBannerData?.banner ?? null, page.prefix);
+        });
+        BANNER_PAGES.forEach((page, index) => {
+          next = mergeBannerSettings(next, pageBannerData[index]?.banner ?? null, page.prefix);
+        });
+
+        try {
+          const nextCache = JSON.stringify(next);
+          localStorage.setItem(SETTINGS_CACHE_KEY, nextCache);
+        } catch {
+          // ignore cache failures
+        }
+
+        return next;
+      });
+    } catch {
+      // Keep defaults on failure
+    }
+  };
+
   useEffect(() => {
     try {
       const cached = localStorage.getItem(SETTINGS_CACHE_KEY);
@@ -300,107 +396,24 @@ export function ImageSettingsProvider({ children }: { children: React.ReactNode 
       // ignore cache failures
     }
 
-    const loadSettings = async () => {
-      try {
-        const bannerRequests = BANNER_PAGES.map((page) =>
-          fetch(`/api/admin/banner?pageKey=${page.pageKey}`, { cache: 'no-store' })
-        );
-        const [imageRes, masterBannerRes, ...pageBannerRes] = await Promise.allSettled([
-          fetch('/api/admin/image-settings', { cache: 'no-store' }),
-          fetch(`/api/admin/banner?pageKey=${MASTER_BANNER_KEY}`, { cache: 'no-store' }),
-          ...bannerRequests,
-        ]);
+    loadSettings();
 
-        type BannerPayload = {
-          title?: string | null;
-          subtitle?: string | null;
-          imageUrl?: string | null;
-          isEnabled?: boolean | null;
-          overlayColor?: string | null;
-          overlayOpacity?: number | null;
-        };
+    const handleSettingsUpdated = () => {
+      loadSettings();
+    };
 
-        const mergeBannerSettings = (
-          current: ImageSettings,
-          banner: BannerPayload | null,
-          prefix: string
-        ): ImageSettings => {
-          if (!banner) {
-            return current;
-          }
-
-          const next = { ...current } as ImageSettings & Record<string, unknown>;
-          const baseKey = `${prefix}Banner`;
-          const assignString = (suffix: string, value?: string | null) => {
-            if (typeof value === 'string' && value.trim()) {
-              next[`${baseKey}${suffix}`] = value.trim();
-            }
-          };
-          const assignBool = (suffix: string, value?: boolean | null) => {
-            if (typeof value === 'boolean') {
-              next[`${baseKey}${suffix}`] = value;
-            }
-          };
-          const assignNumber = (suffix: string, value?: number | null) => {
-            if (Number.isFinite(value)) {
-              next[`${baseKey}${suffix}`] = value as number;
-            }
-          };
-
-          assignString('Image', banner.imageUrl);
-          assignBool('Enabled', banner.isEnabled);
-          assignString('OverlayColor', banner.overlayColor);
-          assignNumber('OverlayOpacity', banner.overlayOpacity);
-          assignString('Title', banner.title);
-          assignString('Subtitle', banner.subtitle);
-          return next;
-        };
-
-        const imageData =
-          imageRes.status === 'fulfilled' && imageRes.value.ok
-            ? await imageRes.value.json()
-            : null;
-        const masterBannerData =
-          masterBannerRes.status === 'fulfilled' && masterBannerRes.value.ok
-            ? await masterBannerRes.value.json()
-            : null;
-        const pageBannerData = await Promise.all(
-          pageBannerRes.map((result) =>
-            result.status === 'fulfilled' && result.value.ok
-              ? result.value.json()
-              : null
-          )
-        );
-
-        setSettings((prev) => {
-          let next = { ...prev };
-
-          if (imageData?.settings) {
-            next = { ...next, ...imageData.settings };
-          }
-
-          BANNER_PAGES.forEach((page) => {
-            next = mergeBannerSettings(next, masterBannerData?.banner ?? null, page.prefix);
-          });
-          BANNER_PAGES.forEach((page, index) => {
-            next = mergeBannerSettings(next, pageBannerData[index]?.banner ?? null, page.prefix);
-          });
-
-          try {
-            const nextCache = JSON.stringify(next);
-            localStorage.setItem(SETTINGS_CACHE_KEY, nextCache);
-          } catch {
-            // ignore cache failures
-          }
-
-          return next;
-        });
-      } catch {
-        // Keep defaults on failure
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === SETTINGS_CACHE_KEY) {
+        handleSettingsUpdated();
       }
     };
 
-    loadSettings();
+    window.addEventListener('image_settings_updated', handleSettingsUpdated);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('image_settings_updated', handleSettingsUpdated);
+      window.removeEventListener('storage', handleStorage);
+    };
   }, []);
 
   const value = useMemo(() => settings, [settings]);

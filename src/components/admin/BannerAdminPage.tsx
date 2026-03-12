@@ -132,6 +132,13 @@ export default function BannerAdminPage({
 
       if (res.ok) {
         setMessage({ type: 'success', text: 'تم حفظ البانر بنجاح!' });
+
+        try {
+          localStorage.removeItem('image_settings_cache_v1');
+          window.dispatchEvent(new Event('image_settings_updated'));
+        } catch {
+          // ignore
+        }
       } else {
         let serverMessage = '';
         try {
