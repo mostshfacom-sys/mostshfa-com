@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
-
-const SETTINGS_FILE = path.join(process.cwd(), 'data', 'image-settings.json');
+import { prisma } from '@/lib/db/prisma';
 
 interface ImageSettingsData {
   hospitalDefaultImage: string;
@@ -12,10 +9,13 @@ const DEFAULT_SETTINGS: ImageSettingsData = {
   hospitalDefaultImage: '/images/defaults/hospital-icon.svg',
 };
 
+const SETTINGS_KEY = 'image_settings';
+
 async function readSettings(): Promise<ImageSettingsData> {
   try {
-    const data = await fs.readFile(SETTINGS_FILE, 'utf-8');
-    const parsed = JSON.parse(data) as Partial<ImageSettingsData>;
+    const setting = await prisma.siteSetting.findUnique({ where: { key: SETTINGS_KEY } });
+    if (!setting?.value) return { ...DEFAULT_SETTINGS };
+    const parsed = JSON.parse(setting.value) as Partial<ImageSettingsData>;
     return { ...DEFAULT_SETTINGS, ...parsed };
   } catch {
     return { ...DEFAULT_SETTINGS };
@@ -23,9 +23,11 @@ async function readSettings(): Promise<ImageSettingsData> {
 }
 
 async function writeSettings(settings: ImageSettingsData): Promise<void> {
-  const dir = path.dirname(SETTINGS_FILE);
-  await fs.mkdir(dir, { recursive: true });
-  await fs.writeFile(SETTINGS_FILE, JSON.stringify(settings, null, 2), 'utf-8');
+  await prisma.siteSetting.upsert({
+    where: { key: SETTINGS_KEY },
+    update: { value: JSON.stringify(settings) },
+    create: { key: SETTINGS_KEY, value: JSON.stringify(settings) },
+  });
 }
 
 export async function GET() {

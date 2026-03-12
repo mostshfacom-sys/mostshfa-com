@@ -133,11 +133,23 @@ export default function BannerAdminPage({
       if (res.ok) {
         setMessage({ type: 'success', text: 'تم حفظ البانر بنجاح!' });
       } else {
-        throw new Error('Failed to save');
+        let serverMessage = '';
+        try {
+          const data = await res.json();
+          serverMessage = typeof data?.error === 'string' ? data.error : '';
+        } catch {
+          try {
+            serverMessage = await res.text();
+          } catch {
+            serverMessage = '';
+          }
+        }
+        throw new Error(serverMessage || `Failed to save (HTTP ${res.status})`);
       }
     } catch (error) {
       console.error('Error saving banner:', error);
-      setMessage({ type: 'error', text: 'حدث خطأ أثناء الحفظ' });
+      const messageText = error instanceof Error && error.message ? error.message : 'حدث خطأ أثناء الحفظ';
+      setMessage({ type: 'error', text: messageText });
     } finally {
       setSaving(false);
     }

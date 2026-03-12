@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { prisma } from '@/lib/db/prisma';
 
-const BANNER_FILE = path.join(process.cwd(), 'data', 'banners.json');
 const MASTER_BANNER_KEY = '_master_';
 
 interface BannerData {
@@ -17,19 +15,45 @@ interface BannerData {
   };
 }
 
-async function readBanners(): Promise<BannerData> {
-  try {
-    const data = await fs.readFile(BANNER_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch {
-    return {};
-  }
+function buildBannerSettingKey(pageKey: string) {
+  return `banner:${pageKey}`;
 }
 
-async function writeBanners(data: BannerData): Promise<void> {
-  const dir = path.dirname(BANNER_FILE);
-  await fs.mkdir(dir, { recursive: true });
-  await fs.writeFile(BANNER_FILE, JSON.stringify(data, null, 2), 'utf-8');
+function normalizeBannerPayload(raw: any) {
+  return {
+    title: raw?.title ? String(raw.title) : null,
+    subtitle: raw?.subtitle ? String(raw.subtitle) : null,
+    imageUrl: raw?.imageUrl ? String(raw.imageUrl) : null,
+    linkUrl: raw?.linkUrl ? String(raw.linkUrl) : null,
+    isEnabled:
+      typeof raw?.isEnabled === 'boolean'
+        ? raw.isEnabled
+        : raw?.isEnabled === null
+          ? null
+          : null,
+    overlayColor:
+      typeof raw?.overlayColor === 'string' && raw.overlayColor.trim() ? raw.overlayColor.trim() : null,
+    overlayOpacity:
+      typeof raw?.overlayOpacity === 'number' && Number.isFinite(raw.overlayOpacity)
+        ? Math.min(Math.max(raw.overlayOpacity, 0), 100)
+        : raw?.overlayOpacity === null
+          ? null
+          : null,
+  };
+}
+
+async function readBannerFromDb(pageKey: string): Promise<BannerData[string] | null> {
+  const setting = await prisma.siteSetting.findUnique({
+    where: { key: buildBannerSettingKey(pageKey) },
+  });
+  if (!setting?.value) return null;
+
+  try {
+    const parsed = JSON.parse(setting.value);
+    return normalizeBannerPayload(parsed);
+  } catch {
+    return null;
+  }
 }
 
 // GET - جلب بيانات البانر
@@ -38,9 +62,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const pageKey = searchParams.get('pageKey') || 'articles';
 
-    const banners = await readBanners();
-    const banner = banners[pageKey] || null;
-
+    const banner = await readBannerFromDb(pageKey);
     return NextResponse.json({ banner });
   } catch (error) {
     console.error('Error fetching banner:', error);
@@ -73,7 +95,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const banners = await readBanners();
     const parsedOverlayOpacity =
       overlayOpacity === null || overlayOpacity === undefined
         ? null
@@ -96,7 +117,7 @@ export async function POST(request: NextRequest) {
       normalizedIsEnabled = isMaster ? null : true;
     }
 
-    banners[pageKey] = {
+    const nextBanner = {
       title: title || null,
       subtitle: subtitle || null,
       imageUrl: imageUrl || null,
@@ -105,9 +126,14 @@ export async function POST(request: NextRequest) {
       overlayColor: overlayColor?.trim() || null,
       overlayOpacity: normalizedOverlayOpacity,
     };
-    await writeBanners(banners);
 
-    return NextResponse.json({ banner: banners[pageKey], success: true });
+    await prisma.siteSetting.upsert({
+      where: { key: buildBannerSettingKey(pageKey) },
+      update: { value: JSON.stringify(nextBanner) },
+      create: { key: buildBannerSettingKey(pageKey), value: JSON.stringify(nextBanner) },
+    });
+
+    return NextResponse.json({ banner: nextBanner, success: true });
   } catch (error) {
     console.error('Error saving banner:', error);
     return NextResponse.json(
@@ -130,9 +156,9 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const banners = await readBanners();
-    delete banners[pageKey];
-    await writeBanners(banners);
+    await prisma.siteSetting.deleteMany({
+      where: { key: buildBannerSettingKey(pageKey) },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
