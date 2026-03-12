@@ -358,7 +358,7 @@ export function NearbySearch({
               type="button"
               className={`px-2.5 py-1 rounded-full text-xs font-bold border transition-colors ${
                 distance === km
-                  ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
                   : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50'
               }`}
             >
@@ -386,19 +386,10 @@ export function NearbySearch({
         disabled={loading || selectedTypes.length === 0}
         className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 px-4 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 font-semibold"
       >
-        {loading ? (
-          <>
-            <span className="animate-spin" aria-hidden>
-              ⏳
-            </span>
-            <span>جاري البحث...</span>
-          </>
-        ) : (
-          <>
-            <span aria-hidden>🔍</span>
-            <span>بحث</span>
-          </>
-        )}
+        <span className="w-5 inline-flex items-center justify-center" aria-hidden>
+          {loading ? <span className="animate-spin">⏳</span> : <span>🔍</span>}
+        </span>
+        <span>{loading ? 'جاري البحث...' : 'بحث'}</span>
       </button>
 
       {/* Results Summary */}
