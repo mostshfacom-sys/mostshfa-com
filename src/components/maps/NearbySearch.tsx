@@ -358,8 +358,8 @@ export function NearbySearch({
               type="button"
               className={`px-2.5 py-1 rounded-full text-xs font-bold border transition-colors ${
                 distance === km
-                  ? 'bg-primary text-white border-primary'
-                  : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                  ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                  : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50'
               }`}
             >
               {km} كم
@@ -384,9 +384,21 @@ export function NearbySearch({
       <button
         onClick={handleSearch}
         disabled={loading || selectedTypes.length === 0}
-        className="w-full bg-primary text-white py-3 px-4 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 font-medium"
+        className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 px-4 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 font-semibold"
       >
-        {loading ? 'جاري البحث...' : '🔍 بحث'}
+        {loading ? (
+          <>
+            <span className="animate-spin" aria-hidden>
+              ⏳
+            </span>
+            <span>جاري البحث...</span>
+          </>
+        ) : (
+          <>
+            <span aria-hidden>🔍</span>
+            <span>بحث</span>
+          </>
+        )}
       </button>
 
       {/* Results Summary */}
