@@ -42,6 +42,16 @@ export function NearbySearch({
   const [distance, setDistance] = useState(maxDistance);
   const [searchResults, setSearchResults] = useState<MapMarker[]>([]);
 
+  const clearLocation = () => {
+    setUserLocation(null);
+    setLocationAccuracy(null);
+    setLocationUpdatedAt(null);
+    setSearchResults([]);
+    setError(null);
+    onLocationChange(null);
+    onSearch([]);
+  };
+
   useEffect(() => {
     if (location) {
       setUserLocation(location);
@@ -229,6 +239,13 @@ export function NearbySearch({
             >
               تحديث الموقع
             </button>
+            <button
+              onClick={clearLocation}
+              className="text-xs text-gray-700 hover:underline"
+              type="button"
+            >
+              عرض الخريطة الكاملة
+            </button>
           </div>
         ) : (
           <div className="space-y-2">
@@ -275,13 +292,24 @@ export function NearbySearch({
         </div>
       )}
 
-      {!userLocation && onStartManualLocation && (
+      {onStartManualLocation && (
         <button
           onClick={onStartManualLocation}
           disabled={loading}
           className="w-full mb-4 flex items-center justify-center gap-2 bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
         >
-          🗺️ اختيار الموقع من الخريطة
+          {userLocation ? '🗺️ تغيير الموقع من الخريطة' : '🗺️ اختيار الموقع من الخريطة'}
+        </button>
+      )}
+
+      {userLocation && (
+        <button
+          onClick={clearLocation}
+          disabled={loading}
+          className="w-full mb-4 flex items-center justify-center gap-2 bg-white text-gray-700 py-3 px-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-50"
+          type="button"
+        >
+          🧹 عرض الخريطة الكاملة
         </button>
       )}
 
