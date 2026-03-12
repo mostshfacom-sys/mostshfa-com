@@ -88,7 +88,7 @@ export default function MobileBottomNav() {
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => setIsGuidesOpen(true)}
+                    onClick={() => setIsGuidesOpen((v) => !v)}
                     className={`flex flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-xs font-semibold transition ${
                       isActive
                         ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
