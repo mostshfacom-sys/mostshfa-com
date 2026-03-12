@@ -9,6 +9,7 @@ import {
   Squares2X2Icon,
   WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline';
+import { useEffect, useMemo, useState } from 'react';
 
 const navItems = [
   {
@@ -50,6 +51,23 @@ const navItems = [
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
+  const [isGuidesOpen, setIsGuidesOpen] = useState(false);
+
+  const guidesItems = useMemo(
+    () => [
+      { id: 'all', label: 'جميع الأدلة الطبية', href: '/directories' },
+      { id: 'hospitals-pro', label: 'دليل المستشفيات', href: '/hospitals-pro' },
+      { id: 'drugs', label: 'دليل الأدوية', href: '/drugs' },
+      { id: 'emergency', label: 'دليل الطوارئ', href: '/emergency' },
+      { id: 'first-aid', label: 'دليل الإسعافات الأولية', href: '/first-aid' },
+      { id: 'mental-health', label: 'دليل الصحة النفسية', href: '/mental-health' },
+    ],
+    []
+  );
+
+  useEffect(() => {
+    setIsGuidesOpen(false);
+  }, [pathname]);
 
   if (pathname?.startsWith('/admin')) {
     return null;
@@ -63,6 +81,25 @@ export default function MobileBottomNav() {
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname ? item.match(pathname) : false;
+              if (item.id === 'directories') {
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setIsGuidesOpen(true)}
+                    className={`flex flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-xs font-semibold transition ${
+                      isActive
+                        ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
+                        : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 dark:text-slate-200 dark:hover:bg-white/10'
+                    }`}
+                    aria-haspopup="dialog"
+                    aria-expanded={isGuidesOpen}
+                  >
+                    <Icon className="h-5 w-5" />
+                    <span>{item.label}</span>
+                  </button>
+                );
+              }
               return (
                 <Link
                   key={item.id}
@@ -81,6 +118,52 @@ export default function MobileBottomNav() {
           </div>
         </div>
       </div>
+
+      {isGuidesOpen && (
+        <div
+          className="fixed inset-0 z-50"
+          role="dialog"
+          aria-modal="true"
+        >
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setIsGuidesOpen(false)}
+            aria-label="إغلاق"
+          />
+          <div className="absolute inset-x-0 bottom-0 p-3">
+            <div className="mx-auto max-w-4xl rounded-3xl bg-white shadow-2xl border border-white/70 overflow-hidden dark:bg-slate-900 dark:border-white/10">
+              <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+                <div className="text-right">
+                  <p className="text-sm font-extrabold text-slate-900 dark:text-white">أهم الأدلة</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-300">اختصار سريع لأهم الصفحات</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsGuidesOpen(false)}
+                  className="h-9 w-9 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+                  aria-label="إغلاق"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="px-4 pb-4">
+                <div className="grid grid-cols-2 gap-2">
+                  {guidesItems.map((g) => (
+                    <Link
+                      key={g.id}
+                      href={g.href}
+                      className="rounded-2xl px-3 py-3 text-sm font-bold bg-slate-50 text-slate-900 hover:bg-emerald-50 hover:text-emerald-800 transition dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+                    >
+                      {g.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
