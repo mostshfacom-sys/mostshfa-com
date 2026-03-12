@@ -386,8 +386,13 @@ export function NearbySearch({
         disabled={loading || selectedTypes.length === 0}
         className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 px-4 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 font-semibold"
       >
-        <span className="w-5 inline-flex items-center justify-center" aria-hidden>
-          {loading ? <span className="animate-spin">⏳</span> : <span>🔍</span>}
+        <span className="relative w-5 h-5" aria-hidden>
+          <span className={`absolute inset-0 flex items-center justify-center transition-opacity ${loading ? 'opacity-0' : 'opacity-100'}`}>
+            🔍
+          </span>
+          <span className={`absolute inset-0 flex items-center justify-center transition-opacity ${loading ? 'opacity-100' : 'opacity-0'}`}>
+            <span className="animate-spin">⏳</span>
+          </span>
         </span>
         <span>{loading ? 'جاري البحث...' : 'بحث'}</span>
       </button>

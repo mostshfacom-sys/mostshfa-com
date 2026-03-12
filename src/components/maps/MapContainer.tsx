@@ -146,93 +146,114 @@ export function MapContainer({
 
   useEffect(() => {
     if (!L || !mapRef.current || mapInstanceRef.current) return;
-    const map = L.map(mapRef.current, {
-      center: [mapCenter.lat, mapCenter.lng],
-      zoom,
-    });
-    mapInstanceRef.current = map;
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    }).addTo(map);
 
-    // Initialize marker cluster group instead of layer group
-    markersLayerRef.current = L.markerClusterGroup({
-      showCoverageOnHover: false,
-      zoomToBoundsOnClick: true,
-      spiderfyOnMaxZoom: true,
-      chunkedLoading: true,
-      maxClusterRadius: 50,
-      iconCreateFunction: (cluster: any) => {
-        const children = cluster.getAllChildMarkers?.() ?? [];
-        const counts: Record<string, number> = {};
-        for (const child of children) {
-          const type = (child as any).__entityType as EntityType | undefined;
-          if (!type) continue;
-          counts[type] = (counts[type] ?? 0) + 1;
-        }
+    let cancelled = false;
+    let rafId = 0;
 
-        let dominantType: EntityType | null = null;
-        let dominantCount = 0;
-        for (const [type, count] of Object.entries(counts)) {
-          if (count > dominantCount) {
-            dominantCount = count;
-            dominantType = type as EntityType;
-          }
-        }
+    const initMap = () => {
+      if (cancelled || !mapRef.current || mapInstanceRef.current) return;
 
-        const color = dominantType ? MAP_COLORS[dominantType].hex : '#2563eb';
-        const size = 42;
-        const count = cluster.getChildCount?.() ?? 0;
-
-        return L.divIcon({
-          html: `
-            <div style="
-              width:${size}px;
-              height:${size}px;
-              border-radius:9999px;
-              background:${color};
-              display:flex;
-              align-items:center;
-              justify-content:center;
-              color:#fff;
-              font-weight:800;
-              font-size:14px;
-              border:2px solid #fff;
-              box-shadow:0 10px 22px rgba(0,0,0,0.25);
-            ">${count}</div>
-          `,
-          className: 'custom-map-cluster',
-          iconSize: [size, size],
-        });
-      },
-    }).addTo(map);
-
-    const handleMoveEnd = () => {
-      if (onBoundsChange) {
-        const bounds = map.getBounds();
-        onBoundsChange({
-          minLat: bounds.getSouth(),
-          maxLat: bounds.getNorth(),
-          minLng: bounds.getWest(),
-          maxLng: bounds.getEast()
-        });
+      const { clientWidth, clientHeight } = mapRef.current;
+      if (clientWidth === 0 || clientHeight === 0) {
+        rafId = requestAnimationFrame(initMap);
+        return;
       }
+
+      const map = L.map(mapRef.current, {
+        center: [mapCenter.lat, mapCenter.lng],
+        zoom,
+      });
+      mapInstanceRef.current = map;
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }).addTo(map);
+
+      // Initialize marker cluster group instead of layer group
+      markersLayerRef.current = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        spiderfyOnMaxZoom: true,
+        chunkedLoading: true,
+        maxClusterRadius: 50,
+        iconCreateFunction: (cluster: any) => {
+          const children = cluster.getAllChildMarkers?.() ?? [];
+          const counts: Record<string, number> = {};
+          for (const child of children) {
+            const type = (child as any).__entityType as EntityType | undefined;
+            if (!type) continue;
+            counts[type] = (counts[type] ?? 0) + 1;
+          }
+
+          let dominantType: EntityType | null = null;
+          let dominantCount = 0;
+          for (const [type, count] of Object.entries(counts)) {
+            if (count > dominantCount) {
+              dominantCount = count;
+              dominantType = type as EntityType;
+            }
+          }
+
+          const color = dominantType ? MAP_COLORS[dominantType].hex : '#2563eb';
+          const size = 42;
+          const count = cluster.getChildCount?.() ?? 0;
+
+          return L.divIcon({
+            html: `
+              <div style="
+                width:${size}px;
+                height:${size}px;
+                border-radius:9999px;
+                background:${color};
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                color:#fff;
+                font-weight:800;
+                font-size:14px;
+                border:2px solid #fff;
+                box-shadow:0 10px 22px rgba(0,0,0,0.25);
+              ">${count}</div>
+            `,
+            className: 'custom-map-cluster',
+            iconSize: [size, size],
+          });
+        },
+      }).addTo(map);
+
+      const handleMoveEnd = () => {
+        if (onBoundsChange) {
+          const bounds = map.getBounds();
+          onBoundsChange({
+            minLat: bounds.getSouth(),
+            maxLat: bounds.getNorth(),
+            minLng: bounds.getWest(),
+            maxLng: bounds.getEast()
+          });
+        }
+      };
+
+      map.on('moveend', handleMoveEnd);
+      // Initial bounds
+      handleMoveEnd();
+
+      setTimeout(() => map.invalidateSize(), 0);
+      setTimeout(() => map.invalidateSize(), 350);
     };
 
-    map.on('moveend', handleMoveEnd);
-    // Initial bounds
-    handleMoveEnd();
-
-    setTimeout(() => map.invalidateSize(), 0);
-    setTimeout(() => map.invalidateSize(), 350);
+    rafId = requestAnimationFrame(initMap);
 
     return () => {
-      map.remove();
+      cancelled = true;
+      if (rafId) cancelAnimationFrame(rafId);
+      const map = mapInstanceRef.current;
+      if (map) {
+        map.remove();
+      }
       mapInstanceRef.current = null;
       markersLayerRef.current = null;
       userMarkerRef.current = null;
     };
-  }, [L, mapCenter.lat, mapCenter.lng, zoom]);
+  }, [L, mapCenter.lat, mapCenter.lng, zoom, onBoundsChange]);
 
   useEffect(() => {
     const map = mapInstanceRef.current;
