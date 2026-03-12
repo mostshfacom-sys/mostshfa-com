@@ -57,10 +57,12 @@ export default function MobileBottomNav() {
     () => [
       { id: 'all', label: 'جميع الأدلة الطبية', href: '/directories' },
       { id: 'hospitals-pro', label: 'دليل المستشفيات', href: '/hospitals-pro' },
+      { id: 'clinics', label: 'دليل العيادات', href: '/clinics' },
+      { id: 'pharmacies', label: 'دليل الصيدليات', href: '/pharmacies' },
+      { id: 'labs', label: 'دليل المعامل', href: '/labs' },
       { id: 'drugs', label: 'دليل الأدوية', href: '/drugs' },
       { id: 'emergency', label: 'دليل الطوارئ', href: '/emergency' },
       { id: 'first-aid', label: 'دليل الإسعافات الأولية', href: '/first-aid' },
-      { id: 'mental-health', label: 'دليل الصحة النفسية', href: '/mental-health' },
     ],
     []
   );
@@ -131,7 +133,7 @@ export default function MobileBottomNav() {
             onClick={() => setIsGuidesOpen(false)}
             aria-label="إغلاق"
           />
-          <div className="absolute inset-x-0 bottom-0 p-3">
+          <div className="absolute inset-x-0 bottom-24 p-3">
             <div className="mx-auto max-w-4xl rounded-3xl bg-white shadow-2xl border border-white/70 overflow-hidden dark:bg-slate-900 dark:border-white/10">
               <div className="px-4 pt-4 pb-3 flex items-center justify-between">
                 <div className="text-right">
@@ -153,6 +155,7 @@ export default function MobileBottomNav() {
                     <Link
                       key={g.id}
                       href={g.href}
+                      onClick={() => setIsGuidesOpen(false)}
                       className="rounded-2xl px-3 py-3 text-sm font-bold bg-slate-50 text-slate-900 hover:bg-emerald-50 hover:text-emerald-800 transition dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
                     >
                       {g.label}
