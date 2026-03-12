@@ -282,10 +282,24 @@ const DEFAULT_SETTINGS: ImageSettings = {
 
 const ImageSettingsContext = createContext<ImageSettings>(DEFAULT_SETTINGS);
 
+const SETTINGS_CACHE_KEY = 'image_settings_cache_v1';
+
 export function ImageSettingsProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<ImageSettings>(DEFAULT_SETTINGS);
 
   useEffect(() => {
+    try {
+      const cached = localStorage.getItem(SETTINGS_CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && typeof parsed === 'object') {
+          setSettings((prev) => ({ ...prev, ...(parsed as Partial<ImageSettings>) }));
+        }
+      }
+    } catch {
+      // ignore cache failures
+    }
+
     const loadSettings = async () => {
       try {
         const bannerRequests = BANNER_PAGES.map((page) =>
@@ -371,6 +385,13 @@ export function ImageSettingsProvider({ children }: { children: React.ReactNode 
           BANNER_PAGES.forEach((page, index) => {
             next = mergeBannerSettings(next, pageBannerData[index]?.banner ?? null, page.prefix);
           });
+
+          try {
+            const nextCache = JSON.stringify(next);
+            localStorage.setItem(SETTINGS_CACHE_KEY, nextCache);
+          } catch {
+            // ignore cache failures
+          }
 
           return next;
         });

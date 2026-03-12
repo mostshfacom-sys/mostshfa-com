@@ -272,9 +272,7 @@ export function UniversalSmartHeaderCompact({
   }, [onSearchChange]);
 
   const resolvedBannerImage = bannerImage?.trim() || HEADER_BACKGROUND_FALLBACK;
-  const backgroundLayers = bannerEnabled === false
-    ? `url(${HEADER_BACKGROUND_FALLBACK})`
-    : `url(${resolvedBannerImage}), url(${HEADER_BACKGROUND_FALLBACK})`;
+  const backgroundImage = bannerEnabled === false ? HEADER_BACKGROUND_FALLBACK : resolvedBannerImage;
   const overlayColor = bannerOverlayColor?.trim() || '#0f172a';
   const overlayOpacity =
     typeof bannerOverlayOpacity === 'number'
@@ -322,7 +320,7 @@ export function UniversalSmartHeaderCompact({
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: backgroundLayers,
+          backgroundImage: `url(${backgroundImage})`,
         }}
       />
 
