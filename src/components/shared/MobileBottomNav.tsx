@@ -123,17 +123,17 @@ export default function MobileBottomNav() {
 
       {isGuidesOpen && (
         <div
-          className="fixed inset-0 z-50"
+          className="fixed inset-0 z-50 pointer-events-none"
           role="dialog"
           aria-modal="true"
         >
           <button
             type="button"
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="pointer-events-auto absolute inset-x-0 top-0 bottom-24 bg-black/40 backdrop-blur-sm"
             onClick={() => setIsGuidesOpen(false)}
             aria-label="إغلاق"
           />
-          <div className="absolute inset-x-0 bottom-24 p-3">
+          <div className="pointer-events-auto absolute inset-x-0 bottom-24 p-3">
             <div className="mx-auto max-w-4xl rounded-3xl bg-white shadow-2xl border border-white/70 overflow-hidden dark:bg-slate-900 dark:border-white/10">
               <div className="px-4 pt-4 pb-3 flex items-center justify-between">
                 <div className="text-right">
