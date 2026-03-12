@@ -172,7 +172,11 @@ function UniversalHeaderClientContent(props: UniversalHeaderClientProps) {
 
   const bannerImage = useMemo(() => {
     const value = settings[`${prefix}BannerImage`];
-    return typeof value === 'string' && value.trim() ? value.trim() : undefined;
+    const resolved = typeof value === 'string' && value.trim() ? value.trim() : undefined;
+    if (prefix === 'home' && !resolved) {
+      return '/images/hospitals/kasr-alainy-hospital.jpg';
+    }
+    return resolved;
   }, [prefix, settings]);
   const bannerEnabled = useMemo(() => {
     const value = settings[`${prefix}BannerEnabled`];
@@ -191,11 +195,17 @@ function UniversalHeaderClientContent(props: UniversalHeaderClientProps) {
     if (prefix === 'home' && isDarkMode) {
       return '#000000';
     }
+    if (prefix === 'home') {
+      return bannerOverlayColor ?? '#065f46';
+    }
     return bannerOverlayColor;
   }, [prefix, isDarkMode, bannerOverlayColor]);
   const resolvedBannerOverlayOpacity = useMemo(() => {
     if (prefix === 'home' && isDarkMode) {
       return 90;
+    }
+    if (prefix === 'home') {
+      return bannerOverlayOpacity ?? 62;
     }
     return bannerOverlayOpacity;
   }, [prefix, isDarkMode, bannerOverlayOpacity]);
