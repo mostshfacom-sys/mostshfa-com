@@ -388,10 +388,31 @@ export function NearbySearch({
       >
         <span className="relative w-5 h-5" aria-hidden>
           <span className={`absolute inset-0 flex items-center justify-center transition-opacity ${loading ? 'opacity-0' : 'opacity-100'}`}>
-            🔍
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-5 h-5"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
           </span>
           <span className={`absolute inset-0 flex items-center justify-center transition-opacity ${loading ? 'opacity-100' : 'opacity-0'}`}>
-            <span className="animate-spin">⏳</span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-5 h-5 animate-spin"
+            >
+              <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+            </svg>
           </span>
         </span>
         <span>{loading ? 'جاري البحث...' : 'بحث'}</span>

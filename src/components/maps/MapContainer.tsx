@@ -127,21 +127,39 @@ export function MapContainer({
 
   useEffect(() => {
     setMounted(true);
-    Promise.all([
-      import('leaflet'),
-      import('leaflet.markercluster')
-    ]).then(([leaflet, _cluster]) => {
-      const leafletLib = leaflet.default;
-      setL(leafletLib);
-      
-      // Fix default icon path issues in Leaflet
-      delete (leafletLib.Icon.Default.prototype as any)._getIconUrl;
-      leafletLib.Icon.Default.mergeOptions({
-        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-      });
-    });
+    let cancelled = false;
+
+    const loadLeaflet = async () => {
+      try {
+        const leaflet = await import('leaflet');
+        const leafletLib = leaflet.default;
+
+        // Some leaflet plugins (like markercluster) expect a global L
+        (window as any).L = leafletLib;
+
+        // Fix default icon path issues in Leaflet
+        delete (leafletLib.Icon.Default.prototype as any)._getIconUrl;
+        leafletLib.Icon.Default.mergeOptions({
+          iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+          iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+        });
+
+        await import('leaflet.markercluster');
+
+        if (!cancelled) {
+          setL(leafletLib);
+        }
+      } catch (err) {
+        console.error('Failed to load Leaflet:', err);
+      }
+    };
+
+    loadLeaflet();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
