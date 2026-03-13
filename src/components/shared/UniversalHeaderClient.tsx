@@ -173,9 +173,6 @@ function UniversalHeaderClientContent(props: UniversalHeaderClientProps) {
   const bannerImage = useMemo(() => {
     const value = settings[`${prefix}BannerImage`];
     const resolved = typeof value === 'string' && value.trim() ? value.trim() : undefined;
-    if (prefix === 'home' && !resolved) {
-      return '/images/hospitals/kasr-alainy-hospital.jpg';
-    }
     return resolved;
   }, [prefix, settings]);
   const bannerEnabled = useMemo(() => {
