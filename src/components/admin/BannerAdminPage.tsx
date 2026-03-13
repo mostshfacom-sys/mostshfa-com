@@ -192,14 +192,11 @@ export default function BannerAdminPage({
         setBanner((prev) => ({ ...prev, imageUrl: data.url }));
         setMessage({ type: 'success', text: 'تم رفع الصورة بنجاح!' });
       } else {
-        const localPath = `/images/banners/${fallbackFileName}`;
-        setBanner((prev) => ({ ...prev, imageUrl: localPath }));
-        setMessage({ type: 'success', text: 'تم تحديد الصورة (سيتم استخدام المسار المحلي)' });
+        setMessage({ type: 'error', text: 'تعذر رفع الصورة. يرجى إدخال رابط مباشر للصورة أو التأكد من إعدادات الاستضافة.' });
       }
     } catch (error) {
       console.error('Error uploading image:', error);
-      const localPath = `/images/banners/${fallbackFileName}`;
-      setBanner((prev) => ({ ...prev, imageUrl: localPath }));
+      setMessage({ type: 'error', text: 'تعذر رفع الصورة. يرجى إدخال رابط مباشر للصورة أو إعادة المحاولة.' });
     }
   };
 

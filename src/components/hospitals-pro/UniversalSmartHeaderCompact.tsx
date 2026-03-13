@@ -273,6 +273,37 @@ export function UniversalSmartHeaderCompact({
 
   const resolvedBannerImage = bannerImage?.trim() || HEADER_BACKGROUND_FALLBACK;
   const backgroundImage = bannerEnabled === false ? HEADER_BACKGROUND_FALLBACK : resolvedBannerImage;
+  const [resolvedBackgroundImage, setResolvedBackgroundImage] = useState(backgroundImage);
+  const backgroundPreloadRef = useRef<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    setResolvedBackgroundImage(backgroundImage);
+
+    if (!backgroundImage || backgroundImage === HEADER_BACKGROUND_FALLBACK) {
+      return;
+    }
+
+    const img = new window.Image();
+    backgroundPreloadRef.current = img;
+
+    img.onload = () => {
+      if (backgroundPreloadRef.current === img) {
+        setResolvedBackgroundImage(backgroundImage);
+      }
+    };
+    img.onerror = () => {
+      if (backgroundPreloadRef.current === img) {
+        setResolvedBackgroundImage(HEADER_BACKGROUND_FALLBACK);
+      }
+    };
+    img.src = backgroundImage;
+
+    return () => {
+      if (backgroundPreloadRef.current === img) {
+        backgroundPreloadRef.current = null;
+      }
+    };
+  }, [backgroundImage]);
   const overlayColor = bannerOverlayColor?.trim() || '#0f172a';
   const overlayOpacity =
     typeof bannerOverlayOpacity === 'number'
@@ -320,7 +351,7 @@ export function UniversalSmartHeaderCompact({
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url(${backgroundImage})`,
+          backgroundImage: `url(${resolvedBackgroundImage})`,
         }}
       />
 
