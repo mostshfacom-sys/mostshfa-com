@@ -24,6 +24,11 @@ const BANNER_PAGES = [
   { prefix: 'terms', pageKey: 'terms' },
   { prefix: 'articlesCategories', pageKey: 'articles-categories' },
   { prefix: 'articles', pageKey: 'articles' },
+  { prefix: 'beautyHealth', pageKey: 'beauty-health' },
+  { prefix: 'mentalHealth', pageKey: 'mental-health' },
+  { prefix: 'sexualHealth', pageKey: 'sexual-health' },
+  { prefix: 'fitnessHealth', pageKey: 'fitness-health' },
+  { prefix: 'firstAid', pageKey: 'first-aid' },
 ];
 
 export interface ImageSettings {
@@ -148,6 +153,36 @@ export interface ImageSettings {
   articlesBannerOverlayOpacity?: number;
   articlesBannerTitle?: string;
   articlesBannerSubtitle?: string;
+  beautyHealthBannerImage?: string;
+  beautyHealthBannerEnabled?: boolean;
+  beautyHealthBannerOverlayColor?: string;
+  beautyHealthBannerOverlayOpacity?: number;
+  beautyHealthBannerTitle?: string;
+  beautyHealthBannerSubtitle?: string;
+  mentalHealthBannerImage?: string;
+  mentalHealthBannerEnabled?: boolean;
+  mentalHealthBannerOverlayColor?: string;
+  mentalHealthBannerOverlayOpacity?: number;
+  mentalHealthBannerTitle?: string;
+  mentalHealthBannerSubtitle?: string;
+  sexualHealthBannerImage?: string;
+  sexualHealthBannerEnabled?: boolean;
+  sexualHealthBannerOverlayColor?: string;
+  sexualHealthBannerOverlayOpacity?: number;
+  sexualHealthBannerTitle?: string;
+  sexualHealthBannerSubtitle?: string;
+  fitnessHealthBannerImage?: string;
+  fitnessHealthBannerEnabled?: boolean;
+  fitnessHealthBannerOverlayColor?: string;
+  fitnessHealthBannerOverlayOpacity?: number;
+  fitnessHealthBannerTitle?: string;
+  fitnessHealthBannerSubtitle?: string;
+  firstAidBannerImage?: string;
+  firstAidBannerEnabled?: boolean;
+  firstAidBannerOverlayColor?: string;
+  firstAidBannerOverlayOpacity?: number;
+  firstAidBannerTitle?: string;
+  firstAidBannerSubtitle?: string;
 }
 
 const DEFAULT_SETTINGS: ImageSettings = {
@@ -278,6 +313,36 @@ const DEFAULT_SETTINGS: ImageSettings = {
   articlesBannerOverlayOpacity: 70,
   articlesBannerTitle: 'المقالات الطبية',
   articlesBannerSubtitle: 'مقالات موثوقة ونصائح طبية من متخصصين',
+  beautyHealthBannerImage: '',
+  beautyHealthBannerEnabled: true,
+  beautyHealthBannerOverlayColor: '#0f172a',
+  beautyHealthBannerOverlayOpacity: 70,
+  beautyHealthBannerTitle: 'الصحة والجمال',
+  beautyHealthBannerSubtitle: 'نصائح وإرشادات للعناية بالصحة والجمال الطبيعي.',
+  mentalHealthBannerImage: '',
+  mentalHealthBannerEnabled: true,
+  mentalHealthBannerOverlayColor: '#0f172a',
+  mentalHealthBannerOverlayOpacity: 70,
+  mentalHealthBannerTitle: 'الصحة النفسية',
+  mentalHealthBannerSubtitle: 'دليلك للتوازن النفسي والهدوء الداخلي وحياة أفضل.',
+  sexualHealthBannerImage: '',
+  sexualHealthBannerEnabled: true,
+  sexualHealthBannerOverlayColor: '#0f172a',
+  sexualHealthBannerOverlayOpacity: 70,
+  sexualHealthBannerTitle: 'الصحة الجنسية',
+  sexualHealthBannerSubtitle: 'معلومات طبية موثوقة وشاملة حول الصحة الجنسية والإنجابية.',
+  fitnessHealthBannerImage: '',
+  fitnessHealthBannerEnabled: true,
+  fitnessHealthBannerOverlayColor: '#0f172a',
+  fitnessHealthBannerOverlayOpacity: 70,
+  fitnessHealthBannerTitle: 'اللياقة البدنية',
+  fitnessHealthBannerSubtitle: 'خطوات عملية لتحسين لياقتك البدنية ونشاطك اليومي.',
+  firstAidBannerImage: '',
+  firstAidBannerEnabled: true,
+  firstAidBannerOverlayColor: '#0f172a',
+  firstAidBannerOverlayOpacity: 70,
+  firstAidBannerTitle: 'الإسعافات الأولية',
+  firstAidBannerSubtitle: 'دليل شامل للتعامل مع الحالات الطارئة وإنقاذ الأرواح.',
 };
 
 const ImageSettingsContext = createContext<ImageSettings>(DEFAULT_SETTINGS);
@@ -363,11 +428,49 @@ export function ImageSettingsProvider({ children }: { children: React.ReactNode 
         }
 
         BANNER_PAGES.forEach((page, index) => {
-          next = mergeBannerSettings(next, pageBannerData[index]?.banner ?? null, page.prefix);
+          const banner = pageBannerData[index]?.banner ?? null;
+          if (banner) {
+            next = mergeBannerSettings(next, banner, page.prefix);
+          }
         });
-        BANNER_PAGES.forEach((page) => {
-          next = mergeBannerSettings(next, masterBannerData?.banner ?? null, page.prefix);
-        });
+
+        // Apply master banner settings with priority
+        if (masterBannerData?.banner) {
+          const master = masterBannerData.banner;
+          BANNER_PAGES.forEach((page) => {
+            const baseKey = `${page.prefix}Banner`;
+            
+            // Only override Title and Subtitle if they are present and NOT empty
+            if (master.title !== undefined && master.title !== null && master.title !== '') {
+              (next as any)[`${baseKey}Title`] = master.title;
+            }
+            if (master.subtitle !== undefined && master.subtitle !== null && master.subtitle !== '') {
+              (next as any)[`${baseKey}Subtitle`] = master.subtitle;
+            }
+
+            // For other settings, only override if explicitly set in master
+            const assignIfPresent = (suffix: string, value: any) => {
+              if (value !== undefined && value !== null && value !== '') {
+                (next as any)[`${baseKey}${suffix}`] = value;
+              }
+            };
+
+            // CRITICAL: For the image, we ONLY override if the master actually has an image.
+            // If the master image is empty, it should NOT wipe out the page-specific image.
+            assignIfPresent('Image', master.imageUrl);
+            
+            // For boolean/number/color, we also check for truthy values or specific types
+            if (typeof master.isEnabled === 'boolean') {
+              (next as any)[`${baseKey}Enabled`] = master.isEnabled;
+            }
+            if (master.overlayColor && master.overlayColor.trim()) {
+              (next as any)[`${baseKey}OverlayColor`] = master.overlayColor.trim();
+            }
+            if (typeof master.overlayOpacity === 'number') {
+              (next as any)[`${baseKey}OverlayOpacity`] = master.overlayOpacity;
+            }
+          });
+        }
 
         try {
           const nextCache = JSON.stringify(next);

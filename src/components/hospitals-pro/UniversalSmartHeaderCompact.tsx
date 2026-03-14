@@ -273,13 +273,18 @@ export function UniversalSmartHeaderCompact({
 
   const resolvedBannerImage = bannerImage?.trim() || HEADER_BACKGROUND_FALLBACK;
   const backgroundImage = bannerEnabled === false ? HEADER_BACKGROUND_FALLBACK : resolvedBannerImage;
-  const [resolvedBackgroundImage, setResolvedBackgroundImage] = useState(backgroundImage);
+  const [resolvedBackgroundImage, setResolvedBackgroundImage] = useState<string | null>(null);
   const backgroundPreloadRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
-    setResolvedBackgroundImage(backgroundImage);
+    if (!backgroundImage) {
+      setResolvedBackgroundImage(HEADER_BACKGROUND_FALLBACK);
+      return;
+    }
 
-    if (!backgroundImage || backgroundImage === HEADER_BACKGROUND_FALLBACK) {
+    // If it's the fallback, set it immediately
+    if (backgroundImage === HEADER_BACKGROUND_FALLBACK) {
+      setResolvedBackgroundImage(HEADER_BACKGROUND_FALLBACK);
       return;
     }
 
@@ -347,11 +352,15 @@ export function UniversalSmartHeaderCompact({
   };
 
   return (
-    <header className={`hospitals-header relative text-white overflow-hidden ${className}`}>
+    <header className={cn(
+      "hospitals-header relative text-white overflow-hidden transition-opacity duration-300",
+      !resolvedBackgroundImage ? "opacity-0" : "opacity-100",
+      className
+    )}>
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500"
         style={{
-          backgroundImage: `url(${resolvedBackgroundImage})`,
+          backgroundImage: resolvedBackgroundImage ? `url(${resolvedBackgroundImage})` : 'none',
         }}
       />
 

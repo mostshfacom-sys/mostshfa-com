@@ -47,23 +47,39 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: 'المقال غير موجود' };
   }
 
+  const metaTitle = article.metaTitle || article.title;
+  const metaDescription = article.metaDescription || article.excerpt || article.title;
+  const keywords =
+    (article.metaKeywords || '')
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean);
+  const fallbackKeywords = article.tags?.split(',').map((t) => t.trim()).filter(Boolean) || [];
+  const finalKeywords = keywords.length ? keywords : fallbackKeywords;
+
+  const canonical = article.canonicalUrl || `/articles/${article.slug}`;
+  const ogImage = article.ogImage || article.image;
+
   return {
-    title: `${article.title} | مستشفى.كوم`,
-    description: article.excerpt || article.title,
-    keywords: article.tags?.split(',').map(t => t.trim()) || [],
+    title: `${metaTitle} | مستشفى.كوم`,
+    description: metaDescription,
+    keywords: finalKeywords,
+    alternates: {
+      canonical,
+    },
     openGraph: {
-      title: article.title,
-      description: article.excerpt || article.title,
+      title: metaTitle,
+      description: metaDescription,
       type: 'article',
-      images: article.image ? [article.image] : [],
+      images: ogImage ? [ogImage] : [],
       publishedTime: article.publishedAt?.toISOString(),
       authors: article.author ? [article.author] : undefined,
     },
     twitter: {
       card: 'summary_large_image',
-      title: article.title,
-      description: article.excerpt || article.title,
-      images: article.image ? [article.image] : [],
+      title: metaTitle,
+      description: metaDescription,
+      images: ogImage ? [ogImage] : [],
     },
   };
 }

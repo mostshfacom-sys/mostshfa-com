@@ -373,6 +373,11 @@ model Article {
   image              String?
   author             String?
   tags               String?
+  metaTitle          String?              @map("meta_title")
+  metaDescription    String?              @map("meta_description")
+  metaKeywords       String?              @map("meta_keywords")
+  canonicalUrl       String?              @map("canonical_url")
+  ogImage            String?              @map("og_image")
   views              Int                  @default(0)
   isFeatured         Boolean              @default(false) @map("is_featured")
   isPublished        Boolean              @default(true) @map("is_published")

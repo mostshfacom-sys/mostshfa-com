@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Drug {
+  id                Int           @id @default(autoincrement())
+  categoryId        Int?          @map("category_id")
+  category          DrugCategory? @relation(fields: [categoryId], references: [id])
+  legacyId          Int?          @map("legacy_id")
+  nameAr            String        @map("name_ar")
+  nameEn            String?       @map("name_en")
+  slug              String        @unique
+  image             String?
+  usage             String?
+  contraindications String?
+  dosage            String?
+  activeIngredient  String?       @map("active_ingredient")
+  disclaimer        String?
+  priceText         String?       @map("price_text")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+  @@index([categoryId])
+  @@map("drugs")
+}
+
+model DrugCategory {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  legacyId  Int?     @map("legacy_id")
+  drugs     Drug[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@map("drug_categories")
+}

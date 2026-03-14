@@ -1,0 +1,89 @@
+
+إجابة مختصرة بدون أي تعديل:
+
+1) هل الصور الحالية افتراضية أم حقيقية؟
+الصور المعروضة تأتي من مكوّن EntityImage الذي يحدد المصدر بهذا الترتيب:
+
+إذا كان logo_url موجودًا وصحيحًا → تُعرض الصورة الفعلية.
+إذا كان غير موجود/فارغ/غير صالح → يحاول صورة محلية حسب رقم المستشفى:
+/images/hospitals/{id}.jpg ثم .png ثم .webp.
+إذا فشلت كل المحاولات → يستخدم الصورة الافتراضية:
+/images/hospitals/hospital.jpg.
+هذا منطقيًا يعني: إذا كانت نفس الصورة تتكرر على كل المستشفيات فغالبًا هي الافتراضية.
+راجع منطق الاختيار هنا: @c:\web\mostshfa_new\src\components\ui\EntityImage.tsx#24-138
+2) أين مسار الصور؟ وكيف تعمل منظومة الصور؟
+الصور المحلية تكون داخل:
+public/images/hospitals/
+(أي مسار يبدأ بـ /images/... يتم قراءته من داخل public).
+إذا أعطيت مسارًا نسبيًا مثل logo.jpg يتم تحويله تلقائيًا إلى
+/images/hospitals/logo.jpg.
+منطق التطبيع هنا: @c:\web\mostshfa_new\src\lib\images\default-images.ts#121-163
+3) كيف أغيّر صور المستشفيات؟
+طريقتان:
+
+من قاعدة البيانات: تحديث حقل logo (الذي يخرج كـ logo_url) إلى رابط كامل أو مسار يبدأ بـ /images/....
+تحويل الحقل في API هنا: @c:\web\mostshfa_new\src\app\api\hospitals-pro[id]\route.ts#103-131
+بالملفات المحلية: ضع صورة باسم رقم المستشفى (مثلاً 123.jpg) داخل
+public/images/hospitals/ لكي تُلتقط تلقائيًا.
+منطق البحث بالـ ID هنا: @c:\web\mostshfa_new\src\components\ui\EntityImage.tsx#24-49
+4) لماذا صورة الهيدر ظهرت افتراضية؟
+الهيدر الآن يستخدم مصدرين:
+
+الرابط الأساسي:
+NEXT_PUBLIC_MEDIA_BASE + /media/banners/hospitals_banar.jpg
+Fallback محلي إذا فشل الأول:
+/images/hospitals/hospital.jpg
+إذا ظهر الفallback فهذا يعني أن رابط البنر الأصلي غير متاح أو غير صحيح.
+المصدر هنا: @c:\web\mostshfa_new\src\components\hospitals-pro\SmartHeaderCompact.tsx#49-316
+===========================================================
+
+
+
+باختصار: فهمك صحيح جزئياً، لكن منظومة صور المستشفيات لها مرحلة إضافية قبل الصورة الافتراضية؛ لذلك تغيّر البانر فقط ولم تتغير كل بطاقات المستشفيات.
+
+لماذا تغيّر البانر فقط؟
+الهيدر يحمّل صورتين بالترتيب:
+
+رابط البانر الأصلي.
+fallback إلى /images/hospitals/hospital.jpg.
+لذلك عند تغيير ملف hospital.jpg سيتغير الهيدر فورًا إذا كان البانر الأصلي غير متاح.
+المصدر: @c:\web\mostshfa_new\src\components\hospitals-pro\SmartHeaderCompact.tsx#49-316
+لماذا صور البطاقات لم تتغير؟
+صور البطاقات لا تذهب مباشرة للصورة الافتراضية، بل تمر بهذه المراحل:
+
+إذا كان logo_url موجودًا وصحيحًا → يُعرض مباشرة.
+إذا لم يوجد → يحاول صورة محلية حسب رقم المستشفى:
+/images/hospitals/{id}.jpg ثم .png ثم .webp.
+فقط إذا فشلت كل المحاولات ينتقل إلى الصورة الافتراضية
+/images/hospitals/hospital.jpg.
+المصدر: @c:\web\mostshfa_new\src\components\ui\EntityImage.tsx#24-137 و @c:\web\mostshfa_new\src\lib\images\default-images.ts#7-56
+النتيجة: إذا كانت المستشفيات لديها logo_url أو صور محلية حسب الـ ID، فلن تتأثر بتغيير hospital.jpg. لذلك تغيّر الهيدر فقط.
+
+ملاحظة مهمة
+الـ Next/Image أحيانًا يحتفظ بنسخة cached للصورة، بينما الهيدر يستخدم CSS background فيظهر التغيير أسرع.
+إذا كانت بطاقة ما لا تتغير رغم أنها فعلاً fallback، قد يكون السبب كاش المتصفح أو كاش Next/Image.
+
+وبخصوص عدم تفضيل نفس الصورة للبانر والافتراضية
+هذا صحيح—حاليًا الهيدر fallback يستخدم نفس صورة المستشفى الافتراضية، ولهذا يظهر نفس الشكل. الحل سيكون فصل صورة البانر عن صورة الافتراضية (لكن كما طلبت: بدون تعديل الآن).
+
+Feedback submitted
+
+
+
+==================================
+النظام المعدل
+المسار الحالي بعد التعديل
+
+الرفع من لوحة التحكم أصبح يحفظ الصورة داخل:
+mostshfa_new\public\images\banners\{pageKey}.{ext}
+مثال: public\images\banners\clinics.jpg
+هذا تم عبر:
+تمرير folder=images/banners واسم ملف ثابت مبني على اسم الصفحة. @c:\web\mostshfa_new\src\components\admin\BannerAdminPage.tsx#147-183
+دعم مسارات مجلدات متداخلة واسم ملف ثابت داخل API الرفع. @c:\web\mostshfa_new\src\app\api\admin\upload\route.ts#35-61
+أين يُخزن رابط الصورة؟
+
+رابط الصورة المُرفوعة يتم حفظه في إعدادات البانر داخل data/banners.json عبر /api/admin/banner. (يعني الـ URL نفسه يُحفظ هناك، والصورة الفعلية في public/images/banners). @c:\web\mostshfa_new\src\app\api\admin\banner\route.ts#54-108
+إذا تريد أسماء مختلفة غير pageKey (مثل clinics-hero أو clinics-2024)، قول لي الاسم وسأثبّته.
+
+
+

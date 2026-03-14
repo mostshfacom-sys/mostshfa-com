@@ -16,6 +16,7 @@ const sidebarLinks = [
   { href: '/admin/pharmacies', label: 'الصيدليات', icon: 'pharmacy' },
   { href: '/admin/drugs', label: 'الأدوية', icon: 'drug' },
   { href: '/admin/articles', label: 'المقالات', icon: 'article' },
+  { href: '/admin/article-categories', label: 'تصنيفات المقالات', icon: 'article' },
   { href: '/admin/visual-tips', label: 'المعلومات المصورة', icon: 'visual' },
   { href: '/admin/contact-messages', label: 'رسائل التواصل', icon: 'contact' },
   { href: '/admin/users', label: 'المستخدمين', icon: 'users' },

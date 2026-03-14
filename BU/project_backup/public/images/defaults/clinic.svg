@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <defs>
+    <linearGradient id="clinicBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0fdf4"/>
+      <stop offset="100%" style="stop-color:#dcfce7"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="url(#clinicBg)"/>
+  
+  <!-- Clinic Building -->
+  <rect x="120" y="120" width="160" height="130" fill="#16a34a" rx="8"/>
+  
+  <!-- Roof -->
+  <polygon points="100,120 200,60 300,120" fill="#15803d"/>
+  
+  <!-- Cross Symbol -->
+  <circle cx="200" cy="90" r="20" fill="white"/>
+  <rect x="192" y="75" width="16" height="30" fill="#16a34a" rx="2"/>
+  <rect x="185" y="82" width="30" height="16" fill="#16a34a" rx="2"/>
+  
+  <!-- Windows -->
+  <rect x="140" y="145" width="40" height="40" fill="#bbf7d0" rx="4"/>
+  <rect x="220" y="145" width="40" height="40" fill="#bbf7d0" rx="4"/>
+  
+  <!-- Door -->
+  <rect x="175" y="195" width="50" height="55" fill="#14532d" rx="4"/>
+  <circle cx="215" cy="222" r="4" fill="#fbbf24"/>
+  
+  <!-- Ground -->
+  <rect x="0" y="250" width="400" height="50" fill="#86efac"/>
+  
+  <!-- Stethoscope Icon -->
+  <circle cx="340" cy="80" r="25" fill="#22c55e" opacity="0.3"/>
+  <path d="M330 70 Q340 85 350 70" stroke="#15803d" stroke-width="3" fill="none"/>
+  <circle cx="330" cy="70" r="5" fill="#15803d"/>
+  <circle cx="350" cy="70" r="5" fill="#15803d"/>
+  
+  <!-- Text -->
+  <text x="200" y="280" text-anchor="middle" fill="#15803d" font-family="Arial, sans-serif" font-size="14" font-weight="bold">عيادة</text>
+</svg>

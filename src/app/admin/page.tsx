@@ -193,6 +193,13 @@ export default function AdminDashboard() {
             <span>بانر الطوارئ</span>
           </Link>
           <Link
+            href="/admin/first-aid-banner"
+            className="flex items-center gap-3 p-4 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+          >
+            <span className="text-xl">🩹</span>
+            <span>بانر الإسعافات</span>
+          </Link>
+          <Link
             href="/admin/nursing-banner"
             className="flex items-center gap-3 p-4 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors"
           >
@@ -226,6 +233,34 @@ export default function AdminDashboard() {
           >
             <span className="text-xl">🖼️</span>
             <span>بانر المقالات</span>
+          </Link>
+          <Link
+            href="/admin/beauty-health-banner"
+            className="flex items-center gap-3 p-4 bg-pink-50 text-pink-600 rounded-lg hover:bg-pink-100 transition-colors"
+          >
+            <span className="text-xl">💄</span>
+            <span>بانر الصحة والجمال</span>
+          </Link>
+          <Link
+            href="/admin/mental-health-banner"
+            className="flex items-center gap-3 p-4 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+          >
+            <span className="text-xl">🧠</span>
+            <span>بانر الصحة النفسية</span>
+          </Link>
+          <Link
+            href="/admin/sexual-health-banner"
+            className="flex items-center gap-3 p-4 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 transition-colors"
+          >
+            <span className="text-xl">❤️</span>
+            <span>بانر الصحة الجنسية</span>
+          </Link>
+          <Link
+            href="/admin/fitness-health-banner"
+            className="flex items-center gap-3 p-4 bg-orange-50 text-orange-600 rounded-lg hover:bg-orange-100 transition-colors"
+          >
+            <span className="text-xl">💪</span>
+            <span>بانر اللياقة البدنية</span>
           </Link>
           <Link
             href="/admin/users"

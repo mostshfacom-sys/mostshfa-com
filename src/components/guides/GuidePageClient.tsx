@@ -189,7 +189,12 @@ export default async function GuidePageContent({ slug }: GuidePageProps) {
       <main className="min-h-screen bg-gray-50 dark:bg-slate-950 overflow-x-hidden">
         <Suspense fallback={<div className="h-64 w-full bg-slate-100 animate-pulse" />}>
             <UniversalHeaderClient
-                prefix={`guide-${guide.slug}`}
+                prefix={guide.slug === 'beauty-health' ? 'beautyHealth' : 
+                        guide.slug === 'mental-health' ? 'mentalHealth' :
+                        guide.slug === 'sexual-health' ? 'sexualHealth' :
+                        guide.slug === 'fitness-health' ? 'fitnessHealth' :
+                        guide.slug === 'first-aid' ? 'firstAid' :
+                        `guide-${guide.slug}`}
                 title={guide.title}
                 subtitle={guide.subtitle}
                 titleClassName="whitespace-nowrap overflow-visible text-[clamp(1.4rem,6.5vw,2.6rem)] sm:text-4xl"

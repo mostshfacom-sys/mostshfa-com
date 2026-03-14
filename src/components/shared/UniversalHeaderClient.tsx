@@ -171,9 +171,17 @@ function UniversalHeaderClientContent(props: UniversalHeaderClientProps) {
   }, []);
 
   const bannerImage = useMemo(() => {
-    const value = settings[`${prefix}BannerImage`];
-    const resolved = typeof value === 'string' && value.trim() ? value.trim() : undefined;
-    return resolved;
+    // 1. Check page-specific banner
+    const pageValue = settings[`${prefix}BannerImage`];
+    if (typeof pageValue === 'string' && pageValue.trim()) {
+      return pageValue.trim();
+    }
+    
+    // 2. Check master banner (prefix is already handled in ImageSettingsProvider merge)
+    // but the provider might have overwritten it. 
+    // Let's rely on what's in settings.
+    
+    return undefined;
   }, [prefix, settings]);
   const bannerEnabled = useMemo(() => {
     const value = settings[`${prefix}BannerEnabled`];
@@ -189,7 +197,7 @@ function UniversalHeaderClientContent(props: UniversalHeaderClientProps) {
   }, [prefix, settings]);
   const isDarkMode = themeMode === 'dark' || (themeMode === 'system' && prefersDark);
   const resolvedBannerOverlayColor = useMemo(() => {
-    if (prefix === 'home' && isDarkMode) {
+    if (isDarkMode) {
       return '#000000';
     }
     if (prefix === 'home') {
@@ -198,8 +206,10 @@ function UniversalHeaderClientContent(props: UniversalHeaderClientProps) {
     return bannerOverlayColor;
   }, [prefix, isDarkMode, bannerOverlayColor]);
   const resolvedBannerOverlayOpacity = useMemo(() => {
-    if (prefix === 'home' && isDarkMode) {
-      return 90;
+    if (isDarkMode) {
+      // Increase opacity for all pages in dark mode to make it darker
+      const baseOpacity = bannerOverlayOpacity ?? (prefix === 'home' ? 62 : 70);
+      return Math.min(baseOpacity + 20, 95);
     }
     if (prefix === 'home') {
       return bannerOverlayOpacity ?? 62;

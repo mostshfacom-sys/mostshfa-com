@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Hospitals Pro Page</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>Testing Hospitals Pro API</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function testAPI() {
+            try {
+                const response = await fetch('http://localhost:3002/api/hospitals-pro?page=1');
+                const data = await response.json();
+                
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = `
+                    <h2>API Response:</h2>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <p><strong>Total Count:</strong> ${data.count}</p>
+                    <p><strong>Results Length:</strong> ${data.results?.length || 0}</p>
+                    <h3>First 3 Hospitals:</h3>
+                    <pre>${JSON.stringify(data.results?.slice(0, 3), null, 2)}</pre>
+                `;
+            } catch (error) {
+                document.getElementById('results').innerHTML = `
+                    <p style="color: red;"><strong>Error:</strong> ${error.message}</p>
+                `;
+            }
+        }
+        
+        testAPI();
+    </script>
+</body>
+</html>

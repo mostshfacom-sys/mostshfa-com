@@ -1,0 +1,461 @@
+// PlanetScale MySQL Schema for Production
+// To use: Copy this file to schema.prisma before deploying to Vercel
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Governorate {
+  id         Int        @id @default(autoincrement())
+  nameAr     String     @unique @map("name_ar") @db.VarChar(255)
+  nameEn     String?    @map("name_en") @db.VarChar(255)
+  cities     City[]
+  hospitals  Hospital[]
+  clinics    Clinic[]
+  labs       Lab[]
+  pharmacies Pharmacy[]
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+  @@map("governorates")
+}
+
+model City {
+  id            Int         @id @default(autoincrement())
+  governorateId Int         @map("governorate_id")
+  governorate   Governorate @relation(fields: [governorateId], references: [id])
+  nameAr        String      @map("name_ar") @db.VarChar(255)
+  nameEn        String?     @map("name_en") @db.VarChar(255)
+  hospitals     Hospital[]
+  clinics       Clinic[]
+  labs          Lab[]
+  pharmacies    Pharmacy[]
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  @@unique([governorateId, nameAr])
+  @@index([governorateId])
+  @@map("cities")
+}
+
+model HospitalType {
+  id          Int        @id @default(autoincrement())
+  nameAr      String     @map("name_ar") @db.VarChar(255)
+  nameEn      String?    @map("name_en") @db.VarChar(255)
+  slug        String     @unique @db.VarChar(255)
+  icon        String?    @db.VarChar(255)
+  color       String?    @db.VarChar(50)
+  description String?    @db.Text
+  isActive    Boolean    @default(true) @map("is_active")
+  order       Int        @default(0)
+  hospitals   Hospital[]
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  @@map("hospital_types")
+}
+
+model Specialty {
+  id        Int        @id @default(autoincrement())
+  nameAr    String     @map("name_ar") @db.VarChar(255)
+  nameEn    String?    @map("name_en") @db.VarChar(255)
+  slug      String     @unique @db.VarChar(255)
+  icon      String?    @db.VarChar(255)
+  hospitals Hospital[]
+  clinics   Clinic[]
+  staff     Staff[]
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  @@map("specialties")
+}
+
+model Hospital {
+  id            Int             @id @default(autoincrement())
+  nameAr        String          @map("name_ar") @db.VarChar(255)
+  nameEn        String?         @map("name_en") @db.VarChar(255)
+  slug          String          @unique @db.VarChar(255)
+  typeId        Int?            @map("type_id")
+  type          HospitalType?   @relation(fields: [typeId], references: [id])
+  governorateId Int?            @map("governorate_id")
+  governorate   Governorate?    @relation(fields: [governorateId], references: [id])
+  cityId        Int?            @map("city_id")
+  city          City?           @relation(fields: [cityId], references: [id])
+  address       String?         @db.VarChar(500)
+  phone         String?         @db.VarChar(50)
+  whatsapp      String?         @db.VarChar(50)
+  website       String?         @db.VarChar(255)
+  facebook      String?         @db.VarChar(255)
+  logo          String?         @db.VarChar(500)
+  description   String?         @db.Text
+  hasEmergency  Boolean         @default(false) @map("has_emergency")
+  isFeatured    Boolean         @default(false) @map("is_featured")
+  ratingAvg     Float           @default(0) @map("rating_avg")
+  ratingCount   Int             @default(0) @map("rating_count")
+  lat           Float?
+  lng           Float?
+  specialties   Specialty[]
+  hospitalStaff HospitalStaff[]
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  @@index([governorateId])
+  @@index([cityId])
+  @@index([typeId])
+  @@map("hospitals")
+}
+
+model Clinic {
+  id            Int           @id @default(autoincrement())
+  nameAr        String        @map("name_ar") @db.VarChar(255)
+  nameEn        String?       @map("name_en") @db.VarChar(255)
+  slug          String        @unique @db.VarChar(255)
+  descriptionAr String?       @map("description_ar") @db.Text
+  phone         String?       @db.VarChar(50)
+  whatsapp      String?       @db.VarChar(50)
+  email         String?       @db.VarChar(255)
+  website       String?       @db.VarChar(255)
+  facebook      String?       @db.VarChar(255)
+  logo          String?       @db.VarChar(500)
+  governorateId Int?          @map("governorate_id")
+  governorate   Governorate?  @relation(fields: [governorateId], references: [id])
+  cityId        Int?          @map("city_id")
+  city          City?         @relation(fields: [cityId], references: [id])
+  addressAr     String?       @map("address_ar") @db.VarChar(500)
+  lat           Float?
+  lng           Float?
+  hours         String?       @db.VarChar(255)
+  isOpen        Boolean       @default(true) @map("is_open")
+  isFeatured    Boolean       @default(false) @map("is_featured")
+  ratingAvg     Float         @default(0) @map("rating_avg")
+  ratingCount   Int           @default(0) @map("rating_count")
+  status        String        @default("published") @db.VarChar(50)
+  specialties   Specialty[]
+  clinicStaff   ClinicStaff[]
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  @@index([governorateId])
+  @@index([cityId])
+  @@map("clinics")
+}
+
+model Lab {
+  id              Int          @id @default(autoincrement())
+  nameAr          String       @map("name_ar") @db.VarChar(255)
+  nameEn          String?      @map("name_en") @db.VarChar(255)
+  slug            String       @unique @db.VarChar(255)
+  descriptionAr   String?      @map("description_ar") @db.Text
+  phone           String?      @db.VarChar(50)
+  whatsapp        String?      @db.VarChar(50)
+  email           String?      @db.VarChar(255)
+  website         String?      @db.VarChar(255)
+  facebook        String?      @db.VarChar(255)
+  logo            String?      @db.VarChar(500)
+  governorateId   Int?         @map("governorate_id")
+  governorate     Governorate? @relation(fields: [governorateId], references: [id])
+  cityId          Int?         @map("city_id")
+  city            City?        @relation(fields: [cityId], references: [id])
+  addressAr       String?      @map("address_ar") @db.VarChar(500)
+  lat             Float?
+  lng             Float?
+  hasHomeSampling Boolean      @default(false) @map("has_home_sampling")
+  hours           String?      @db.VarChar(255)
+  isOpen          Boolean      @default(true) @map("is_open")
+  isFeatured      Boolean      @default(false) @map("is_featured")
+  ratingAvg       Float        @default(0) @map("rating_avg")
+  ratingCount     Int          @default(0) @map("rating_count")
+  status          String       @default("published") @db.VarChar(50)
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+  @@index([governorateId])
+  @@index([cityId])
+  @@map("labs")
+}
+
+model Pharmacy {
+  id                 Int          @id @default(autoincrement())
+  nameAr             String       @map("name_ar") @db.VarChar(255)
+  nameEn             String?      @map("name_en") @db.VarChar(255)
+  slug               String       @unique @db.VarChar(255)
+  descriptionAr      String?      @map("description_ar") @db.Text
+  phone              String?      @db.VarChar(50)
+  whatsapp           String?      @db.VarChar(50)
+  email              String?      @db.VarChar(255)
+  website            String?      @db.VarChar(255)
+  facebook           String?      @db.VarChar(255)
+  logo               String?      @db.VarChar(500)
+  governorateId      Int?         @map("governorate_id")
+  governorate        Governorate? @relation(fields: [governorateId], references: [id])
+  cityId             Int?         @map("city_id")
+  city               City?        @relation(fields: [cityId], references: [id])
+  addressAr          String?      @map("address_ar") @db.VarChar(500)
+  lat                Float?
+  lng                Float?
+  hasDeliveryService Boolean      @default(false) @map("has_delivery_service")
+  hours              String?      @db.VarChar(255)
+  isOpen             Boolean      @default(true) @map("is_open")
+  isFeatured         Boolean      @default(false) @map("is_featured")
+  is24h              Boolean      @default(false) @map("is_24h")
+  ratingAvg          Float        @default(0) @map("rating_avg")
+  ratingCount        Int          @default(0) @map("rating_count")
+  status             String       @default("published") @db.VarChar(50)
+  createdAt          DateTime     @default(now()) @map("created_at")
+  updatedAt          DateTime     @updatedAt @map("updated_at")
+  @@index([governorateId])
+  @@index([cityId])
+  @@map("pharmacies")
+}
+
+model DrugCategory {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(255)
+  legacyId  Int?     @map("legacy_id")
+  drugs     Drug[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@map("drug_categories")
+}
+
+model Drug {
+  id                Int           @id @default(autoincrement())
+  categoryId        Int?          @map("category_id")
+  category          DrugCategory? @relation(fields: [categoryId], references: [id])
+  legacyId          Int?          @map("legacy_id")
+  nameAr            String        @map("name_ar") @db.VarChar(255)
+  nameEn            String?       @map("name_en") @db.VarChar(255)
+  slug              String        @unique @db.VarChar(255)
+  image             String?       @db.VarChar(500)
+  usage             String?       @db.Text
+  contraindications String?       @db.Text
+  dosage            String?       @db.Text
+  activeIngredient  String?       @map("active_ingredient") @db.VarChar(500)
+  disclaimer        String?       @db.Text
+  priceText         String?       @map("price_text") @db.VarChar(255)
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+  @@index([categoryId])
+  @@map("drugs")
+}
+
+model ArticleCategory {
+  id        Int       @id @default(autoincrement())
+  nameAr    String    @map("name_ar") @db.VarChar(255)
+  nameEn    String?   @map("name_en") @db.VarChar(255)
+  slug      String    @unique @db.VarChar(255)
+  icon      String?   @db.VarChar(255)
+  color     String?   @db.VarChar(50)
+  articles  Article[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  @@map("article_categories")
+}
+
+model Article {
+  id          Int              @id @default(autoincrement())
+  categoryId  Int?             @map("category_id")
+  category    ArticleCategory? @relation(fields: [categoryId], references: [id])
+  title       String           @db.VarChar(500)
+  slug        String           @unique @db.VarChar(255)
+  excerpt     String?          @db.Text
+  content     String?          @db.LongText
+  image       String?          @db.VarChar(500)
+  author      String?          @db.VarChar(255)
+  tags        String?          @db.Text
+  views       Int              @default(0)
+  isFeatured  Boolean          @default(false) @map("is_featured")
+  isPublished Boolean          @default(true) @map("is_published")
+  publishedAt DateTime?        @map("published_at")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+  @@index([categoryId])
+  @@index([isPublished])
+  @@map("articles")
+}
+
+model Staff {
+  id              Int             @id @default(autoincrement())
+  nameAr          String          @map("name_ar") @db.VarChar(255)
+  nameEn          String?         @map("name_en") @db.VarChar(255)
+  slug            String          @unique @db.VarChar(255)
+  title           String?         @db.VarChar(255)
+  specialtyId     Int?            @map("specialty_id")
+  specialty       Specialty?      @relation(fields: [specialtyId], references: [id])
+  bio             String?         @db.Text
+  image           String?         @db.VarChar(500)
+  phone           String?         @db.VarChar(50)
+  email           String?         @db.VarChar(255)
+  experience      Int?
+  education       String?         @db.Text
+  certifications  String?         @db.Text
+  qualifications  String?         @db.Text
+  languages       String?         @db.VarChar(255)
+  consultationFee Float?          @map("consultation_fee")
+  availableDays   String?         @map("available_days") @db.VarChar(255)
+  isFeatured      Boolean         @default(false) @map("is_featured")
+  isActive        Boolean         @default(true) @map("is_active")
+  ratingAvg       Float           @default(0) @map("rating_avg")
+  ratingCount     Int             @default(0) @map("rating_count")
+  hospitalStaff   HospitalStaff[]
+  clinicStaff     ClinicStaff[]
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  @@index([specialtyId])
+  @@map("staff")
+}
+
+model HospitalStaff {
+  id         Int      @id @default(autoincrement())
+  hospitalId Int      @map("hospital_id")
+  hospital   Hospital @relation(fields: [hospitalId], references: [id])
+  staffId    Int      @map("staff_id")
+  staff      Staff    @relation(fields: [staffId], references: [id])
+  position   String?  @db.VarChar(255)
+  department String?  @db.VarChar(255)
+  isHead     Boolean  @default(false) @map("is_head")
+  createdAt  DateTime @default(now()) @map("created_at")
+  @@unique([hospitalId, staffId])
+  @@index([hospitalId])
+  @@index([staffId])
+  @@map("hospital_staff")
+}
+
+model ClinicStaff {
+  id        Int      @id @default(autoincrement())
+  clinicId  Int      @map("clinic_id")
+  clinic    Clinic   @relation(fields: [clinicId], references: [id])
+  staffId   Int      @map("staff_id")
+  staff     Staff    @relation(fields: [staffId], references: [id])
+  isOwner   Boolean  @default(false) @map("is_owner")
+  createdAt DateTime @default(now()) @map("created_at")
+  @@unique([clinicId, staffId])
+  @@index([clinicId])
+  @@index([staffId])
+  @@map("clinic_staff")
+}
+
+model User {
+  id            Int          @id @default(autoincrement())
+  email         String       @unique @db.VarChar(255)
+  phone         String?      @unique @db.VarChar(50)
+  password      String?      @db.VarChar(255)
+  name          String?      @db.VarChar(255)
+  image         String?      @db.VarChar(500)
+  role          String       @default("user") @db.VarChar(50)
+  emailVerified DateTime?    @map("email_verified")
+  phoneVerified DateTime?    @map("phone_verified")
+  isActive      Boolean      @default(true) @map("is_active")
+  lastLogin     DateTime?    @map("last_login")
+  favorites     Favorite[]
+  reviews       Review[]
+  recentViews   RecentView[]
+  auditLogs     AuditLog[]
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  @@map("users")
+}
+
+model Favorite {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType String   @map("entity_type") @db.VarChar(50)
+  entityId   Int      @map("entity_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  @@unique([userId, entityType, entityId])
+  @@index([userId])
+  @@map("favorites")
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType String   @map("entity_type") @db.VarChar(50)
+  entityId   Int      @map("entity_id")
+  rating     Int
+  comment    String?  @db.Text
+  isApproved Boolean  @default(false) @map("is_approved")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@map("reviews")
+}
+
+model RecentView {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType String   @map("entity_type") @db.VarChar(50)
+  entityId   Int      @map("entity_id")
+  viewedAt   DateTime @default(now()) @map("viewed_at")
+  @@index([userId])
+  @@map("recent_views")
+}
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int?     @map("user_id")
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String   @db.VarChar(100)
+  entityType String   @map("entity_type") @db.VarChar(50)
+  entityId   String   @map("entity_id") @db.VarChar(50)
+  entityName String   @map("entity_name") @db.VarChar(255)
+  changes    String?  @db.Text
+  ipAddress  String?  @map("ip_address") @db.VarChar(50)
+  userAgent  String?  @map("user_agent") @db.VarChar(500)
+  createdAt  DateTime @default(now()) @map("created_at")
+  @@index([userId])
+  @@index([entityType])
+  @@index([action])
+  @@map("audit_logs")
+}
+
+model MedicalArticle {
+  id            Int       @id @default(autoincrement())
+  titleAr       String    @map("title_ar") @db.VarChar(500)
+  titleEn       String?   @map("title_en") @db.VarChar(500)
+  slug          String    @unique @db.VarChar(255)
+  contentAr     String    @map("content_ar") @db.LongText
+  contentEn     String?   @map("content_en") @db.LongText
+  excerptAr     String?   @map("excerpt_ar") @db.Text
+  categoryId    Int?      @map("category_id")
+  featuredImage String?   @map("featured_image") @db.VarChar(500)
+  status        String    @default("draft") @db.VarChar(50)
+  viewCount     Int       @default(0) @map("view_count")
+  likeCount     Int       @default(0) @map("like_count")
+  readingTime   Int       @default(0) @map("reading_time")
+  publishedAt   DateTime? @map("published_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  @@index([categoryId])
+  @@index([status])
+  @@map("medical_articles")
+}
+
+model PageBanner {
+  id        Int      @id @default(autoincrement())
+  pageKey   String   @unique @map("page_key") @db.VarChar(100)
+  title     String?  @db.VarChar(255)
+  subtitle  String?  @db.VarChar(500)
+  imageUrl  String?  @map("image_url") @db.VarChar(500)
+  linkUrl   String?  @map("link_url") @db.VarChar(500)
+  isEnabled Boolean  @default(true) @map("is_enabled")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@map("page_banners")
+}
+
+model VisualTip {
+  id        Int      @id @default(autoincrement())
+  titleAr   String   @map("title_ar") @db.VarChar(500)
+  contentAr String?  @map("content_ar") @db.Text
+  imageUrl  String?  @map("image_url") @db.VarChar(500)
+  isActive  Boolean  @default(true) @map("is_active")
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@index([isActive, sortOrder])
+  @@map("visual_tips")
+}
