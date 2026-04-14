@@ -594,6 +594,11 @@ export default function NavbarAdminPage() {
             description: 'روابط الأدوات الذكية والصفحات المتقدمة',
           },
           {
+            key: 'medicalBrief' as SectionKey,
+            title: 'قسم الموجز الطبي',
+            description: 'قائمة مستقلة للموجز الطبي وروابط التخصصات والمصادر',
+          },
+          {
             key: 'articles' as SectionKey,
             title: 'قسم المقالات الطبية',
             description: 'إدارة أقسام المقالات أو الاعتماد على التصنيفات التلقائية',

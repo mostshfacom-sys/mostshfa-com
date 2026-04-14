@@ -44,12 +44,14 @@ const DROPDOWN_CLOSE_DELAY = 380;
 const SECTION_ORDER: Array<keyof NavbarConfig['sections']> = [
   'directories',
   'tools',
+  'medicalBrief',
   'articles',
 ];
 
 const SECTION_LINKS: Record<keyof NavbarConfig['sections'], string> = {
   directories: '/directories',
   tools: '/tools',
+  medicalBrief: '/medical-brief',
   articles: '/articles',
 };
 
@@ -95,6 +97,11 @@ const sectionStyles = {
     badge: 'bg-sky-100 text-sky-700',
     glow: 'from-sky-500/20 via-indigo-500/10 to-transparent',
     accent: 'text-sky-600',
+  },
+  medicalBrief: {
+    badge: 'bg-rose-100 text-rose-700',
+    glow: 'from-rose-500/20 via-fuchsia-500/10 to-transparent',
+    accent: 'text-rose-600',
   },
   articles: {
     badge: 'bg-amber-100 text-amber-700',
@@ -246,6 +253,7 @@ export function Header() {
     return {
       directories: config.sections.directories.items,
       tools: config.sections.tools.items,
+      medicalBrief: config.sections.medicalBrief.items,
       articles: resolvedArticles,
     };
   }, [config.sections, articleItems]);

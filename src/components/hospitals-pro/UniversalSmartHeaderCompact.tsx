@@ -28,6 +28,8 @@ interface UniversalSmartHeaderCompactProps {
   onSearchChange?: (value: string) => void;
   onSearchSubmit?: (value: string) => void;
   searchPlaceholder?: string;
+  hideSearchOnMobile?: boolean;
+  headerActions?: React.ReactNode;
   quickFilters?: QuickFilterConfig[];
   quickFiltersOpen?: boolean;
   onQuickFiltersToggle?: (open: boolean) => void;
@@ -212,6 +214,8 @@ export function UniversalSmartHeaderCompact({
   onSearchChange,
   onSearchSubmit,
   searchPlaceholder = 'اكتب اي شيء تتذكره للبحث عن مستشفى',
+  hideSearchOnMobile,
+  headerActions,
   quickFilters = [],
   quickFiltersOpen,
   onQuickFiltersToggle,
@@ -244,31 +248,21 @@ export function UniversalSmartHeaderCompact({
   const [localQuickFiltersOpen, setLocalQuickFiltersOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [localSearchValue, setLocalSearchValue] = useState(searchValue);
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Sync local search with prop
   useEffect(() => {
-    setLocalSearchValue(searchValue);
+    if (searchValue !== localSearchValue) {
+      setLocalSearchValue(searchValue);
+    }
   }, [searchValue]);
 
   const handleSearchChange = useCallback((value: string) => {
     setLocalSearchValue(value);
-    
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
-    searchTimeoutRef.current = setTimeout(() => {
-      onSearchChange?.(value);
-    }, 400); // 400ms debounce
+    onSearchChange?.(value);
   }, [onSearchChange]);
 
   const handleClearSearch = useCallback(() => {
     setLocalSearchValue('');
     onSearchChange?.('');
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
   }, [onSearchChange]);
 
   const resolvedBannerImage = bannerImage?.trim() || HEADER_BACKGROUND_FALLBACK;
@@ -342,7 +336,7 @@ export function UniversalSmartHeaderCompact({
   const handleSearchKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      onSearchSubmit?.(searchValue);
+      onSearchSubmit?.(localSearchValue);
     }
   };
 
@@ -521,7 +515,7 @@ export function UniversalSmartHeaderCompact({
               <div
                 className={`flex w-full items-stretch gap-2 ${
                   hasCounters ? 'lg:max-w-lg xl:max-w-xl' : 'max-w-2xl mx-auto'
-                }`}
+                } ${hideSearchOnMobile ? 'hidden sm:flex' : ''}`}
               >
                 <div className="relative flex-1 min-w-0 cursor-text order-1">
                   <div className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/60 z-10 pointer-events-none">
@@ -547,10 +541,20 @@ export function UniversalSmartHeaderCompact({
                     </button>
                   )}
                 </div>
+                <button
+                  type="button"
+                  onClick={() => onSearchSubmit?.(localSearchValue)}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-lg border-2 border-white/30 bg-white/20 px-3 py-2.5 text-white hover:bg-white/25 transition-colors shadow-md order-2"
+                  aria-label="تنفيذ البحث"
+                  title="بحث"
+                >
+                  <MagnifyingGlassIcon className="w-4 h-4 text-white" />
+                  <span className="hidden sm:inline text-xs font-bold">بحث</span>
+                </button>
                 {showVoiceSearch && (
                   <VoiceSearchButton
                     onVoiceResult={handleVoiceResult}
-                    className="inline-flex items-center justify-center rounded-lg border-2 border-white/30 bg-white/15 p-2.5 text-white hover:bg-white/20 transition-colors order-2"
+                    className="inline-flex items-center justify-center rounded-lg border-2 border-white/30 bg-white/15 p-2.5 text-white hover:bg-white/20 transition-colors order-3"
                   />
                 )}
               </div>
@@ -593,6 +597,8 @@ export function UniversalSmartHeaderCompact({
                       <div className="hidden sm:block w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
                     </motion.button>
                   )}
+
+                  {headerActions}
 
                   {shouldShowResultsCount && (
                     <div className="flex items-center gap-2 px-2.5 py-2 bg-white/15 backdrop-blur-md border-2 border-white/30 rounded-lg">
@@ -652,6 +658,8 @@ export function UniversalSmartHeaderCompact({
                   <span className="text-[10px] leading-tight">{quickFiltersLabel}</span>
                 </motion.button>
               )}
+
+              {headerActions}
 
               {showMapButton && (
                 <motion.button

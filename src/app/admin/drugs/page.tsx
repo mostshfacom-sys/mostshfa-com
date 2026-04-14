@@ -159,7 +159,7 @@ export default function AdminDrugsPage() {
                 {drugs.map((drug) => (
                   <tr key={drug.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
-                      <Link href={`/drugs/${drug.slug}`} className="text-primary hover:underline font-medium">
+                      <Link href={`/drugs/${encodeURIComponent(drug.slug)}`} className="text-primary hover:underline font-medium">
                         {drug.nameAr}
                       </Link>
                     </td>

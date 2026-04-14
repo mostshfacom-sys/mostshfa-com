@@ -54,6 +54,7 @@ export async function GET(
       id: alt.id,
       nameAr: alt.nameAr,
       nameEn: alt.nameEn,
+      image: alt.image,
       slug: alt.slug,
       activeIngredient: alt.activeIngredient,
       priceText: alt.priceText,

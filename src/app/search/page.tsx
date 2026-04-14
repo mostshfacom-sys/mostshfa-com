@@ -1,5 +1,4 @@
 import { Header, Footer, Breadcrumb } from '@/components/shared';
-import UniversalHeaderClient from '@/components/shared/UniversalHeaderClient';
 import AdvancedSearchClient from '@/components/search/AdvancedSearchClient';
 import type { Metadata } from 'next';
 
@@ -14,37 +13,24 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   return {
     title: query ? `نتائج البحث: ${query}` : 'البحث',
     description: query
-      ? `نتائج البحث عن "${query}" في دليل الخدمات الطبية`
-      : 'ابحث في دليل الخدمات الطبية الشامل',
+      ? `نتائج البحث عن "${query}" داخل كل أقسام موقع مستشفى.كوم`
+      : 'ابحث في كل أقسام موقع مستشفى.كوم بنتائج أدق وتصنيفات أوضح',
+    alternates: {
+      canonical: '/search',
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
   };
 }
 
 export default async function SearchPage({ searchParams }: PageProps) {
-  const query = searchParams.q || '';
-  const headerTitle = query ? 'نتائج البحث' : 'البحث';
-  const headerSubtitle = query
-    ? `نتائج البحث عن "${query}" في دليل الخدمات الطبية`
-    : 'ابحث في دليل الخدمات الطبية الشامل';
-
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-gray-50">
-        <UniversalHeaderClient
-          prefix="search"
-          title={headerTitle}
-          subtitle={headerSubtitle}
-          searchPlaceholder="ابحث عن مستشفى، عيادة، طبيب..."
-          searchParamKey="q"
-          searchAction="/search"
-          resetPageOnSearch={false}
-          showViewToggle={false}
-          showVoiceSearch
-          showMapButton={false}
-          useBannerText={false}
-          className="mb-8"
-        />
-        <div className="container-custom py-8">
+      <main className="min-h-screen bg-gradient-to-b from-white via-emerald-50/40 to-white transition-colors duration-300 dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950">
+        <div className="container-custom py-8 md:py-10">
           <Breadcrumb items={[{ label: 'البحث' }]} className="mb-6" />
           <AdvancedSearchClient />
         </div>

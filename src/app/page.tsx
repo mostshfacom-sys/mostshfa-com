@@ -31,33 +31,46 @@ import { PlayIcon } from '@heroicons/react/24/solid';
 export const dynamic = 'force-dynamic';
 
 async function getHomeHeaderStats() {
-  const [
-    hospitalCount,
-    clinicCount,
-    labCount,
-    pharmacyCount,
-    emergencyHospitals,
-    medicalTools,
-    drugCount,
-  ] = await Promise.all([
-    prisma.hospital.count(),
-    prisma.clinic.count({ where: { status: 'published' } }),
-    prisma.lab.count({ where: { status: 'published' } }),
-    prisma.pharmacy.count({ where: { status: 'published' } }),
-    prisma.hospital.count({ where: { hasEmergency: true } }),
-    prisma.medicalTool.count({ where: { isActive: true } }),
-    prisma.drug.count(),
-  ]);
+  try {
+    const [
+      hospitalCount,
+      clinicCount,
+      labCount,
+      pharmacyCount,
+      emergencyHospitals,
+      medicalTools,
+      drugCount,
+    ] = await Promise.all([
+      prisma.hospital.count(),
+      prisma.clinic.count({ where: { status: 'published' } }),
+      prisma.lab.count({ where: { status: 'published' } }),
+      prisma.pharmacy.count({ where: { status: 'published' } }),
+      prisma.hospital.count({ where: { hasEmergency: true } }),
+      prisma.medicalTool.count({ where: { isActive: true } }),
+      prisma.drug.count(),
+    ]);
 
-  return {
-    hospitalCount,
-    clinicCount,
-    labCount,
-    pharmacyCount,
-    emergencyHospitals,
-    medicalTools,
-    drugCount,
-  };
+    return {
+      hospitalCount,
+      clinicCount,
+      labCount,
+      pharmacyCount,
+      emergencyHospitals,
+      medicalTools,
+      drugCount,
+    };
+  } catch (error) {
+    console.error('Error loading home header stats:', error);
+    return {
+      hospitalCount: 0,
+      clinicCount: 0,
+      labCount: 0,
+      pharmacyCount: 0,
+      emergencyHospitals: 0,
+      medicalTools: 0,
+      drugCount: 0,
+    };
+  }
 }
 
 const fallbackMedicalTips: MedicalTipTickerItem[] = [

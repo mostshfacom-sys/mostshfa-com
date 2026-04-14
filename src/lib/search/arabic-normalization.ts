@@ -11,22 +11,25 @@
  */
 export function normalizeArabic(text: string): string {
   if (!text) return '';
-  
-  return text
-    // Normalize Alef variants
-    .replace(/[أإآ]/g, 'ا')
+
+  const normalizedDigits = text
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 1632))
+    .replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - 1776));
+
+  return normalizedDigits
+    .replace(/[أإآٱ]/g, 'ا')
     .replace(/ؤ/g, 'و')
     .replace(/ئ/g, 'ي')
-    // Normalize Taa Marbuta to Haa
+    .replace(/ء/g, '')
     .replace(/ة/g, 'ه')
-    // Normalize Alef Maqsura to Yaa
     .replace(/ى/g, 'ي')
-    // Remove Tashkeel (diacritics)
-    .replace(/[\u064B-\u065F]/g, '')
-    // Remove Tatweel
+    .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')
     .replace(/ـ/g, '')
-    .replace(/[^0-9A-Za-z\u0600-\u06FF\s]/g, '')
-    // Normalize whitespace
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .replace(/[\u060C\u061B\u061F\u066A-\u066D\u06D4]/g, ' ')
+    .replace(/[^0-9A-Za-z\u0621-\u063A\u0641-\u064A\u0660-\u0669\u06F0-\u06F9\s]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -57,14 +60,39 @@ export function expandArabicVariants(text: string, limit = 12): string[] {
   return Array.from(new Set(variants)).filter(Boolean);
 }
 
+const ARABIC_PREFIXES = ['وال', 'بال', 'كال', 'فال', 'لل', 'ال', 'و', 'ف', 'ب', 'ك', 'ل'];
+
+export function compactArabic(text: string): string {
+  return normalizeArabic(text).replace(/\s+/g, '');
+}
+
 export function buildSearchTerms(query: string, limit = 12): string[] {
   const trimmed = query.trim();
   const normalized = normalizeArabic(trimmed);
   const terms = new Set<string>();
+
+  const pushTerm = (value: string) => {
+    const cleanValue = value.trim();
+    if (!cleanValue) return;
+    terms.add(cleanValue);
+  };
+
+  const normalizedTokens = normalized.split(' ').filter(Boolean);
+
   if (normalized) terms.add(normalized);
   if (trimmed) terms.add(trimmed);
+  normalizedTokens.forEach(pushTerm);
+  normalizedTokens.forEach((token) => {
+    ARABIC_PREFIXES.forEach((prefix) => {
+      if (token.startsWith(prefix) && token.length > prefix.length + 1) {
+        pushTerm(token.slice(prefix.length));
+      }
+    });
+  });
   expandArabicVariants(normalized, limit).forEach((term) => terms.add(term));
-  return Array.from(terms).filter((term) => normalizeArabic(term).length > 0);
+  return Array.from(terms)
+    .filter((term) => normalizeArabic(term).length > 0)
+    .slice(0, limit);
 }
 
 /**

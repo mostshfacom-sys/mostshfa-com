@@ -30,6 +30,7 @@ export interface NavbarConfig {
   sections: {
     directories: NavbarSection;
     tools: NavbarSection;
+    medicalBrief: NavbarSection;
     articles: NavbarSection & {
       useAutoCategories?: boolean;
       autoCount?: number;
@@ -45,7 +46,7 @@ export interface NavbarConfig {
 }
 
 export const DEFAULT_NAVBAR_CONFIG: NavbarConfig = {
-  version: 1,
+  version: 2,
   brand: {
     label: 'مستشفى.كوم',
     href: '/',
@@ -233,6 +234,81 @@ export const DEFAULT_NAVBAR_CONFIG: NavbarConfig = {
           href: '/tools',
           description: 'استكشف جميع الأدوات المتقدمة',
           icon: 'sparkles',
+          isFeatured: true,
+        },
+      ],
+    },
+    medicalBrief: {
+      id: 'medical-brief',
+      label: 'الموجز الطبي',
+      description: 'قائمة مستقلة للموجز الطبي مع أهم المسارات والتخصصات النشطة',
+      icon: 'sparkles',
+      isEnabled: true,
+      items: [
+        {
+          id: 'medical-brief-home',
+          label: 'آخر تحديثات الموجز',
+          href: '/medical-brief#latest',
+          description: 'ابدأ من الخبر الأبرز والموجز السريع داخل الصفحة المستقلة',
+          icon: 'sparkles',
+          isFeatured: true,
+        },
+        {
+          id: 'medical-brief-sources',
+          label: 'المصادر النشطة',
+          href: '/medical-brief#sources',
+          description: 'تعرف على المنصات الطبية العربية التي تغذي الموجز الآن',
+          icon: 'directory',
+          isFeatured: true,
+        },
+        {
+          id: 'medical-brief-content-types',
+          label: 'أنواع المحتوى',
+          href: '/medical-brief#content-types',
+          description: 'فرّق سريعًا بين التوعية الوقائية والتحديث العلاجي والدراسات',
+          icon: 'article',
+        },
+        {
+          id: 'medical-brief-cardio',
+          label: 'القلب والأوعية',
+          href: '/medical-brief#specialty-cardio',
+          description: 'مستجدات الضغط والشرايين والوقاية القلبية',
+          icon: 'heart',
+        },
+        {
+          id: 'medical-brief-nutrition',
+          label: 'التغذية والأيض',
+          href: '/medical-brief#specialty-nutrition',
+          description: 'الوزن والسكر والتغذية العلاجية',
+          icon: 'nutrition',
+        },
+        {
+          id: 'medical-brief-mental',
+          label: 'الصحة النفسية',
+          href: '/medical-brief#specialty-mental',
+          description: 'النوم والدماغ والقلق والصحة الذهنية',
+          icon: 'mind',
+        },
+        {
+          id: 'medical-brief-women',
+          label: 'صحة المرأة',
+          href: '/medical-brief#specialty-women',
+          description: 'الحمل والخصوبة وصحة الأمومة',
+          icon: 'woman',
+        },
+        {
+          id: 'medical-brief-children',
+          label: 'طب الأطفال',
+          href: '/medical-brief#specialty-children',
+          description: 'الرضع والأطفال واللقاحات والمتابعة اليومية',
+          icon: 'kids',
+        },
+        {
+          id: 'medical-brief-specialties',
+          label: 'جميع التخصصات',
+          href: '/medical-brief#specialties',
+          description: 'انتقل إلى كل مسارات الموجز الطبي حسب التخصص',
+          icon: 'directory',
           isFeatured: true,
         },
       ],

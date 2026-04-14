@@ -16,6 +16,7 @@ interface EntityImageProps {
   className?: string;
   priority?: boolean;
   sizes?: string;
+  unoptimized?: boolean;
 }
 
 /**
@@ -80,20 +81,19 @@ function getImageSource(
 /**
  * مكون صورة ذكي يعرض صورة الكيان أو صورة افتراضية مناسبة
  */
-export function EntityImage(props: any) {
-  const {
-    src,
-    alt,
-    entityType,
-    entityId,
-    width,
-    height,
-    fill = false,
-    className = '',
-    priority = false,
-    sizes,
-  } = props;
-
+export function EntityImage({
+  src,
+  alt,
+  entityType,
+  entityId,
+  width,
+  height,
+  fill = false,
+  className = '',
+  priority = false,
+  sizes,
+  unoptimized = false,
+}: EntityImageProps) {
   const { hospitalDefaultImage } = useImageSettings?.() || {};
   
   const safeEntityType = (entityType && typeof entityType === 'string') ? entityType : 'default';
@@ -103,22 +103,17 @@ export function EntityImage(props: any) {
       ? hospitalDefaultImage.trim()
       : getDefaultImage(safeEntityType);
 
+  const resolvedSource = getImageSource(src, safeEntityType, entityId, resolvedFallback);
+
   const [imgSrc, setImgSrc] = useState<string>(() => {
-    if (src) return src;
-    return resolvedFallback;
+    return resolvedSource;
   });
-  
-  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    if (src) {
-      setImgSrc(src);
-      setHasError(false);
-    }
-  }, [src]);
+    setImgSrc(resolvedSource);
+  }, [resolvedSource]);
 
   const handleError = () => {
-    setHasError(true);
     setImgSrc(resolvedFallback);
   };
 
@@ -137,6 +132,7 @@ export function EntityImage(props: any) {
       className={className}
       priority={priority}
       sizes={sizes || (finalFill ? '100vw' : undefined)}
+      unoptimized={unoptimized || imgSrc.startsWith('/api/pulse-image?') || imgSrc.endsWith('.svg')}
       onError={handleError}
     />
   );

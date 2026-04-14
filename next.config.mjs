@@ -86,6 +86,31 @@ const nextConfig = {
   
   // Generate ETags for caching
   generateEtags: true,
+
+  async redirects() {
+    return [
+      {
+        source: '/drugs-lab',
+        destination: '/drugs',
+        permanent: true,
+      },
+      {
+        source: '/drugs-lab/:slug',
+        destination: '/drugs/:slug',
+        permanent: true,
+      },
+      {
+        source: '/articles/pulse',
+        destination: '/medical-brief',
+        permanent: true,
+      },
+      {
+        source: '/articles/pulse/s/:id',
+        destination: '/medical-brief/s/:id',
+        permanent: true,
+      },
+    ];
+  },
   
   // Headers for caching and security
   async headers() {

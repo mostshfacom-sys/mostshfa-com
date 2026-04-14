@@ -3,8 +3,8 @@ const fs = require('fs');
 const path = require('path');
 
 const prisma = new PrismaClient();
-const BACKUP_DIR = 'C:\\web\\mostshfa.com_trae\\BU';
-const BACKUP_PATH = path.join(BACKUP_DIR, 'database_dump.json');
+const BACKUP_DIR = 'C:\\web\\mostshfa.com\\BU\\04-04-2026';
+const BACKUP_PATH = path.join(BACKUP_DIR, 'neon_database_dump.json');
 
 async function backup() {
   console.log('🚀 Starting Database Backup to JSON...');

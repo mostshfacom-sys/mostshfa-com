@@ -8,6 +8,10 @@ export async function GET(request: Request) {
     const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '20')));
     const search = (searchParams.get('search') || '').trim();
+    const category = (searchParams.get('category') || '').trim();
+    const hasPrice = (searchParams.get('hasPrice') || '').trim();
+    const hasImage = (searchParams.get('hasImage') || '').trim();
+    const sort = (searchParams.get('sort') || '').trim();
 
     const where: any = {};
     if (search) {
@@ -19,13 +23,48 @@ export async function GET(request: Request) {
       ];
     }
 
+    if (category) {
+      const categoryId = parseInt(category);
+      if (!Number.isNaN(categoryId)) {
+        where.categoryId = categoryId;
+      }
+    }
+
+    if (hasPrice === '1' || hasPrice === 'true') {
+      where.priceText = {
+        not: null,
+        notIn: ['', '0', '0.00', '0.0'],
+      };
+    }
+
+    if (hasImage === '1' || hasImage === 'true') {
+      where.AND = [
+        ...(Array.isArray(where.AND) ? where.AND : []),
+        { image: { not: null } },
+        { image: { not: '' } },
+        { NOT: [{ image: { startsWith: '/images/defaults/' } }] },
+      ];
+    }
+
+    const orderBy = (() => {
+      switch (sort) {
+        case 'nameDesc':
+          return { nameAr: 'desc' as const };
+        case 'updatedDesc':
+          return { updatedAt: 'desc' as const };
+        case 'nameAsc':
+        default:
+          return { nameAr: 'asc' as const };
+      }
+    })();
+
     const skip = (page - 1) * limit;
     const [total, drugs] = await Promise.all([
       prisma.drug.count({ where }),
       prisma.drug.findMany({
         where,
         include: { category: true },
-        orderBy: { nameAr: 'asc' },
+        orderBy,
         skip,
         take: limit,
       }),
@@ -43,6 +82,7 @@ export async function GET(request: Request) {
         activeIngredient: drug.activeIngredient,
         category: drug.category?.name || '',
         priceText: drug.priceText,
+        image: drug.image,
         updatedAt: drug.updatedAt,
       })),
     });

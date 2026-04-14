@@ -44,6 +44,7 @@ export const normalizeNavbarConfig = (
     sections: {
       directories: mergeSection(base.sections.directories, sections?.directories),
       tools: mergeSection(base.sections.tools, sections?.tools),
+      medicalBrief: mergeSection(base.sections.medicalBrief, sections?.medicalBrief),
       articles: {
         ...mergeSection(base.sections.articles, sections?.articles),
         useAutoCategories:

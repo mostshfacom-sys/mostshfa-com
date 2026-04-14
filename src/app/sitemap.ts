@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import prisma from '@/lib/db/prisma';
+import { getInternalPulseHref, getPulseData, medicalBriefPath } from '@/app/articles/pulse/lib';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mostshfa.com';
 
@@ -19,6 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/pharmacies`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
     { url: `${BASE_URL}/nursing`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
     { url: `${BASE_URL}/articles`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
+    { url: `${BASE_URL}${medicalBriefPath}`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.85 },
     { url: `${BASE_URL}/articles/categories`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
     { url: `${BASE_URL}/privacy`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
@@ -48,7 +50,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
     drugs.forEach(d => {
       dynamicPages.push({
-        url: `${BASE_URL}/drugs/${d.slug}`,
+        url: `${BASE_URL}/drugs/${encodeURIComponent(d.slug)}`,
         lastModified: d.updatedAt,
         changeFrequency: 'weekly',
         priority: 0.7,
@@ -109,6 +111,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // 8. YouTube Videos (Redirects to YouTube but we can index our pages if we have them)
     // Currently they seem to be listed on /medical-videos, if we have individual video pages we'd add them here.
+    const pulseData = await getPulseData();
+    pulseData.latestArticles.slice(0, 50).forEach((article) => {
+      dynamicPages.push({
+        url: `${BASE_URL}${getInternalPulseHref(article.id)}`,
+        lastModified: article.publishedAt || new Date(),
+        changeFrequency: 'daily',
+        priority: 0.75,
+      });
+    });
 
   } catch (error) {
     console.error('Error generating sitemap:', error);

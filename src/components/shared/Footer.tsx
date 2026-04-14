@@ -18,6 +18,7 @@ const footerLinks = {
   ],
   content: [
     { href: '/articles', label: 'المقالات الطبية' },
+    { href: '/medical-brief', label: 'الموجز الطبي' },
     { href: '/medical-info', label: 'المعلومات الطبية' },
     { href: '/medical-videos', label: 'الفيديوهات الطبية' },
     { href: '/tools', label: 'الأدوات الصحية' },

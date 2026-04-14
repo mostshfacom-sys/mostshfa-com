@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useImageSettings } from '@/components/ui/ImageSettingsProvider';
 import { useTheme } from '@/components/shared/ThemeProvider';
@@ -8,12 +8,19 @@ import UniversalSmartHeaderCompact from '@/components/hospitals-pro/UniversalSma
 import type { CounterData } from '@/components/hospitals-pro/UniversalSmartHeader';
 import type { EntityType } from '@/components/maps/MapContainer';
 import {
+  buildDrugsLabUrl,
+  DRUGS_LAB_QUERY_CHANGE_EVENT,
+  sanitizeDrugSearchInput,
+} from '@/lib/search/drugs-lab';
+import {
   BuildingOffice2Icon,
   CheckBadgeIcon,
   ClockIcon,
   HeartIcon,
+  MagnifyingGlassIcon,
   ShieldCheckIcon,
   StarIcon,
+  TagIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
 
@@ -59,6 +66,11 @@ interface UniversalHeaderClientProps {
   subtitle?: string;
   counters?: HeaderCounterConfig[];
   searchPlaceholder?: string;
+  hideSearchOnMobile?: boolean;
+  headerActions?: React.ReactNode;
+  searchJumpTargetId?: string;
+  searchJumpInputId?: string;
+  categoriesHref?: string;
   searchParamKey?: string;
   searchAction?: string;
   pageParamKey?: string;
@@ -114,6 +126,11 @@ function UniversalHeaderClientContent(props: UniversalHeaderClientProps) {
     subtitle,
     counters = [],
     searchPlaceholder,
+    hideSearchOnMobile,
+    headerActions,
+    searchJumpTargetId,
+    searchJumpInputId,
+    categoriesHref,
     searchParamKey = 'search',
     searchAction,
     pageParamKey = 'page',
@@ -150,9 +167,11 @@ function UniversalHeaderClientContent(props: UniversalHeaderClientProps) {
 
   const [searchValue, setSearchValue] = useState('');
   const [prefersDark, setPrefersDark] = useState(false);
+  const isDrugsLabPage = pathname === '/drugs-lab' || pathname === '/drugs';
 
   useEffect(() => {
-    setSearchValue(searchParams.get(searchParamKey) ?? '');
+    const next = searchParams.get(searchParamKey) ?? '';
+    setSearchValue(next);
   }, [searchParams, searchParamKey]);
 
   useEffect(() => {
@@ -259,8 +278,23 @@ function UniversalHeaderClientContent(props: UniversalHeaderClientProps) {
     [quickFilters, router]
   );
 
-  const handleSearchSubmit = (value: string) => {
-    const trimmed = value.trim();
+  const handleSearchSubmit = useCallback((value: string) => {
+    const destination = searchAction || pathname;
+    const trimmed = isDrugsLabPage ? sanitizeDrugSearchInput(value) : value.trim();
+
+    if (isDrugsLabPage && typeof window !== 'undefined') {
+      const { queryString, nextUrl } = buildDrugsLabUrl(
+        destination,
+        searchParams,
+        { [searchParamKey]: trimmed || null },
+        { resetPage: resetPageOnSearch && Boolean(pageParamKey) }
+      );
+      window.history.replaceState({}, '', nextUrl);
+      window.dispatchEvent(new CustomEvent(DRUGS_LAB_QUERY_CHANGE_EVENT, { detail: { queryString } }));
+      setSearchValue(trimmed);
+      return;
+    }
+
     const params = new URLSearchParams(searchParams.toString());
     if (trimmed) {
       params.set(searchParamKey, trimmed);
@@ -270,10 +304,95 @@ function UniversalHeaderClientContent(props: UniversalHeaderClientProps) {
     if (resetPageOnSearch && pageParamKey) {
       params.set(pageParamKey, '1');
     }
-    const destination = searchAction || pathname;
     const queryString = params.toString();
+
+    if (isDrugsLabPage && typeof window !== 'undefined') {
+      const nextUrl = queryString ? `${destination}?${queryString}` : destination;
+      window.history.replaceState({}, '', nextUrl);
+      window.dispatchEvent(new CustomEvent(DRUGS_LAB_QUERY_CHANGE_EVENT, { detail: { queryString } }));
+      return;
+    }
+
     router.push(queryString ? `${destination}?${queryString}` : destination);
+  }, [
+    isDrugsLabPage,
+    pageParamKey,
+    pathname,
+    resetPageOnSearch,
+    router,
+    searchAction,
+    searchParamKey,
+    searchParams,
+  ]);
+
+  const handleSearchChange = (next: string) => {
+    setSearchValue(next);
   };
+
+  const computedHeaderActions = useMemo(() => {
+    if (!searchJumpTargetId && !categoriesHref) {
+      return headerActions;
+    }
+
+    return (
+      <div className="flex items-stretch gap-2">
+        {searchJumpTargetId && (
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById(searchJumpTargetId);
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+              const inputId = (searchJumpInputId || '').trim();
+              if (inputId) {
+                window.setTimeout(() => {
+                  const input = document.getElementById(inputId) as HTMLInputElement | null;
+                  input?.focus();
+                }, 350);
+              }
+            }}
+            className="inline-flex items-center justify-center gap-1.5 rounded-lg border-2 border-white/30 bg-white/20 px-2.5 py-2.5 text-white hover:bg-white/25 transition-colors shadow-md"
+            aria-label="الانتقال إلى البحث"
+            title="بحث"
+          >
+            <MagnifyingGlassIcon className="w-4 h-4 text-white" />
+            <span className="hidden sm:inline text-xs font-bold">بحث</span>
+          </button>
+        )}
+
+        {categoriesHref && (
+          <button
+            type="button"
+            onClick={() => router.push(String(categoriesHref))}
+            className="inline-flex items-center justify-center gap-1.5 rounded-lg border-2 border-white/30 bg-white/15 px-2.5 py-2.5 text-white hover:bg-white/20 transition-colors shadow-md"
+            aria-label="تصنيفات الأدوية"
+            title="تصنيفات الأدوية"
+          >
+            <TagIcon className="w-4 h-4 text-white" />
+            <span className="hidden sm:inline text-xs font-bold">التصنيفات</span>
+          </button>
+        )}
+
+        {headerActions}
+      </div>
+    );
+  }, [categoriesHref, headerActions, router, searchJumpInputId, searchJumpTargetId]);
+
+  useEffect(() => {
+    if (!isDrugsLabPage) return;
+
+    const nextValue = sanitizeDrugSearchInput(searchValue);
+    const currentValue = sanitizeDrugSearchInput(searchParams.get(searchParamKey) ?? '');
+
+    if (nextValue === currentValue) return;
+
+    const timeoutId = window.setTimeout(() => {
+      handleSearchSubmit(nextValue);
+    }, 350);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [handleSearchSubmit, isDrugsLabPage, searchParamKey, searchParams, searchValue]);
 
   return (
     <UniversalSmartHeaderCompact
@@ -281,9 +400,11 @@ function UniversalHeaderClientContent(props: UniversalHeaderClientProps) {
       subtitle={useBannerText ? bannerSubtitle || subtitle : subtitle}
       counters={resolvedCounters}
       searchValue={searchValue}
-      onSearchChange={setSearchValue}
+      onSearchChange={handleSearchChange}
       onSearchSubmit={handleSearchSubmit}
       searchPlaceholder={searchPlaceholder}
+      hideSearchOnMobile={hideSearchOnMobile}
+      headerActions={computedHeaderActions}
       viewMode={viewMode}
       onViewModeChange={onViewModeChange}
       showViewToggle={showViewToggle}
