@@ -6,10 +6,16 @@
     </linearGradient>
   </defs>
   <rect x="8" y="8" width="112" height="112" rx="28" fill="url(#g)"/>
-  <mask id="crescent">
-    <rect width="128" height="128" fill="black"/>
-    <circle cx="62" cy="64" r="30" fill="white"/>
-    <circle cx="74" cy="64" r="30" fill="black"/>
-  </mask>
-  <rect x="8" y="8" width="112" height="112" rx="28" fill="#ffffff" mask="url(#crescent)"/>
+  <path
+    fill="#ffffff"
+    d="M64 98s-24.6-15.6-36.5-30.2C18.9 57 18.7 44.7 27 36.4c8.1-8.1 21.2-8.1 29.3 0L64 44.1l7.7-7.7c8.1-8.1 21.2-8.1 29.3 0 8.3 8.3 8.1 20.6-.5 31.4C88.6 82.4 64 98 64 98z"
+  />
+  <path
+    fill="none"
+    stroke="#0f766e"
+    stroke-width="7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    d="M24 70h18l7-14 10 28 10-18h35"
+  />
 </svg>
